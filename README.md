@@ -2,6 +2,7 @@
 NRT burned severity
 
 ## Tasks
+* Have a look at p 1-2 of [CSRS abstracts](https://github.com/bcgov/wps-research/blob/master/doc/2024_csrs/2024_csrs_abstracts.pdf)
 * Review general details of [Sentinel-2 mission](https://sentiwiki.copernicus.eu/web/s2-mission)
 * Install google cloud sdk [install google cloud SDK](https://cloud.google.com/sdk/docs/install). Could borrow the script [here](https://github.com/bcgov/wps-research/blob/master/py/gcp/install_gcp.py) and update it to the latest versions (and to work on MacOS)
 * Install QGis
