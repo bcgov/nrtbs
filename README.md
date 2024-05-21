@@ -13,3 +13,4 @@ NRT burned severity
 * Verify this is the correct link and download a province-wide burned-severity dataset for 2021 [here](https://catalogue.data.gov.bc.ca/dataset/fire-burn-severity-historical). Open it in QGis : )  
 * Determine if "pre" and "post" imagery dates (used to generate the product) are listed within the dataset
 * Download 2021 fire perimeters from: [here](https://www.for.gov.bc.ca/ftp/HPR/external/!publish/Maps_and_Data/GoogleEarth/WMB_Fires/) in KML format
+* Fire of interest: [white rock lake](https://en.wikipedia.org/wiki/White_Rock_Lake_fire)
