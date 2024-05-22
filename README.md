@@ -14,3 +14,5 @@ NRT burned severity
 * Determine if "pre" and "post" imagery dates (used to generate the product) are listed within the dataset
 * Download 2021 fire perimeters from: [here](https://www.for.gov.bc.ca/ftp/HPR/external/!publish/Maps_and_Data/GoogleEarth/WMB_Fires/) in KML format
 * Fire of interest: [white rock lake](https://en.wikipedia.org/wiki/White_Rock_Lake_fire)
+* note: Sparks lake K21001 pre/post dates used in BC Gov BS estimate: 20200729 / 20220902  
+
