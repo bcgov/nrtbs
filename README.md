@@ -1,7 +1,6 @@
 # nrtbs
 NRT burned severity
-
-## Tasks
+## Data Engineering
 * Have a look at p 1-2 of [CSRS abstracts](https://github.com/bcgov/wps-research/blob/master/doc/2024_csrs/2024_csrs_abstracts.pdf)
 * Review general details of [Sentinel-2 mission](https://sentiwiki.copernicus.eu/web/s2-mission)
 * Install google cloud sdk [install google cloud SDK](https://cloud.google.com/sdk/docs/install). Could borrow the script [here](https://github.com/bcgov/wps-research/blob/master/py/gcp/install_gcp.py) and update it to the latest versions (and to work on MacOS)
@@ -13,6 +12,9 @@ NRT burned severity
 * Verify this is the correct link and download a province-wide burned-severity dataset for 2021 [here](https://catalogue.data.gov.bc.ca/dataset/fire-burn-severity-historical). Open it in QGis : )  
 * Determine if "pre" and "post" imagery dates (used to generate the product) are listed within the dataset
 * Download 2021 fire perimeters from: [here](https://www.for.gov.bc.ca/ftp/HPR/external/!publish/Maps_and_Data/GoogleEarth/WMB_Fires/) in KML format
-* Fire of interest: [white rock lake](https://en.wikipedia.org/wiki/White_Rock_Lake_fire)
-* note: Sparks lake K21001 pre/post dates used in BC Gov BS estimate: 20200729 / 20220902  
+* Fire of interest: Sparks lake K21001. Note: pre/post dates used in BC Gov BS estimate: 20200729 / 20220902  
 * Rasterize burned severity product 
+## Modelling
+* Fit a sequence of models: where the independent variable is a time-series of Sentinel-2 data (starting with a cloud-free pre-fire date, and ending with date "X") Where "X" is >= the pre-fire date, and "X" <= the post-fire date. The post-fire date is the first cloud-free date after the fire is declared "out" (should be available from national fire polygon database, if not [here](https://www.for.gov.bc.ca/ftp/HPR/external/!publish/Maps_and_Data/GoogleEarth/WMB_Fires/). Better yet, can choose a post-fire date by inspection (some time late in the season when the fire has obviously stopped moving).      
+* Two cases: dependent variable is 1) burned-severity class or 2) the dNBR.
+* Want to understand the goodness of fit for the dependent variable, as "X" is varied (want to see how small we can make "X" and still get a good estimate).  
