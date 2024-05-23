@@ -19,6 +19,8 @@ NRT burned severity
 * Two cases: dependent variable is 1) burned-severity class or 2) the dNBR.
 * Want to understand the goodness of fit for the dependent variable, as "X" is varied (want to see how small we can make "X" and still get a good estimate).
 * Methods: start with Scikit-learn and find something that runs in a finite amount of time. Try a few models in scikit-learn at least, before moving to more complex neural-network models such as in Pytorch or Keras/[Tensorflow](https://developers.google.com/machine-learning/crash-course)   
-## Things to consider later
+## To consider later
 * As a future refinement, may likely need to run Sen2cor processor [here](https://step.esa.int/main/snap-supported-plugins/sen2cor/sen2cor-v2-11/) as a pre-processing step to exclude detected areas. Info available [here](https://sentiwiki.copernicus.eu/web/s2-processing#S2Processing-L2AAlgorithmsS2-Processing-L2A-Algorithmstrue) on S2 processing algorithms resulting in the available cloud mask accompanying Level-2 data (running sen2cor on Level-1 data results in Level-2 data) 
 * It may eventually be necessary to improve cloud vs. smoke vs. fire classification to refine our results.
+## Application-izing
+When we have arrived at an acceptable method that we determine is operationally relevant for anticipating burned-severity (while the fire is still burning) we need to collect the steps into an "application" that can be re-run (for re-use, including validation over larger areas) 
