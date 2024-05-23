@@ -19,5 +19,5 @@ NRT burned severity
 * Two cases: dependent variable is 1) burned-severity class or 2) the dNBR.
 * Want to understand the goodness of fit for the dependent variable, as "X" is varied (want to see how small we can make "X" and still get a good estimate).  
 ## Things to consider later
-* likely will need to run Sen2cor processor. Info available [here](https://sentiwiki.copernicus.eu/web/s2-processing#S2Processing-L2AAlgorithmsS2-Processing-L2A-Algorithmstrue) on S2 processing algorithms resulting in the available cloud mask accompanying Level-2 data (running sen2cor on Level-1 data results in Level-2 data) 
+* As a future refinement, may likely need to run Sen2cor processor [here](https://step.esa.int/main/snap-supported-plugins/sen2cor/sen2cor-v2-11/) as a pre-processing step to exclude detected areas. Info available [here](https://sentiwiki.copernicus.eu/web/s2-processing#S2Processing-L2AAlgorithmsS2-Processing-L2A-Algorithmstrue) on S2 processing algorithms resulting in the available cloud mask accompanying Level-2 data (running sen2cor on Level-1 data results in Level-2 data) 
 * It may eventually be necessary to improve cloud vs. smoke vs. fire classification to refine our results.
