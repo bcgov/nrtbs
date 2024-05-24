@@ -27,3 +27,6 @@ NRT burned severity
 * It may eventually be necessary to improve cloud vs. smoke vs. fire classification to refine our results.
 ## Application-izing
 When we have arrived at an acceptable method that we determine is operationally relevant for anticipating burned-severity (while the fire is still burning) we need to collect the steps into an "application" that can be re-run (for re-use, including validation over larger areas) 
+
+# Background / references
+* https://burnseverity.cr.usgs.gov/ravg/background-products-applications
