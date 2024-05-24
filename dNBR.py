@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 
 
 def NBR(file_name):
+    '''
+    Takes binary file and returns the band values as well as the NBR.
+    >>> NBR('S2A_MSIL1C_20210902T190911_N0301_R056_T10UFB_20210902T225534.bin')
+    '''
     vals = read_binary(file_name) 
     data = vals[3]
     width = vals[0]
@@ -27,6 +31,10 @@ def NBR(file_name):
             
             
 def dNBR(start_frame, end_frame):
+    '''
+    Takes the start and end binary files and returns the dNRB.
+    >>> dNBR('S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin', 'S2A_MSIL1C_20210907T190911_N0301_R056_T10UFB_20210902T225534.bin')
+    '''
     preNBR = NBR(start_frame)[3]
     postNBR = NBR(end_frame)[3]
     dNBR = postNBR - preNBR
