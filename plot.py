@@ -70,6 +70,8 @@ def plot(file_list):
         if not os.path.exists('images'):
             os.mkdir('images')
         plt.savefig(f'images/{date}_{file_list[n]}.png')
+        plt.clf()
+
         
         plt.imshow(NBR, cmap='Greys') #Plotting the NBR
         plt.title(f'NBR of Sparks Lake fire on {date}')
@@ -78,6 +80,7 @@ def plot(file_list):
         if not os.path.exists('NBR'):
             os.mkdir('NBR')
         plt.savefig(f'NBR/{date}_{file_list[n]}.png')
+        plt.clf()
         
         #Plotting the dNBR for all frames but the first
         if n == 0:
@@ -90,3 +93,4 @@ def plot(file_list):
             if not os.path.exists('dNBR'):
                 os.mkdir('dNBR')
             plt.savefig(f'dNBR/{date}_{file_list[n]}.png')
+            plt.clf()
