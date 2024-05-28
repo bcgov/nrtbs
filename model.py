@@ -9,13 +9,12 @@ import os
 filenames = ['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin','S2B_MSIL1C_20210629T190919_N0300_R056_T10UFB_20210629T212050.bin','S2A_MSIL1C_20210701T185921_N0301_R013_T10UFB_20210701T223921.bin','S2B_MSIL1C_20210709T190919_N0301_R056_T10UFB_20210709T224644.bin','S2A_MSIL1C_20210714T190921_N0301_R056_T10UFB_20210714T225634.bin','S2B_MSIL1C_20210719T190919_N0301_R056_T10UFB_20210719T212141.bin','S2A_MSIL1C_20210724T190921_N0301_R056_T10UFB_20210724T230122.bin','S2B_MSIL1C_20210726T185919_N0301_R013_T10UFB_20210726T211239.bin','S2B_MSIL1C_20210729T190919_N0301_R056_T10UFB_20210729T212314.bin','S2A_MSIL1C_20210803T190921_N0301_R056_T10UFB_20210803T224926.bin','S2B_MSIL1C_20210805T185919_N0301_R013_T10UFB_20210805T211134.bin','S2A_MSIL1C_20210813T190921_N0301_R056_T10UFB_20210813T224901.bin','S2A_MSIL1C_20210902T190911_N0301_R056_T10UFB_20210902T225534.bin','S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin']
 
 
-def model(stop_index, filenames): 
+def NBRmodel(stop_index, filenames): 
     '''
     Using a list of raster files this function models the dNBR of a given fire using linear regression and 4 parameters. The function plots both an error plot of the predicted vs observed final dNBR and the predicted dNBR. It also returns the fits score.
     '''
     if stop_index < 0 or stop_index >= len(filenames): err("bad index")  
-    dnbr = dNBR(f'raster_data/small/{filenames[0]}', f'raster_data/small/{filenames[-1]}')  # dependent variable: compare start and end dates
-    #nbr = NBR(f'raster_data/small/{filenames[-1]}')[4]
+    nbr = NBR(f'raster_data/small/{filenames[-1]}')[4]# dependent variable: compare start and end dates
     
     params = []
     for i in range(stop_index + 1):  
@@ -28,7 +27,7 @@ def model(stop_index, filenames):
     for i in range(height):
         for j in range(width):
             x = [params[k][i][j] for k in range(len(params))]
-            y = dnbr[i][j]
+            y = nbr[i][j]
             #print(x)
             if not np.isnan(x).any():
                 X += [x]
@@ -47,23 +46,94 @@ def model(stop_index, filenames):
         i = n // width
         j = n % height
         data[i][j] = pred[n]
-    err = dnbr - data #error 
+    err = nbr - data #error 
+    test = dNBR(f'raster_data/small/{filenames[0]}',f'raster_data/small/{filenames[stop_index]}')
+    '''
+    if test.all() == data.all():
+        print('They the same')
+    else:
+        print('It may have worked')
+    
+    '''
     plt.figure(figsize=(15,15))
     
     plt.imshow(err,cmap='Greys')
     plt.colorbar()
-    plt.title(f'Error using stop date {date}. Score: {score}')
+    plt.title(f'NBR error using stop date {date}. Score: {score}')
+    if not os.path.exists('NBR_model_error'):
+        os.mkdir('NBR_model_error')    
+    plt.savefig(f'NBR_model_error/{date}_{filenames[stop_index]}.png')
+    
+    plt.imshow(data,cmap='Greys')
+    plt.title(f'Predicted NBR using stop date {date}. Score: {score}')
+    if not os.path.exists('NBR_model'):
+        os.mkdir('NBR_model')    
+    plt.savefig(f'NBR_model/{date}_{filenames[stop_index]}.png')
+    #print(score) 
+
+ 
+    
+def dNBRmodel(stop_index, filenames): 
+    '''
+    Using a list of raster files this function models the dNBR of a given fire using linear regression and 4 parameters. The function plots both an error plot of the predicted vs observed final dNBR and the predicted dNBR. It also returns the fits score.
+    '''
+    if stop_index < 0 or stop_index >= len(filenames): err("bad index")  
+    dnbr = dNBR(f'raster_data/small/{filenames[0]}', f'raster_data/small/{filenames[-1]}')  # dependent variable: compare start and end dates
+    
+    params = []
+    for i in range(stop_index + 1):  
+        params += NBR(f'raster_data/small/{filenames[i]}')
+ 
+    X = []
+    Y = []
+    height = 549
+    width = 549
+    for i in range(height):
+        for j in range(width):
+            x = [params[k][i][j] for k in range(len(params))]
+            y = dnbr[i][j]
+            if not np.isnan(x).any():
+                X += [x]
+                Y += [y]     
+            else:
+                X += [[0 for k in range(len(params))]]
+                Y += [0]
+
+    reg = LinearRegression().fit(X, Y)
+    pred = reg.predict(X)
+    data = np.zeros((height,width))
+    score = reg.score(X, Y)
+    
+    date = filenames[stop_index].split('_')[2].split('T')[0]
+    for n in range(len(pred)): #going through the prediction list to plot the predicted dNBR
+        i = n // width
+        j = n % height
+        data[i][j] = pred[n]
+    err = dnbr - data #error 
+    test = dNBR(f'raster_data/small/{filenames[0]}',f'raster_data/small/{filenames[stop_index]}')
+    '''
+    if test.all() == data.all():
+        print('They the same')
+    else:
+        print('It may have worked')
+    
+    '''
+    plt.figure(figsize=(15,15))
+    
+    plt.imshow(err,cmap='Greys')
+    plt.colorbar()
+    plt.title(f'dNBR error using stop date {date}. Score: {score}')
     if not os.path.exists('dNBR_model_error'):
         os.mkdir('dNBR_model_error')    
     plt.savefig(f'dNBR_model_error/{date}_{filenames[stop_index]}.png')
     
     plt.imshow(data,cmap='Greys')
-    plt.title(f'Predicted dNBR using stop index {date}. Score: {score}')
+    plt.title(f'Predicted dNBR using stop date {date}. Score: {score}')
     if not os.path.exists('dNBR_model'):
         os.mkdir('dNBR_model')    
     plt.savefig(f'dNBR_model/{date}_{filenames[stop_index]}.png')
-    #print(score) 
- 
- 
+
+
 for i in range(len(filenames)):
-    model(i, filenames) 
+    NBRmodel(i, filenames)
+    dNBRmodel(i,filenames)
