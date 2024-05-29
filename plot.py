@@ -34,17 +34,17 @@ def plot(file_list):
     >>> plot(['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin',...,'S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin'])
     '''
     for n in range(len(file_list)):
-        vals = read_binary(file_list[n]) #reading each file
+        vals = read_binary(f'raster_data/{file_list[n]}') #reading each file
         data = vals[3]
         width = vals[0]
         height = vals[1]
-        NBR = np.zeros((width,height))    
-        B12 = np.zeros((width,height))
-        B11 = np.zeros((width,height))
-        B09 = np.zeros((width,height))
-        B08 = np.zeros((width,height))
-        for i in range(width):
-            for j in range(height):
+        NBR = np.zeros((height,width))    
+        B12 = np.zeros((height,width))
+        B11 = np.zeros((height,width))
+        B09 = np.zeros((height,width))
+        B08 = np.zeros((height,width))
+        for i in range(height):
+            for j in range(width):
                 if (data[width*height*0 + width*i+j] + data[width*height*3 + width*i+j]) == 0:
                     NBR[i][j] = 0
                 else:
@@ -62,23 +62,21 @@ def plot(file_list):
         image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
         
         plt.figure(figsize=(15,15)) #setting figure parameters
-        plt.tight_layout()
         
         plt.imshow(image) #Plotting the image
         plt.title(f'Sparks Lake fire on {date}, bands: r=B12, g=B11, b=B09')
-        plt.tight_layout()
         if not os.path.exists('images'):
             os.mkdir('images')
+        plt.tight_layout()
         plt.savefig(f'images/{date}_{file_list[n]}.png')
         plt.clf()
-
         
         plt.imshow(NBR, cmap='Greys') #Plotting the NBR
         plt.title(f'NBR of Sparks Lake fire on {date}')
-        plt.tight_layout()
-        plt.colorbar()      
+        plt.colorbar(fraction=0.04525)     
         if not os.path.exists('NBR'):
             os.mkdir('NBR')
+        plt.tight_layout()
         plt.savefig(f'NBR/{date}_{file_list[n]}.png')
         plt.clf()
         
@@ -89,8 +87,10 @@ def plot(file_list):
             dNBR = start_NBR - NBR        
             plt.imshow(dNBR, cmap='Greys')
             plt.title(f'dNBR of Sparks Lake fire on {date}')
-            plt.tight_layout()     
+            plt.colorbar(fraction=0.04525)     
             if not os.path.exists('dNBR'):
                 os.mkdir('dNBR')
-            plt.savefig(f'dNBR/{date}_{file_list[n]}.png')
+            plt.tight_layout()
+            plt.savefig(f'dNBR/{date}_{file_list[n]}.png') 
             plt.clf()
+        
