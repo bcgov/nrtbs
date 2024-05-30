@@ -34,7 +34,10 @@ def burnmask(start_file,end_file,threshold):
     
     
 def param_plots(file_list,threshold):
-    mask = burnmask(file_list[0],file_list[-1],threshold)
+    '''
+    Makes plots of the burned and unburned mean and standard deveation of the 4 parameters calculated using the NBR function, B12, B11, B09, B08, and NBR.
+    '''
+    mask = burnmask(file_list[0],file_list[-1],threshold) #calculating the mask ie. where is burned/unburned
     
     burn12_mean = []; burn11_mean = []; burn09_mean = []; burn08_mean = []; burnnbr_mean = []; unburn12_mean = []; unburn11_mean = []; unburn09_mean = [];unburn08_mean = []; unburnnbr_mean = []
     
@@ -42,9 +45,9 @@ def param_plots(file_list,threshold):
     
     time = []
     
-    start_date = datetime.datetime.strptime(file_list[0].split('_')[2].split('T')[0],'%Y%m%d')
+    start_date = datetime.datetime.strptime(file_list[0].split('_')[2].split('T')[0],'%Y%m%d') #fire start date
     
-    for file in file_list:    
+    for file in file_list: #loops finding pixel values for each parameter and sorting them to burned or unburned
         burned_b12 = []; burned_b11 = []; burned_b09 = []; burned_b08 = []; burned_nbr = []; unburned_b12 = []; unburned_b11 = []; unburned_b09 = []; unburned_b08 = []; unburned_nbr = []
         
         date  = datetime.datetime.strptime(file.split('_')[2].split('T')[0],'%Y%m%d')
@@ -73,20 +76,20 @@ def param_plots(file_list,threshold):
                         unburned_b08 += [params[3][i][j]]
                     if not np.isnan(params[4][i][j]):
                         unburned_nbr += [params[4][i][j]]
-        burn12_mean += [np.mean(burned_b12)]
+        burn12_mean += [np.mean(burned_b12)] #calculating means
         burn11_mean += [np.mean(burned_b11)]
         burn09_mean += [np.mean(burned_b09)]
         burn08_mean += [np.mean(burned_b08)]
         burnnbr_mean += [np.mean(burned_nbr)]
         
-        burn12_dev += [np.std(burned_b12)]
+        burn12_dev += [np.std(burned_b12)] #calculating standard deveations
         burn11_dev += [np.std(burned_b11)]
         burn09_dev += [np.std(burned_b09)]
         burn08_dev += [np.std(burned_b08)]
         burnnbr_dev += [np.std(burned_nbr)]
         
-        days = date.day - start_date.day
-        months = date.month - start_date.month
+        days = date.day - start_date.day #getting an estimate of the elapsed days
+        months = date.month - start_date.month 
         time += [days + months*31]
             
         unburn12_mean += [np.mean(unburned_b12)]
@@ -101,7 +104,7 @@ def param_plots(file_list,threshold):
         unburn08_dev += [np.std(unburned_b08)]
         unburnnbr_dev += [np.std(unburned_nbr)]
         
-    plt.figure(figsize=(15,15))
+    plt.figure(figsize=(15,15)) #plotting
     
     plt.plot(time, burn12_mean, color='red', label='Burned mean')
     plt.plot(time, list(map(add,burn12_mean, burn12_dev)), color='red', linestyle='dashed')
