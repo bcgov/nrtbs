@@ -66,8 +66,8 @@ def param_plots(file_list,threshold):
         
         date  = datetime.datetime.strptime(file.split('_')[2].split('T')[0],'%Y%m%d')
         params = NBR(f'raster_data/small/{file}')
-        for i in range(len(mask[0])):
-            for j in range(len(mask)):
+        for i in range(len(mask)):
+            for j in range(len(mask[0])):
                 for band in range(5):
                     if mask[i][j]:
                         burned_band_list[band] += [params[band][i][j]]
