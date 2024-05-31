@@ -38,6 +38,7 @@ except:
 args = sys.argv
 sep = os.path.sep
 abspath = os.path.abspath
+
 def get_pd():
     return os.path.abspath(sep.join(abspath(__file__).split(sep)[:-1])) + sep  # python directory i.e. path to here
 pd = get_pd()
@@ -158,7 +159,7 @@ def assert_exists(fn):
 
 # use numpy to read a floating-point data file (4 bytes per float, byte order 0)
 def read_float(fn):
-    print("+r", fn)
+   # print("+r", fn)
     return np.fromfile(fn, dtype = np.float32) # "float32") # '<f4')
 
 def wopen(fn):
@@ -172,7 +173,7 @@ def read_binary(fn):
     hdr = hdr_fn(fn) # read header and print parameters
     samples, lines, bands = read_hdr(hdr)
     samples, lines, bands = int(samples), int(lines), int(bands)
-    print("\tsamples", samples, "lines", lines, "bands", bands)
+    #print("\tsamples", samples, "lines", lines, "bands", bands)
     data = read_float(fn)
     return samples, lines, bands, data
 

@@ -17,7 +17,7 @@ def Download_URLs_from_tileID_and_date_range(tile_id, start_date, end_date):
         date = x[i+1].split('_')[2].split('T')[0]
         if date == 'PRD':
             continue;
-        if x[i+1].split('_')[5] == tile_id and start_date <= int(date) <= end_date and float(z[i+1]) <= 10:
+        if x[i+1].split('_')[5] == tile_id and start_date < int(date) < end_date and float(z[i+1]) <= 10:
             print(z[i+1])
             matches += [i+1]
     if len(matches) == 0:

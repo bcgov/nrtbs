@@ -34,7 +34,7 @@ def plot(file_list):
     >>> plot(['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin',...,'S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin'])
     '''
     for n in range(len(file_list)):
-        vals = read_binary(f'raster_data/{file_list[n]}') #reading each file
+        vals = read_binary(f'raster_data/small/{file_list[n]}') #reading each file
         data = vals[3]
         width = vals[0]
         height = vals[1]
@@ -62,7 +62,7 @@ def plot(file_list):
         image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
         
         plt.figure(figsize=(15,15)) #setting figure parameters
-        
+        imratio = height/width
         plt.imshow(image) #Plotting the image
         plt.title(f'Sparks Lake fire on {date}, bands: r=B12, g=B11, b=B09')
         if not os.path.exists('images'):
@@ -73,7 +73,7 @@ def plot(file_list):
         
         plt.imshow(NBR, cmap='Greys') #Plotting the NBR
         plt.title(f'NBR of Sparks Lake fire on {date}')
-        plt.colorbar(fraction=0.04525)     
+        plt.colorbar(fraction=0.04525*imratio)     
         if not os.path.exists('NBR'):
             os.mkdir('NBR')
         plt.tight_layout()
@@ -87,10 +87,15 @@ def plot(file_list):
             dNBR = start_NBR - NBR        
             plt.imshow(dNBR, cmap='Greys')
             plt.title(f'dNBR of Sparks Lake fire on {date}')
-            plt.colorbar(fraction=0.04525)     
+            plt.colorbar(fraction=0.04525*imratio)     
             if not os.path.exists('dNBR'):
                 os.mkdir('dNBR')
             plt.tight_layout()
             plt.savefig(f'dNBR/{date}_{file_list[n]}.png') 
             plt.clf()
         
+
+
+
+filenames = ['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin','S2B_MSIL1C_20210629T190919_N0300_R056_T10UFB_20210629T212050.bin','S2A_MSIL1C_20210701T185921_N0301_R013_T10UFB_20210701T223921.bin','S2B_MSIL1C_20210709T190919_N0301_R056_T10UFB_20210709T224644.bin','S2A_MSIL1C_20210714T190921_N0301_R056_T10UFB_20210714T225634.bin','S2B_MSIL1C_20210719T190919_N0301_R056_T10UFB_20210719T212141.bin','S2A_MSIL1C_20210724T190921_N0301_R056_T10UFB_20210724T230122.bin','S2B_MSIL1C_20210726T185919_N0301_R013_T10UFB_20210726T211239.bin','S2B_MSIL1C_20210729T190919_N0301_R056_T10UFB_20210729T212314.bin','S2A_MSIL1C_20210803T190921_N0301_R056_T10UFB_20210803T224926.bin','S2B_MSIL1C_20210805T185919_N0301_R013_T10UFB_20210805T211134.bin','S2A_MSIL1C_20210813T190921_N0301_R056_T10UFB_20210813T224901.bin','S2A_MSIL1C_20210902T190911_N0301_R056_T10UFB_20210902T225534.bin','S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin']
+plot(filenames)

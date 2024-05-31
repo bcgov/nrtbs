@@ -50,7 +50,11 @@ def plot(file):
                 C12_im = C
             elif band == 'C12_real':
                 C12_re = C
-                
+            elif band == 'C11':
+                C11 = C
+            elif band == 'C22':
+                C22 = C                
+            ''' 
             plt.figure(figsize=(15,15))
             plt.imshow(C, cmap='grey') #Plotting the image
             plt.title(f'Mystery date: {file}, band: {band}')
@@ -60,19 +64,24 @@ def plot(file):
                 os.mkdir(f'{file}')
             plt.tight_layout()
             plt.savefig(f'{file}/{band}.png')
-            plt.clf()     
+            plt.clf() 
+            '''
+        data = np.sqrt(C12_im**2 + C12_re**2)
+        x = scale(C11)
+        y = scale(data)
+        z = scale(C22)
         
-        data = C12_im + C12_re
         plt.figure(figsize=(15,15)) #setting figure parameters
         
-        plt.imshow(data, cmap='grey') #Plotting the image
-        plt.title(f'Mystery date: {file}, band: C12 sum')
+        image = np.stack([x,y,z], axis=2)
+        plt.imshow(data) #Plotting the image
+        plt.title(f'Mystery date: {file},')
         imratio=height/width
-        plt.colorbar(fraction=0.046*imratio)
+        #plt.colorbar(fraction=0.046*imratio)
         if not os.path.exists(f'{file}'):
             os.mkdir(f'{file}')
         plt.tight_layout()
-        plt.savefig(f'{file}/C12.png')
+        plt.savefig(f'{file}/radio.png')
         plt.clf()
 
 file_list = ['20170720','20190718','20160721','20161208','20180830','20181206','20190829']
