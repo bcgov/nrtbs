@@ -1,8 +1,0 @@
-from NBR import NBR
-
-def dNBR(start_frame, end_frame):
-    preNBR = NBR(start_frame)
-    postNBR = NBR(end_frame)
-    dNBR = postNBR - preNBR
-    plt.imshow(dNBR, cmap='hot', interpolation='nearest')
-    plt.show()
