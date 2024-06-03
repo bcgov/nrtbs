@@ -35,7 +35,7 @@ def NBR(file_name):
     plt.tight_layout()
     plt.colorbar()
     '''
-    return [B12,B11,B09,B08,NBR]
+    return [B12,B11,B09,B08,NBR,height,width]
             
             
 def dNBR(start_frame, end_frame):
