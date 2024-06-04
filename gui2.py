@@ -4,11 +4,7 @@ from dNBR import NBR
 from operator import add, sub
 import datetime
 import numpy as np
-
-fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6)) = plt.subplots(3, 2, figsize=(15,8))
-
-# Global list to store click coordinates
-clicks = []
+import math
 
 filenames = ['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin',
              'S2B_MSIL1C_20210629T190919_N0300_R056_T10UFB_20210629T212050.bin',
@@ -24,8 +20,38 @@ filenames = ['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin',
              'S2A_MSIL1C_20210813T190921_N0301_R056_T10UFB_20210813T224901.bin',
              'S2A_MSIL1C_20210902T190911_N0301_R056_T10UFB_20210902T225534.bin',
              'S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin']
-params = [NBR(f'raster_data/small/{file}') for file in filenames]
-plot_colors = ['b','r','y','k']
+
+
+fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6)) = plt.subplots(3, 2, figsize=(15,8))
+clicks = []
+plot_colors = ['b','r','y','k','c','m']
+
+def interactive_time_serise(file,plot_type:str('image or nbr'), file_list, width):
+    '''
+    
+    '''
+    global params
+    params = [NBR(f'raster_data/small/{file}') for file in file_list]
+    
+    global square_width
+    square_width = width
+    
+    if plot_type == 'image':
+        data = NBR(file)
+        image = np.stack([scale(data[0]),scale(data[1]),scale(data[2])], axis=2)
+        ax1.imshow(image)
+    
+    elif plot_type == 'nbr':
+        image = NBR(file)[4]
+        ax1.imshow(image, cmap='grey')
+        
+    else:
+        print('invalid image type')
+    
+    cid = fig.canvas.mpl_connect('button_press_event', on_click)
+    
+    plt.show()
+    
 def param_plots(clicks, width):
     '''
     takes the list of click locations and square_width and plots the B12, B11, B09, B08, and NBR of the mean value timeserise in a box with side lenght = square_width
@@ -66,20 +92,16 @@ def param_plots(clicks, width):
 
     plt.tight_layout()
     plt.show()
-
-def gui(file_list,width):
-    nbr = NBR(filenames[-1])
-    square_width = width
+'''
+def gui(file,file_type):
+    data = NBR(file)
+    if file_type == 'B12':
     ax1.imshow(nbr[4], cmap='grey')
-
-
-
-gui(filenames[-1],25) #creating the first plot
-square_width = 5 #defining square width
+'''
 
 def on_click(event):
     print(f"Clicked at: {event.xdata}, {event.ydata}")
-    if event.inaxes is not None and len(clicks) < 4:  # Check if the click is inside the plot area
+    if event.inaxes is not None and len(clicks) < 6:  # Check if the click is inside the plot area
         # Store the click coordinates
         clicks.append((event.xdata, event.ydata))
         print(f"Clicked at: {event.xdata}, {event.ydata}")
@@ -90,9 +112,27 @@ def on_click(event):
         ax1.add_patch(square)  # Add the square to the plot
         fig.canvas.draw()  # Update the plot
         param_plots(clicks,square_width)
+        
+def scale(X):
+    # default: scale a band to [0, 1]  and then clip
+    mymin = np.nanmin(X) # np.nanmin(X))
+    mymax = np.nanmax(X) # np.nanmax(X))
+    X = (X-mymin) / (mymax - mymin)  # perform the linear transformation
+
+    X[X < 0.] = 0.  # clip
+    X[X > 1.] = 1.
+
+    # use histogram trimming / turn it off to see what this step does!
+    if  True:
+        values = X.ravel().tolist()
+        values.sort()
+        n_pct = 1. # percent for stretch value
+        frac = n_pct / 100.
+        lower = int(math.floor(float(len(values))*frac))
+        upper = int(math.floor(float(len(values))*(1. - frac)))
+        mymin, mymax = values[lower], values[upper]
+        X = (X-mymin) / (mymax - mymin)  # perform the linear transformation
+    
+    return X
 
 
-# Connect the event handler to the figure
-cid = fig.canvas.mpl_connect('button_press_event', on_click)
-
-plt.show()
