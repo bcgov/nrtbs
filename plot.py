@@ -45,15 +45,11 @@ def plot(file_list):
         B08 = np.zeros((height,width))
         for i in range(height):
             for j in range(width):
-                if (data[width*height*0 + width*i+j] + data[width*height*3 + width*i+j]) == 0:
-                    NBR[i][j] = 0
-                else:
-                    NBR[i][j] = (data[width*height*0 + width*i+j] - data[width*height*3 + width*i+j])/(data[width*height*0 + width*i+j] + data[width*height*3 + width*i+j]) #calculating the NBR
                 B12[i][j] = data[width*height*0 + width*i+j] #updating band data for each of the 4 bands
                 B11[i][j] = data[width*height*1 + width*i+j]
                 B09[i][j] = data[width*height*2 + width*i+j]
                 B08[i][j] = data[width*height*3 + width*i+j]
-                
+        NBR = (B12-B08)/(B12+B08)      
         band1 = scale(B12) #scaling bands for plotting
         band2 = scale(B11)
         band3 = scale(B09)
@@ -61,6 +57,9 @@ def plot(file_list):
         date  = file_list[n].split('_')[2].split('T')[0]
         image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
         
+        plt.plot(nbr)
+        
+        '''
         plt.figure(figsize=(15,15)) #setting figure parameters
         imratio = height/width
         plt.imshow(image) #Plotting the image
@@ -93,7 +92,7 @@ def plot(file_list):
             plt.tight_layout()
             plt.savefig(f'dNBR/{date}_{file_list[n]}.png') 
             plt.clf()
-        
+        '''
 
 
 

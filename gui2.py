@@ -28,7 +28,6 @@ plot_colors = ['b','r','y','k','c','m']
 
 def interactive_time_serise(file,plot_type:str('image or nbr'), file_list, width):
     '''
-    
     '''
     global params
     params = [NBR(f'raster_data/small/{file}') for file in file_list]
