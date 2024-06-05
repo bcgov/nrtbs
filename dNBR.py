@@ -1,6 +1,7 @@
 from misc import exist, read_hdr, read_float, hdr_fn, read_binary
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors
 
 
 def NBR(file_name):
@@ -42,31 +43,29 @@ def dNBR(start_frame, end_frame):
     '''
     preNBR = NBR(start_frame)[4]
     postNBR = NBR(end_frame)[4]
-    dNBR = postNBR - preNBR
+    dNBR = preNBR - postNBR
     date  = end_frame.split('_')[2].split('T')[0]
-    '''
-    #plt.figure(figsize=(15,15))
-    plt.imshow(dNBR, cmap='Greys')
-    plt.title(f'dNBR of Sparks Lake fire using end date: {date}')
-    plt.colorbar()
-    plt.tight_layout()
-    plt.show()
-    #plt.savefig(f'{end_frame}dNBR.png')    
-    '''
     return dNBR
 
-'''
-preNBR = NBR('S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin')[4]
-
-filenames = ['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin','S2B_MSIL1C_20210629T190919_N0300_R056_T10UFB_20210629T212050.bin','S2A_MSIL1C_20210701T185921_N0301_R013_T10UFB_20210701T223921.bin','S2B_MSIL1C_20210709T190919_N0301_R056_T10UFB_20210709T224644.bin','S2A_MSIL1C_20210714T190921_N0301_R056_T10UFB_20210714T225634.bin','S2B_MSIL1C_20210719T190919_N0301_R056_T10UFB_20210719T212141.bin','S2A_MSIL1C_20210724T190921_N0301_R056_T10UFB_20210724T230122.bin','S2B_MSIL1C_20210726T185919_N0301_R013_T10UFB_20210726T211239.bin','S2B_MSIL1C_20210729T190919_N0301_R056_T10UFB_20210729T212314.bin','S2A_MSIL1C_20210803T190921_N0301_R056_T10UFB_20210803T224926.bin','S2B_MSIL1C_20210805T185919_N0301_R013_T10UFB_20210805T211134.bin','S2A_MSIL1C_20210813T190921_N0301_R056_T10UFB_20210813T224901.bin','S2A_MSIL1C_20210902T190911_N0301_R056_T10UFB_20210902T225534.bin','S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin']
-
-for file in filenames:
-    dNBR('S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin',file)
-
-'''
-'''
-err = dNBR('raster_data/S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin','raster_data/S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin') - dNBR('raster_data/S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin','raster_data/S2A_MSIL1C_20210813T190921_N0301_R056_T10UFB_20210813T224901.bin')
-
-plt.imshow(err)
-plt.show()
-'''
+def class_plot(start_file, end_file): #plots the BARC 256 dNBR classifications for the provided start and end file
+    dnbr = dNBR(start_file,end_file)
+    scaled_dNBR = (dnbr*1000+275)/5 #scalling dNBR
+    class_plot = np.zeros((len(scaled_dNBR),len(scaled_dNBR[0])))
+    for i in range(len(scaled_dNBR)): #making classifications
+        for j in range(len(scaled_dNBR[0])):
+            if scaled_dNBR[i][j] < 76:
+                class_plot[i][j] = 0
+            elif 76 <= scaled_dNBR[i][j] < 110:
+                class_plot[i][j] = 1
+            elif 110 <= scaled_dNBR[i][j] < 187:
+                class_plot[i][j] = 2
+            else:
+                class_plot[i][j] = 3
+    cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])   #plotting
+    imratio = len(scaled_dNBR)/len(scaled_dNBR[0])   
+    plt.figure(figsize=(15,15))       
+    plt.imshow(class_plot,cmap=cmap)
+    plt.title('BARC 256 burn severity classification')
+    plt.tight_layout()
+    plt.colorbar(fraction=0.04525*imratio)
+    plt.show()
