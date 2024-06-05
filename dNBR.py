@@ -19,14 +19,11 @@ def NBR(file_name):
     B08 = np.zeros((height,width))
     for i in range(height):
         for j in range(width):
-            if (data[width*height*0 + width*i+j] + data[width*height*3 + width*i+j]) == 0:
-                NBR[i][j] = 0
-            else:
-                NBR[i][j] = (data[width*height*0 + width*i+j] - data[width*height*3 + width*i+j])/(data[width*height*0 + width*i+j] + data[width*height*3 + width*i+j])
             B12[i][j] = data[width*height*0 + width*i+j]
             B11[i][j] = data[width*height*1 + width*i+j]
             B09[i][j] = data[width*height*2 + width*i+j]
             B08[i][j] = data[width*height*3 + width*i+j]
+    NBR = (B08-B12)/(B08+B12)        
     date  = file_name.split('_')[2].split('T')[0]
     '''
     plt.figure(figsize=(15,15))
