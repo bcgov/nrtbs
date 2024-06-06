@@ -1,4 +1,4 @@
-from misc import exist, read_hdr, read_float, hdr_fn, read_binary
+from misc import exist, read_hdr, read_float, hdr_fn, read_binary, extract_date
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -26,13 +26,6 @@ def scale(X):
         X = (X-mymin) / (mymax - mymin)  # perform the linear transformation
     
     return X
-    
-
-def extract_date(file_name):
-    # Assuming the date format is YYYY-MM-DD in the file names
-    date  = file_name.split('_')[2].split('T')[0]
-    return datetime.datetime.strptime(date, "%Y%m%d")
-
 
 def plot(file_dir):
     '''
@@ -55,54 +48,81 @@ def plot(file_dir):
         data = vals[3]
         width = vals[0]
         height = vals[1]
-        NBR = np.zeros((height,width))    
-        B12 = np.zeros((height,width))
-        B11 = np.zeros((height,width))
-        B09 = np.zeros((height,width))
-        B08 = np.zeros((height,width))
-        for i in range(height):
-            for j in range(width):
-                B12[i][j] = data[width*height*0 + width*i+j] #updating band data for each of the 4 bands
-                B11[i][j] = data[width*height*1 + width*i+j]
-                B08[i][j] = data[width*height*2 + width*i+j]
-                #B08[i][j] = data[width*height*3 + width*i+j]
-        NBR = (B12-B08)/(B12+B08)      
-        band1 = scale(B12) #scaling bands for plotting
-        band2 = scale(B11)
-        band3 = scale(B09)
-        band4 = scale(B08)
-        date  = sorted_file_names[n].split('_')[2].split('T')[0]
-        image = np.stack([band1,band2,band4], axis=2) #creating 3D matrix for RGB plot
-        
-        plt.figure(figsize=(15,15)) #setting figure parameters
-        imratio = height/width
-        plt.imshow(image) #Plotting the image
-        plt.title(f'Sparks Lake fire on {date}, bands: r=B12, g=B11, b=B09')
-        if not os.path.exists('images'):
-            os.mkdir('images')
-        plt.tight_layout()
-        plt.savefig(f'images/{date}_{sorted_file_names[n]}.png')
-        plt.clf()
-        
-        plt.imshow(NBR, cmap='Greys') #Plotting the NBR
-        plt.title(f'NBR of Sparks Lake fire on {date}')
-        plt.colorbar(fraction=0.04525*imratio)     
-        if not os.path.exists('NBR'):
-            os.mkdir('NBR')
-        plt.tight_layout()
-        plt.savefig(f'NBR/{date}_{sorted_file_names[n]}.png')
-        plt.clf()
-        
-        #Plotting the dNBR for all frames but the first
-        if n == 0:
-            start_NBR = NBR
-        else:
-            dNBR = start_NBR - NBR        
-            plt.imshow(dNBR, cmap='Greys')
-            plt.title(f'dNBR of Sparks Lake fire on {date}')
-            plt.colorbar(fraction=0.04525*imratio)     
-            if not os.path.exists('dNBR'):
-                os.mkdir('dNBR')
+        bands = vals[2]
+        if bands < 4:
+            B12 = np.zeros((height,width))
+            B11 = np.zeros((height,width))
+            B09 = np.zeros((height,width))
+            for i in range(height):
+                for j in range(width):
+                    B12[i][j] = data[width*height*0 + width*i+j] #updating band data for each of the 4 bands
+                    B11[i][j] = data[width*height*1 + width*i+j]
+                    B09[i][j] = data[width*height*2 + width*i+j]
+            band1 = scale(B12) #scaling bands for plotting
+            band2 = scale(B11)
+            band3 = scale(B09)
+            date  = sorted_file_names[n].split('_')[2].split('T')[0]
+            image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
+            
+            plt.figure(figsize=(15,15)) #setting figure parameters
+            imratio = height/width
+            plt.imshow(image) #Plotting the image
+            plt.title(f'Sparks Lake fire on {date}, bands: r=B12, g=B11, b=B09')
+            if not os.path.exists('images'):
+                os.mkdir('images')
             plt.tight_layout()
-            plt.savefig(f'dNBR/{date}_{sorted_file_names[n]}.png') 
+            plt.savefig(f'images/{date}_{sorted_file_names[n]}.png')
             plt.clf()
+            print('Could not plot NBR/dNBR, not enough bands')
+            
+        else:
+            NBR = np.zeros((height,width))    
+            B12 = np.zeros((height,width))
+            B11 = np.zeros((height,width))
+            B09 = np.zeros((height,width))
+            B08 = np.zeros((height,width))
+            for i in range(height):
+                for j in range(width):
+                    B12[i][j] = data[width*height*0 + width*i+j] #updating band data for each of the 4 bands
+                    B11[i][j] = data[width*height*1 + width*i+j]
+                    B09[i][j] = data[width*height*2 + width*i+j]
+                    B08[i][j] = data[width*height*3 + width*i+j]
+            NBR = (B12-B08)/(B12+B08)      
+            band1 = scale(B12) #scaling bands for plotting
+            band2 = scale(B11)
+            band3 = scale(B09)
+            date  = sorted_file_names[n].split('_')[2].split('T')[0]
+            image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
+        
+            plt.figure(figsize=(15,15)) #setting figure parameters
+            imratio = height/width
+            plt.imshow(image) #Plotting the image
+            plt.title(f'Sparks Lake fire on {date}, bands: r=B12, g=B11, b=B09')
+            if not os.path.exists('images'):
+                os.mkdir('images')
+            plt.tight_layout()
+            plt.savefig(f'images/{date}_{sorted_file_names[n]}.png')
+            plt.clf()
+        
+            plt.imshow(NBR, cmap='Greys') #Plotting the NBR
+            plt.title(f'NBR of Sparks Lake fire on {date}')
+            plt.colorbar(fraction=0.04525*imratio)     
+            if not os.path.exists('NBR'):
+                os.mkdir('NBR')
+            plt.tight_layout()
+            plt.savefig(f'NBR/{date}_{sorted_file_names[n]}.png')
+            plt.clf()
+        
+            #Plotting the dNBR for all frames but the first
+            if n == 0:
+                start_NBR = NBR
+            else:
+                dNBR = start_NBR - NBR        
+                plt.imshow(dNBR, cmap='Greys')
+                plt.title(f'dNBR of Sparks Lake fire on {date}')
+                plt.colorbar(fraction=0.04525*imratio)     
+                if not os.path.exists('dNBR'):
+                    os.mkdir('dNBR')
+                plt.tight_layout()
+                plt.savefig(f'dNBR/{date}_{sorted_file_names[n]}.png') 
+                plt.clf()
