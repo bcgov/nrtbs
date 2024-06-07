@@ -92,7 +92,7 @@ def hdr_fn(bin_fn):  # return filename for hdr file, given binfile name
 
 def read_hdr(hdr):
     samples, lines, bands = 0, 0, 0
-    # print('+r', hdr)
+    print('+r', hdr)
     for line in open(hdr).readlines():
         line = line.strip()
         words = line.split('=')
@@ -173,7 +173,7 @@ def read_binary(fn):
     hdr = hdr_fn(fn) # read header and print parameters
     samples, lines, bands = read_hdr(hdr)
     samples, lines, bands = int(samples), int(lines), int(bands)
-    #print("\tsamples", samples, "lines", lines, "bands", bands)
+    print("\tsamples", samples, "lines", lines, "bands", bands)
     data = read_float(fn)
     return samples, lines, bands, data
 
@@ -452,3 +452,8 @@ def shapefile_to_EPSG(src_f, dst_f, dst_EPSG=3347): # or 3005 bc albers
                  dst_f,
                  fn,
                  "-lco ENCODING=UTF-8"]);
+
+def extract_date(file_name):
+    # Assuming the date format is YYYY-MM-DD in the file names
+    date  = file_name.split('_')[2].split('T')[0]
+    return datetime.datetime.strptime(date, "%Y%m%d")

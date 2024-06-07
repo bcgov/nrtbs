@@ -12,10 +12,10 @@ def burnmask(start_file,end_file,threshold):
     creates a burn mask of the provided fire using the fire start and end frames and provided dNBR threshold
     >>>burnmask('raster_data/small/S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin', 'raster_data/small/S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin')
     '''
-    vals = read_binary(f'raster_data/small/{start_file}') 
+    vals = read_binary(start_file)
     width = vals[0]
     height = vals[1]
-    dnbr = dNBR(f'raster_data/small/{start_file}',f'raster_data/small/{end_file}')
+    dnbr = dNBR(start_file,end_file)
     mask = dnbr >= threshold
 
     return mask
@@ -44,7 +44,7 @@ def param_plots(file_dir,threshold):
     sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
 
     
-    mask = burnmask(f'{file_dir}/{sorted_file_names[0]}',f'{file_dir}/{sorted_file_names[-1],threshold}') #calculating the mask ie. where is burned/unburned
+    mask = burnmask(f'{file_dir}/{sorted_file_names[0]}',f'{file_dir}/{sorted_file_names[-1]}',threshold) #calculating the mask ie. where is burned/unburned
     
     time = []
     
@@ -87,5 +87,5 @@ def param_plots(file_dir,threshold):
         plt.legend()
         plt.title(f'{band_title[band]} burned and unburned')
         plt.tight_layout()
-        plt.savefig(f'{band_title[band]}.png')
+        plt.savefig(f'{band_title[band]}_timeserise.png')
         plt.clf()
