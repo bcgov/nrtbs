@@ -1,4 +1,3 @@
-
 from sklearn.linear_model import LinearRegression 
 
 from sklearn.neighbors import KNeighborsRegressor
@@ -14,12 +13,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from misc import read_binary
+from misc import read_binary, extract_date
 
 filenames = ['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin','S2B_MSIL1C_20210629T190919_N0300_R056_T10UFB_20210629T212050.bin','S2A_MSIL1C_20210701T185921_N0301_R013_T10UFB_20210701T223921.bin','S2B_MSIL1C_20210709T190919_N0301_R056_T10UFB_20210709T224644.bin','S2A_MSIL1C_20210714T190921_N0301_R056_T10UFB_20210714T225634.bin','S2B_MSIL1C_20210719T190919_N0301_R056_T10UFB_20210719T212141.bin','S2A_MSIL1C_20210724T190921_N0301_R056_T10UFB_20210724T230122.bin','S2B_MSIL1C_20210726T185919_N0301_R013_T10UFB_20210726T211239.bin','S2B_MSIL1C_20210729T190919_N0301_R056_T10UFB_20210729T212314.bin','S2A_MSIL1C_20210803T190921_N0301_R056_T10UFB_20210803T224926.bin','S2B_MSIL1C_20210805T185919_N0301_R013_T10UFB_20210805T211134.bin','S2A_MSIL1C_20210813T190921_N0301_R056_T10UFB_20210813T224901.bin','S2A_MSIL1C_20210902T190911_N0301_R056_T10UFB_20210902T225534.bin','S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin']
 
-
-def NBRmodel(stop_index, filenames, model_type): 
+def NBRmodel(stop_index, file_dir, model_type): 
     '''
     Using a list of raster files and a model type this function models the NBR of a given fire using linear regression and 4 parameters. The function plots both an error plot of the predicted vs observed final dNBR and the predicted NBR. It also returns the fits score.
     model types:
@@ -27,20 +25,34 @@ def NBRmodel(stop_index, filenames, model_type):
     'KN_reg' == K Neighbor Regressor
     
     '''
+    #extracting bin files
+    files = os.listdir(file_dir)
+    file_list = []
+    for n in range(len(files)):
+        if files[n].split('.')[-1] == 'bin':
+            file_list.append(files[n])
+        else:
+            continue;
+        
+    sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
 
-    vals = read_binary(f'raster_data/small/{filenames[stop_index]}') #reading each file
+
+    vals = read_binary(f'{file_dir}/{sorted_file_names[stop_index]}') #reading each file
     width = vals[0]
-    height = vals[1]  
+    height = vals[1]
+    bands = vals[2]  
     
-    if stop_index < 0 or stop_index >= len(filenames): err("bad index")  
-    nbr = NBR(f'raster_data/small/{filenames[-1]}')[4]# dependent variable: compare start and end dates
+    if stop_index < 0 or stop_index >= len(sorted_file_names): err("bad index")  
+    nbr = NBR(f'{file_dir}/{sorted_file_names[-1]}')[4]# dependent variable: compare start and end dates
     
     params = []
     for i in range(stop_index + 1):  
-        params += NBR(f'raster_data/small/{filenames[i]}') #making a list of parameters 
+        params += NBR(f'{file_dir}/{sorted_file_names[i]}')[0:5] #making a list of parameters 
 
     X = []
     Y = []
+    #print(len(params))
+    #print(params[len(params)][0][0])
     for i in range(height): #making training and test data
         for j in range(width):
             x = [params[k][i][j] for k in range(len(params))]
@@ -72,7 +84,7 @@ def NBRmodel(stop_index, filenames, model_type):
         data = np.zeros((height,width))
         score = reg.score(X, Y)     
         
-    date = filenames[stop_index].split('_')[2].split('T')[0]
+    date = sorted_file_names[stop_index].split('_')[2].split('T')[0]
     for n in range(len(pred)): #going through the prediction list to plot the predicted NBR
         i = n // width
         j = n % width
@@ -88,7 +100,7 @@ def NBRmodel(stop_index, filenames, model_type):
     if not os.path.exists('NBR_model_error'):
         os.mkdir('NBR_model_error') 
     plt.tight_layout()
-    plt.savefig(f'NBR_model_error/{date}_{model_type}_{filenames[stop_index]}.png')
+    plt.savefig(f'NBR_model_error/{date}_{model_type}_{sorted_file_names[stop_index]}.png')
     plt.clf()
     
     plt.imshow(data,cmap='Greys')
@@ -101,23 +113,34 @@ def NBRmodel(stop_index, filenames, model_type):
     plt.clf()
  
     
-def dNBRmodel(stop_index, filenames, model_type): 
+def dNBRmodel(stop_index, file_dir, model_type): 
     '''
     Using a list of raster files and a model type this function models the NBR of a given fire using linear regression and 4 parameters. The function plots both an error plot of the predicted vs observed final dNBR and the predicted NBR. It also returns the fits score.
     model types:
     'lin_reg' == linear regression
     'KN_reg' == K Neighbor Regressor
     '''
-    vals = read_binary(f'raster_data/small/{filenames[stop_index]}') #reading each file
+    #extracting bin files
+    files = os.listdir(file_dir)
+    file_list = []
+    for n in range(len(files)):
+        if files[n].split('.')[-1] == 'bin':
+            file_list.append(files[n])
+        else:
+            continue;
+        
+    sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
+
+    vals = read_binary(f'{file_dir}/{sorted_file_names[stop_index]}') #reading each file
     width = vals[0]
     height = vals[1]  
     
     if stop_index < 0 or stop_index >= len(filenames): err("bad index")  
-    dnbr = dNBR(f'raster_data/small/{filenames[0]}', f'raster_data/small/{filenames[-1]}')  # dependent variable: compare start and end dates
+    dnbr = dNBR(f'{file_dir}/{sorted_file_names[0]}', f'{file_dir}/{sorted_file_names[-1]}')  # dependent variable: compare start and end dates
     
     params = []
     for i in range(stop_index + 1):  
-        params += NBR(f'raster_data/small/{filenames[i]}')#making a list of parameters 
+        params += NBR(f'{file_dir}/{sorted_file_names[i]}')[0:5] #making a list of parameters 
  
     X = []
     Y = [] 
@@ -154,14 +177,12 @@ def dNBRmodel(stop_index, filenames, model_type):
         data = np.zeros((height,width))
         score = reg.score(X, Y)      
 
-    date = filenames[stop_index].split('_')[2].split('T')[0]
+    date = sorted_file_names[stop_index].split('_')[2].split('T')[0]
     for n in range(len(pred)): #going through the prediction list to plot the predicted dNBR
         i = n // width
         j = n % width
         data[i][j] = pred[n]
     err = dnbr - data #error 
-    test = dNBR(f'raster_data/small/{filenames[0]}',f'raster_data/small/{filenames[stop_index]}')
-    
     
     plt.figure(figsize=(15,15)) #plotting
     imratio = height/width
@@ -172,7 +193,7 @@ def dNBRmodel(stop_index, filenames, model_type):
     if not os.path.exists('dNBR_model_error'):
         os.mkdir('dNBR_model_error') 
     plt.tight_layout()
-    plt.savefig(f'dNBR_model_error/{date}_{model_type}_{filenames[stop_index]}.png')
+    plt.savefig(f'dNBR_model_error/{date}_{model_type}_{sorted_file_names[stop_index]}.png')
     plt.clf()
     
     plt.imshow(data,cmap='Greys')
@@ -181,9 +202,8 @@ def dNBRmodel(stop_index, filenames, model_type):
     if not os.path.exists('dNBR_model'):
         os.mkdir('dNBR_model')
     plt.tight_layout()
-    plt.savefig(f'dNBR_model/{date}_{model_type}_{filenames[stop_index]}.png')
+    plt.savefig(f'dNBR_model/{date}_{model_type}_{sorted_file_names[stop_index]}.png')
     plt.clf()
 
-for i in range(len(filenames)):
-    NBRmodel(i, filenames,'KN_reg')
-    dNBRmodel(i,filenames,'KN_reg')
+for i in range(14):
+    NBRmodel(i, 'L2_T10UFB_aoi_MRAP/small','linear_reg')
