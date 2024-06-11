@@ -32,3 +32,4 @@ When we have arrived at an acceptable method that we determine is operationally 
 * https://burnseverity.cr.usgs.gov/ravg/background-products-applications
 * https://towardsdatascience.com/t-sne-clearly-explained-d84c537f53a
 * https://github.com/SashaNasonova/burnSeverity/blob/main/burnsev_gee.py
+* https://github.com/SashaNasonova/burnSeverity/blob/main/BurnSeverityMapping.ipynb
