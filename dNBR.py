@@ -24,7 +24,7 @@ def NBR(file_name):
             B11[i][j] = data[width*height*1 + width*i+j]
             B09[i][j] = data[width*height*2 + width*i+j]
             B08[i][j] = data[width*height*3 + width*i+j]
-    NBR = (B08-B12)/(B08+B12)        
+    NBR = (B08-B12)/(B08+B12)
     date  = file_name.split('_')[2].split('T')[0]
     '''
     plt.figure(figsize=(15,15))
@@ -45,6 +45,8 @@ def dNBR(start_frame, end_frame):
     postNBR = NBR(end_frame)[4]
     dNBR = preNBR - postNBR
     date  = end_frame.split('_')[2].split('T')[0]
+    #plt.colorbar()
+    #plt.show()
     return dNBR
 
 def class_plot(start_file, end_file): 
@@ -53,7 +55,7 @@ def class_plot(start_file, end_file):
     >>> class_plot('S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin', 'S2A_MSIL1C_20210907T190911_N0301_R056_T10UFB_20210902T225534.bin')
     '''
     dnbr = dNBR(start_file,end_file)
-    scaled_dNBR = (dnbr*1000+275)/5 #scalling dNBR
+    scaled_dNBR = (dnbr*2000+275)/5 #scalling dNBR
     class_plot = np.zeros((len(scaled_dNBR),len(scaled_dNBR[0])))
     for i in range(len(scaled_dNBR)): #making classifications
         for j in range(len(scaled_dNBR[0])):
@@ -79,4 +81,18 @@ def class_plot(start_file, end_file):
     plt.xlabel(f'start file:{start}, end file:{end}')
     plt.colorbar(fraction=0.04525*imratio)
     plt.tight_layout()
-    plt.savefig(f'{end}_BARC_classification.png')
+    plt.show()
+    #plt.savefig(f'{end}_BARC_classification.png')
+    
+    return class_plot
+
+
+'''
+diff = dNBR('pre/trim/S2A_MSIL1C_20200729T190921_N0209_R056_T10UFB_20200729T225849.bin','post/trim/S2B_MSIL1C_20220902T190919_N0400_R056_T10UFB_20220902T212431.bin') - dNBR('L1/trimmed/S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin','L1/trimmed/S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin')
+cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])   #plotting
+#imratio = len(scaled_dNBR)/len(scaled_dNBR[0])   
+#plt.figure(figsize=(15,15))       
+plt.imshow(diff,cmap=cmap)
+plt.colorbar()
+plt.show()
+'''
