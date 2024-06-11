@@ -1,7 +1,8 @@
-from misc import exist, read_hdr, read_float, hdr_fn, read_binary
+from misc import exist, read_hdr, read_float, hdr_fn, read_binary, extract_date
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors
+import os
 
 
 def NBR(file_name):
@@ -25,6 +26,7 @@ def NBR(file_name):
             B09[i][j] = data[width*height*2 + width*i+j]
             B08[i][j] = data[width*height*3 + width*i+j]
     NBR = (B08-B12)/(B08+B12)
+    nbrswir = (B11-B12-0.02)/(B11+B12+0.1)
     date  = file_name.split('_')[2].split('T')[0]
     '''
     plt.figure(figsize=(15,15))
@@ -33,7 +35,7 @@ def NBR(file_name):
     plt.tight_layout()
     plt.colorbar()
     '''
-    return [B12,B11,B09,B08,NBR,height,width]
+    return [B12,B11,B09,B08,NBR,height,width,nbrswir]
             
             
 def dNBR(start_frame, end_frame):
@@ -41,21 +43,45 @@ def dNBR(start_frame, end_frame):
     Takes the start and end binary files and returns the dNRB.
     >>> dNBR('S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin', 'S2A_MSIL1C_20210907T190911_N0301_R056_T10UFB_20210902T225534.bin')
     '''
-    preNBR = NBR(start_frame)[4]
-    postNBR = NBR(end_frame)[4]
+    predata = NBR(start_frame)
+    postdata = NBR(end_frame)
+    preNBR = predata[4]
+    postNBR = postdata[4]
+    preswir = predata[7]
+    postswir = postdata[7]
     dNBR = preNBR - postNBR
+    dNBRSWIR = preswir - postswir
+    
+    for i in range(len(dNBR)):
+        for j in range(len(dNBR[0])):
+            if predata[0][i][j] <= 100 or dNBRSWIR[i][j] <= 0.105:
+                dNBR[i][j] = 0
+            else:
+                continue;
+    
     date  = end_frame.split('_')[2].split('T')[0]
     #plt.colorbar()
     #plt.show()
+
     return dNBR
 
-def class_plot(start_file, end_file): 
+def class_plot(file_dir,k): 
     '''
     Plots the BARC 256 burn severity of the provided start and end file and saves it as a png
     >>> class_plot('S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin', 'S2A_MSIL1C_20210907T190911_N0301_R056_T10UFB_20210902T225534.bin')
     '''
-    dnbr = dNBR(start_file,end_file)
-    scaled_dNBR = (dnbr*2000+275)/5 #scalling dNBR
+    files = os.listdir(file_dir)
+    file_list = []
+    for n in range(len(files)):
+        if files[n].split('.')[-1] == 'bin':
+            file_list.append(files[n])
+        else:
+            continue;
+        
+    sorted_file_names = sorted(file_list, key=extract_date)
+    
+    dnbr = dNBR(f'{file_dir}/{sorted_file_names[0]}',f'{file_dir}/{sorted_file_names[k]}')
+    scaled_dNBR = (dnbr*1000+275)/5 #scalling dNBR
     class_plot = np.zeros((len(scaled_dNBR),len(scaled_dNBR[0])))
     un_tot = 0
     low_tot = 0
@@ -76,8 +102,8 @@ def class_plot(start_file, end_file):
                 class_plot[i][j] = 3
                 high_tot += 1
                 
-    start = start_file.split('/')[-1] #splitting files for file names
-    end = end_file.split('/')[-1]
+    start = sorted_file_names[0].split('/')[-1] #splitting files for file names
+    end = sorted_file_names[k].split('/')[-1]
     start_date  = start.split('_')[2].split('T')[0]
     end_date = end.split('_')[2].split('T')[0]
     #calculating percentages of each class
@@ -99,6 +125,10 @@ def class_plot(start_file, end_file):
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Medium {med_per}%',color='orange')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'High {high_per}%',color='red')
     plt.legend(fontsize="20")
-    plt.show()
-    #plt.savefig(f'{end}_BARC_classification.png')
+    #plt.show()
+    plt.tight_layout()
+    plt.savefig(f'{end}_BARC_classification.png')
     return class_plot
+
+class_plot('L1/trimmed',13)
+    
