@@ -1,8 +1,51 @@
 import numpy as np
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
+from dNBR import NBR
+from  misc import read_binary
 
-def create_tsne_embedding(data, n_components=2, perplexity=30, learning_rate=200, n_iter=1000):
+def data(start_file,end_file,threshold):
+
+    prevals = read_binary(start_file) 
+    predata = prevals[3]
+    postvals = read_binary(end_file)
+    postdata = postvals[3] 
+    width = prevals[0]
+    height = prevals[1]
+    prebands = []
+    postbands = []
+    data = []
+    USE_NTH = 10
+    label = []
+    colors = []
+    #data1 = np.zeros((width*height, 4))
+    for pixle in range(width*height):
+        if pixle % USE_NTH == 0:
+            prebands = []
+            postbands = []
+            for band in range(4):
+                prebands.append(predata[pixle*band])
+                postbands.append(postdata[pixle*band])
+            data.append(prebands)
+            dnbr = (prebands[0]-prebands[3])/(prebands[0]+prebands[3]) - (postbands[0]-postbands[3])/(postbands[0]+postbands[3])
+            scaled_dNBR = (dnbr*2000+275)/5
+            if scaled_dNBR < 76:
+                label.append('unburned')
+                colors.append('green')
+            elif 76 <= scaled_dNBR < 110:
+                label.append('low')
+                colors.append('yellow')
+            elif 110 <= scaled_dNBR < 187:
+                label.append('med')
+                colors.append('orange')
+            else:
+                label.append('high')
+                colors.append('red')
+        else:
+            continue;
+    return [np.array(data),label,colors]
+
+def create_tsne_embedding(data, n_components=2):
     """
     Create a t-SNE embedding from the given data.
 
@@ -16,11 +59,11 @@ def create_tsne_embedding(data, n_components=2, perplexity=30, learning_rate=200
     Returns:
     np.ndarray: The embedded data array of shape (n_samples, n_components).
     """
-    tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=n_iter, random_state=42)
+    tsne = TSNE(n_components=n_components)
     tsne_results = tsne.fit_transform(data)
     return tsne_results
 
-def plot_tsne_embedding(embedded_data, labels=None):
+def plot_tsne_embedding(embedded_data, labels, colors):
     """
     Plot the t-SNE embedding.
 
@@ -29,29 +72,26 @@ def plot_tsne_embedding(embedded_data, labels=None):
     labels (np.ndarray): The labels for each data point (default is None).
     """
     plt.figure(figsize=(8, 6))
-    if labels is not None:
-        unique_labels = np.unique(labels)
-        for label in unique_labels:
-            idx = labels == label
-            plt.scatter(embedded_data[idx, 0], embedded_data[idx, 1], label=label)
-        plt.legend()
-    else:
-        plt.scatter(embedded_data[:, 0], embedded_data[:, 1])
-    plt.xlabel('t-SNE Component 1')
-    plt.ylabel('t-SNE Component 2')
-    plt.title('t-SNE 4D to 2D Embedding')
+    plt.scatter(embedded_data[:, 0],embedded_data[:, 1],c=colors,s=10)
+    plt.scatter(np.nan,np.nan,color='green', label='Unburned')
+    plt.scatter(np.nan,np.nan,color='yellow', label='Low')
+    plt.scatter(np.nan,np.nan,color='orange', label='Medium')
+    plt.scatter(np.nan,np.nan,color='red', label='High')
+    plt.title('BARC tSNE')
+    plt.legend()
     plt.show()
 
-# Example usage:
-# Generate random 4D data for demonstration purposes
-np.random.seed(42)
-data_4d = np.random.rand(100, 4)
 
-# Create the t-SNE embedding
+data = data('L2/small/S2B_MSIL2A_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin','L2/small/S2B_MSIL2A_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin',0.3)
+data_4d = data[0]
+label = data[1]
+colors = data[2]
+#print(data.shape)
+
 tsne_2d = create_tsne_embedding(data_4d)
 
 # Optionally, create some labels for the data points
-labels = np.random.choice(['Class 1', 'Class 2', 'Class 3'], size=100)
+#labels = np.random.choice(['Class 1', 'Class 2', 'Class 3'], size=100)
 
 # Plot the t-SNE embedding
-plot_tsne_embedding(tsne_2d, labels)
+plot_tsne_embedding(tsne_2d,label,colors)
