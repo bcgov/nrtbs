@@ -54,7 +54,7 @@ def dNBR(start_frame, end_frame):
     
     for i in range(len(dNBR)):
         for j in range(len(dNBR[0])):
-            if predata[0][i][j] <= 100 or dNBRSWIR[i][j] <= 0.105:
+            if predata[0][i][j] <= 100 or dNBRSWIR[i][j] <= 0.1:
                 dNBR[i][j] = 0
             else:
                 continue;
@@ -65,23 +65,13 @@ def dNBR(start_frame, end_frame):
 
     return dNBR
 
-def class_plot(file_dir,k): 
+def class_plot(dNBR, start_date='Not given', end_date='Not given'): 
     '''
     Plots the BARC 256 burn severity of the provided start and end file and saves it as a png
     >>> class_plot('S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin', 'S2A_MSIL1C_20210907T190911_N0301_R056_T10UFB_20210902T225534.bin')
     '''
-    files = os.listdir(file_dir)
-    file_list = []
-    for n in range(len(files)):
-        if files[n].split('.')[-1] == 'bin':
-            file_list.append(files[n])
-        else:
-            continue;
-        
-    sorted_file_names = sorted(file_list, key=extract_date)
     
-    dnbr = dNBR(f'{file_dir}/{sorted_file_names[0]}',f'{file_dir}/{sorted_file_names[k]}')
-    scaled_dNBR = (dnbr*1000+275)/5 #scalling dNBR
+    scaled_dNBR = (dNBR*1000+275)/5 #scalling dNBR
     class_plot = np.zeros((len(scaled_dNBR),len(scaled_dNBR[0])))
     un_tot = 0
     low_tot = 0
@@ -102,10 +92,10 @@ def class_plot(file_dir,k):
                 class_plot[i][j] = 3
                 high_tot += 1
                 
-    start = sorted_file_names[0].split('/')[-1] #splitting files for file names
-    end = sorted_file_names[k].split('/')[-1]
-    start_date  = start.split('_')[2].split('T')[0]
-    end_date = end.split('_')[2].split('T')[0]
+    #start = sorted_file_names[0].split('/')[-1] #splitting files for file names
+    #end = sorted_file_names[k].split('/')[-1]
+    #start_date  = start.split('_')[2].split('T')[0]
+    #end_date = end.split('_')[2].split('T')[0]
     #calculating percentages of each class
     tot = un_tot+low_tot+med_tot+high_tot
     un_per = round(100*un_tot/tot,1)
@@ -114,12 +104,11 @@ def class_plot(file_dir,k):
     high_per = round(100*high_tot/tot,1)
     
 
-    
+    '''
     cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])   #plotting
     plt.figure(figsize=(15,15))
     plt.imshow(class_plot,cmap=cmap)
     plt.title(f'BARC 256 burn severity, start date:{start_date}, end date:{end_date}')
-    plt.xlabel(f'start file:{start}, end file:{end}')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Unburned {un_per}%',color='green')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Low {low_per}%' ,color='yellow')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Medium {med_per}%',color='orange')
@@ -127,8 +116,6 @@ def class_plot(file_dir,k):
     plt.legend(fontsize="20")
     #plt.show()
     plt.tight_layout()
-    plt.savefig(f'{end}_BARC_classification.png')
+    plt.savefig(f'{end_date}_BARC_classification.png')
+    '''
     return class_plot
-
-class_plot('L1/trimmed',13)
-    
