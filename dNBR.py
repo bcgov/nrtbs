@@ -4,6 +4,55 @@ import matplotlib.pyplot as plt
 import matplotlib.colors
 import os
 
+def nbr_full(file_name):
+    """
+    Takes a binary file and returnes all bands as well as NBR,NBRSWIR and NVDI
+    """
+    vals = read_binary(file_name) 
+    data = vals[3]
+    width = vals[0]
+    height = vals[1]
+    NBR = np.zeros((height,width))    
+    B12 = np.zeros((height,width))
+    B11 = np.zeros((height,width))
+    B09 = np.zeros((height,width))
+    B08 = np.zeros((height,width))
+    B8A = np.zeros((height,width))
+    B7 = np.zeros((height,width))
+    B6 = np.zeros((height,width))
+    B5 = np.zeros((height,width))
+    B4 = np.zeros((height,width))
+    B3 = np.zeros((height,width))
+    B2 = np.zeros((height,width))
+    B1 = np.zeros((height,width))
+    for i in range(height):
+        for j in range(width):
+            B12[i][j] = data[width*height*11 + width*i+j]
+            B11[i][j] = data[width*height*10 + width*i+j]
+            B09[i][j] = data[width*height*9 + width*i+j]
+            B08[i][j] = data[width*height*8 + width*i+j]
+            B8A[i][j] = data[width*height*7 + width*i+j]
+            B7[i][j] = data[width*height*6 + width*i+j]
+            B6[i][j] = data[width*height*5 + width*i+j]
+            B5[i][j] = data[width*height*4 + width*i+j]
+            B4[i][j] = data[width*height*3 + width*i+j]
+            B3[i][j] = data[width*height*2 + width*i+j]
+            B2[i][j] = data[width*height*1 + width*i+j]
+            B1[i][j] = data[width*height*0 + width*i+j]
+    NBR = (B08-B12)/(B08+B12)#calculating NBR
+    NDVI = (B08 - B4)/(B08 + B4)#calculating NDVI
+    
+    nbrswir = (B11-B12-0.02)/(B11+B12+0.1)
+    date  = file_name.split('_')[2].split('T')[0]
+    '''
+    plt.figure(figsize=(15,15))
+    plt.imshow(NDVI, cmap='Greys')
+    plt.title(f'NBR of Sparks Lake fire on {date}')
+    plt.tight_layout()
+    plt.colorbar()
+    '''
+    return [B1,B2,B3,B4,B5,B6,B7,B8A,B08,B09,B11,B12,NBR,NDVI,nbrswir, height,width]
+            
 
 def NBR(file_name):
     '''
@@ -26,11 +75,12 @@ def NBR(file_name):
             B09[i][j] = data[width*height*2 + width*i+j]
             B08[i][j] = data[width*height*3 + width*i+j]
     NBR = (B08-B12)/(B08+B12)
+    
     nbrswir = (B11-B12-0.02)/(B11+B12+0.1)
     date  = file_name.split('_')[2].split('T')[0]
     '''
     plt.figure(figsize=(15,15))
-    plt.imshow(NBR, cmap='Greys')
+    plt.imshow(NDVI, cmap='Greys')
     plt.title(f'NBR of Sparks Lake fire on {date}')
     plt.tight_layout()
     plt.colorbar()
@@ -49,19 +99,17 @@ def dNBR(start_frame, end_frame):
     postNBR = postdata[4]
     preswir = predata[7]
     postswir = postdata[7]
-    dNBR = preNBR - postNBR
-    dNBRSWIR = preswir - postswir
+    dNBR = preNBR - postNBR #calculating dNBR
+    rdnbr = dNBR/(np.sqrt(abs(preNBR))) #calculating RdNBR
+    dNBRSWIR = preswir - postswir # calculating dNBRSWIR
     
+    #removing water and some noise
     for i in range(len(dNBR)):
         for j in range(len(dNBR[0])):
-            if predata[0][i][j] <= 100 or dNBRSWIR[i][j] <= 0.1:
+            if predata[0][i][j] <= 100 or rdnbr[i][j] < 0 or dNBRSWIR[i][j] < 0.1 or predata[3][i][j] > 2000:
                 dNBR[i][j] = 0
             else:
                 continue;
-    
-    date  = end_frame.split('_')[2].split('T')[0]
-    #plt.colorbar()
-    #plt.show()
 
     return dNBR
 
@@ -91,12 +139,8 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
             else:
                 class_plot[i][j] = 3
                 high_tot += 1
-                
-    #start = sorted_file_names[0].split('/')[-1] #splitting files for file names
-    #end = sorted_file_names[k].split('/')[-1]
-    #start_date  = start.split('_')[2].split('T')[0]
-    #end_date = end.split('_')[2].split('T')[0]
-    #calculating percentages of each class
+    
+    #calculating percentages           
     tot = un_tot+low_tot+med_tot+high_tot
     un_per = round(100*un_tot/tot,1)
     low_per = round(100*low_tot/tot,1)
@@ -104,10 +148,10 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
     high_per = round(100*high_tot/tot,1)
     
 
-    '''
+    #plotting
     cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])   #plotting
     plt.figure(figsize=(15,15))
-    plt.imshow(class_plot,cmap=cmap)
+    plt.imshow(class_plot,vmin=0,vmax=3,cmap=cmap)
     plt.title(f'BARC 256 burn severity, start date:{start_date}, end date:{end_date}')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Unburned {un_per}%',color='green')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Low {low_per}%' ,color='yellow')
@@ -117,5 +161,5 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
     #plt.show()
     plt.tight_layout()
     plt.savefig(f'{end_date}_BARC_classification.png')
-    '''
+
     return class_plot

@@ -89,3 +89,49 @@ def param_plots(file_dir,threshold):
         plt.tight_layout()
         plt.savefig(f'{band_title[band]}_timeserise.png')
         plt.clf()
+        
+def burn_unburn(file_dir):
+    #extracting bin files
+    files = os.listdir(file_dir)
+    file_list = []
+    for n in range(len(files)):
+        if files[n].split('.')[-1] == 'bin':
+            file_list.append(files[n])
+        else:
+            continue;
+        
+    sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
+    
+    nbrs = []
+    b11s = []
+    b12s = []
+    b8s = []
+    nbrswirs = []
+    for file in sorted_file_names:
+        data = NBR(f'{file_dir}/{file}')
+        nbrs.append(data[4])
+        b11s.append(data[1])
+        b12s.append(data[0])
+        b8s.append(data[3])
+        nbrswirs.append((data[1]-data[0]-0.02)/(data[1]+data[0]+0.1))
+    
+    height = len(nbrs[0])
+    width = len(nbrs[0][0])
+    burned = np.zeros((height,width))
+    for frame in range(1,len(nbrs)):
+        for i in range(height-5):
+            for j in range(width-5):
+                if (nbrs[frame-1][i][j] - nbrs[frame][i][j]) > 0.105 and (nbrswirs[frame-1][i][j] - nbrswirs[frame][i][j]) > 0.1 and b12s[frame][i][j] > 100 and b8s[frame][i][j] < 2000:
+                    burned[i][j] = True
+        plt.imshow(burned,cmap='grey') 
+        plt.savefig(f'{frame}.png')
+        
+#and dnbr[i][j] > 0.1 
+# if (nbrs[frame][i][j] - nbrs[frame-2][i][j]) < -0.35 and -500 < (b11s[frame][i][j] - b11s[frame-1][i][j]) < 500 and b12s[frame][i][j] > 100 and (b8s[frame][i][j] - b8s[frame-1][i][j]) < 0:
+
+'''
+nbrav = (nbrs[frame][i][j:j+5].sum() + nbrs[frame][i+1][j:j+5].sum() + nbrs[frame][i+2][j:j+5].sum() + nbrs[frame][i+3][j:j+5].sum() + nbrs[frame][i+4][j:j+5].sum() + nbrs[frame][i+5][j:j+5].sum())/25
+                
+                nbrav2 = (nbrs[frame-1][i][j:j+5].sum() + nbrs[frame-1][i+1][j:j+5].sum() + nbrs[frame-1][i+2][j:j+5].sum() + nbrs[frame-1][i+3][j:j+5].sum() + nbrs[frame-1][i+4][j:j+5].sum() + nbrs[frame-1][i+5][j:j+5].sum())/25
+                if (nbrav - nbrav2) < -0.3:
+'''
