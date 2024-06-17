@@ -12,19 +12,10 @@ def nbr_full(file_name):
     data = vals[3]
     width = vals[0]
     height = vals[1]
-    NBR = np.zeros((height,width))    
-    B12 = np.zeros((height,width))
-    B11 = np.zeros((height,width))
-    B09 = np.zeros((height,width))
-    B08 = np.zeros((height,width))
-    B8A = np.zeros((height,width))
-    B7 = np.zeros((height,width))
-    B6 = np.zeros((height,width))
-    B5 = np.zeros((height,width))
-    B4 = np.zeros((height,width))
-    B3 = np.zeros((height,width))
-    B2 = np.zeros((height,width))
-    B1 = np.zeros((height,width))
+    band_names = ['B1','B2','B3','B4','B5','B6','B7','B8A','B08','B09','B11','B12']
+    for b in band_names:
+        exec(f"{b} = np.zeros(({height}, {width}))", globals())
+        
     for i in range(height):
         for j in range(width):
             B12[i][j] = data[width*height*11 + width*i+j]
@@ -39,6 +30,7 @@ def nbr_full(file_name):
             B3[i][j] = data[width*height*2 + width*i+j]
             B2[i][j] = data[width*height*1 + width*i+j]
             B1[i][j] = data[width*height*0 + width*i+j]
+
     NBR = (B08-B12)/(B08+B12)#calculating NBR
     NDVI = (B08 - B4)/(B08 + B4)#calculating NDVI
     
@@ -63,11 +55,10 @@ def NBR(file_name):
     data = vals[3]
     width = vals[0]
     height = vals[1]
-    NBR = np.zeros((height,width))    
-    B12 = np.zeros((height,width))
-    B11 = np.zeros((height,width))
-    B09 = np.zeros((height,width))
-    B08 = np.zeros((height,width))
+    band_names = ['B08','B09','B11','B12']
+    for b in band_names:
+        exec(f"{b} = np.zeros(({height}, {width}))", globals())
+        
     for i in range(height):
         for j in range(width):
             B12[i][j] = data[width*height*0 + width*i+j]
