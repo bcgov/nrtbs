@@ -5,7 +5,8 @@ from operator import add, sub
 import datetime
 import numpy as np
 import math
-
+from misc import extract_date
+import os
 filenames = ['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin',
              'S2B_MSIL1C_20210629T190919_N0300_R056_T10UFB_20210629T212050.bin',
              'S2A_MSIL1C_20210701T185921_N0301_R013_T10UFB_20210701T223921.bin',
@@ -26,22 +27,33 @@ fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6)) = plt.subplots(3, 2, figsize=(15,8))
 clicks = []
 plot_colors = ['b','r','y','k','c','m']
 
-def interactive_time_serise(file,plot_type:str('image or nbr'), file_list, width):
+def interactive_time_serise(file_dir,plot_type:str('image or nbr'), width):
     '''
     '''
+    #extracting bin files
+    files = os.listdir(file_dir)
+    file_list = []
+    for n in range(len(files)):
+        if files[n].split('.')[-1] == 'bin':
+            file_list.append(files[n])
+        else:
+            continue;
+        
+    sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
+    
     global params
-    params = [NBR(f'raster_data/small/{file}') for file in file_list]
+    params = [NBR(f'{file_dir}/{file}') for file in sorted_file_names]
     
     global square_width
     square_width = width
     
     if plot_type == 'image':
-        data = NBR(file)
+        data = NBR(f'{file_dir}/{sorted_file_names[-1]}')
         image = np.stack([scale(data[0]),scale(data[1]),scale(data[2])], axis=2)
         ax1.imshow(image)
     
     elif plot_type == 'nbr':
-        image = NBR(file)[4]
+        image = NBR(f'{file_dir}/{sorted_file_names[-1]}')[4]
         ax1.imshow(image, cmap='grey')
         
     else:
