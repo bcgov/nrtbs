@@ -94,7 +94,6 @@ def dNBR(start_frame, end_frame):
     rdnbr = dNBR/(np.sqrt(abs(preNBR))) #calculating RdNBR
     dNBRSWIR = preswir - postswir # calculating dNBRSWIR
     
-    '''
     #removing water and some noise
     for i in range(len(dNBR)):
         for j in range(len(dNBR[0])):
@@ -102,7 +101,6 @@ def dNBR(start_frame, end_frame):
                 dNBR[i][j] = 0
             else:
                 continue;
-    '''
 
     return dNBR
 
