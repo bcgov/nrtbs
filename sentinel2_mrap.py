@@ -55,10 +55,7 @@ def extract(file_name):
     stack_ds = None
     
     envi_header_cleanup(['',out_file_name])
-
-    #run('fh ' + out_file_name)  # fix envi header, then reproduce the band names
-    print(hdr_fn(file_name), hdr_fn(out_file_name))
-    envi_update_band_names([ 
+    envi_update_band_names(['', 
                             hdr_fn(file_name),
                             hdr_fn(out_file_name)])
 
