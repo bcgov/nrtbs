@@ -1,6 +1,7 @@
 '''20240210 modified from sentinel2_extract_swir.py
 20230605 sentinel2_extract_swir.py'''
-from misc import err, args, exist, run, parfor
+from misc import err, args, exist, run, parfor, get_pd 
+pd = get_pd()
 from envi import envi_header_cleanup
 import multiprocessing as mp
 from osgeo import gdal
@@ -13,16 +14,19 @@ def extract(file_name):
     # non-atomic variable... 
     import copy
     original_name = copy.deepcopy(file_name) 
+    
+    w = original_name.split('_')
+    ds = w[2].split('T')[0]  # date string
+    stack_fn = original_name[:-4] + 'bin' # output stack filename
+    hdr_f =  original_name[:-4] + 'hdr'
 
     if file_name.split('.')[-1] == 'zip':
-        pass;
+        stack_fn = original_name[:-4] + '.bin' # output stack filename
+        hdr_f =  original_name[:-4] + '.hdr'
     else:
         file_name += os.path.sep + "MTD_MSIL1C.xml"
     
-    w = original_name.split('_')  # split filename on '_'
     print(w)
-    ds = w[2].split('T')[0]  # date string
-    stack_fn = original_name[:-4] + 'bin' # output stack filename
 
     
     if exist(stack_fn):
@@ -106,7 +110,6 @@ def extract(file_name):
         bi += 1
     
     stack_ds = None
-    hdr_f =  original_name[:-4] + 'hdr'
     envi_header_cleanup([None, hdr_f])
     xml_f = stack_fn + '.aux.xml'
     hdr_b = hdr_f + '.bak'
@@ -114,11 +117,11 @@ def extract(file_name):
         if os.path.exists(f):
             os.remove(f)
             
-    if not os.path.exists('raster_zero_to_nan'):
-        run('g++ raster_zero_to_nan.cpp misc.cpp -O3 -o raster_zero_to_nan')
-        run('chmod 777 raster_zero_to_nan')
+    if not os.path.exists(pd + 'raster_zero_to_nan'):
+        run(f'g++ {pd}raster_zero_to_nan.cpp {pd}misc.cpp -O3 -o {pd}raster_zero_to_nan')
+        run(f'chmod 777 {pd}raster_zero_to_nan')
     try:
-        run('./raster_zero_to_nan ' + stack_fn)
+        run(f'{pd}raster_zero_to_nan ' + stack_fn)
     except:
         print('run raster zero to nan failed')
 

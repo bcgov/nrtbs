@@ -119,12 +119,13 @@ def burn_unburn(file_dir):
     width = len(nbrs[0][0])
     burned = np.zeros((height,width))
     for frame in range(1,len(nbrs)):
+        date  = sorted_file_names[frame].split('_')[2].split('T')[0]
         for i in range(height-5):
             for j in range(width-5):
                 if (nbrs[frame-1][i][j] - nbrs[frame][i][j]) > 0.105 and (nbrswirs[frame-1][i][j] - nbrswirs[frame][i][j]) > 0.1 and b12s[frame][i][j] > 100 and b8s[frame][i][j] < 2000:
                     burned[i][j] = True
         plt.imshow(burned,cmap='grey') 
-        plt.savefig(f'{frame}.png')
+        plt.savefig(f'{date}.png')
         
 #and dnbr[i][j] > 0.1 
 # if (nbrs[frame][i][j] - nbrs[frame-2][i][j]) < -0.35 and -500 < (b11s[frame][i][j] - b11s[frame-1][i][j]) < 500 and b12s[frame][i][j] > 100 and (b8s[frame][i][j] - b8s[frame-1][i][j]) < 0:
