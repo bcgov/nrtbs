@@ -13,8 +13,11 @@ import numpy as np
 import copy
 import sys
 import os
+gdal.PushErrorHandler('CPLQuietErrorHandler')
+import warnings; warnings.filterwarnings('ignore')
 
 my_bands, my_proj, my_geo, my_xsize, my_ysize, nbands, file_name  = {}, None, None, None, None, None, None
+
 
 def extract(file_name):
     global my_proj, my_geo, my_bands, my_xsize, my_ysize, nbands
@@ -50,9 +53,12 @@ def extract(file_name):
     for i in range(1, nbands + 1):
         stack_ds.GetRasterBand(i).WriteArray(my_bands[i])
     stack_ds = None
+    
+    envi_header_cleanup(['',out_file_name])
 
-    run('fh ' + out_file_name)  # fix envi header, then reproduce the band names
-    envi_update_band_names(['envi_update_band_names.py', 
+    #run('fh ' + out_file_name)  # fix envi header, then reproduce the band names
+    print(hdr_fn(file_name), hdr_fn(out_file_name))
+    envi_update_band_names([ 
                             hdr_fn(file_name),
                             hdr_fn(out_file_name)])
 
