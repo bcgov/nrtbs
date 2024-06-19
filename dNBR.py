@@ -1,4 +1,4 @@
-from misc import exist, read_hdr, read_float, hdr_fn, read_binary, extract_date
+from misc import exist, read_hdr, read_float, hdr_fn, read_binary, extract_date, write_binary, write_hdr
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors
@@ -94,13 +94,15 @@ def dNBR(start_frame, end_frame):
     rdnbr = dNBR/(np.sqrt(abs(preNBR))) #calculating RdNBR
     dNBRSWIR = preswir - postswir # calculating dNBRSWIR
     
+    '''
     #removing water and some noise
     for i in range(len(dNBR)):
         for j in range(len(dNBR[0])):
-            if predata[0][i][j] <= 100 or rdnbr[i][j] < 0 or dNBRSWIR[i][j] < 0.1 or predata[3][i][j] > 2000:
+            if predata[0][i][j] <= 100 or rdnbr[i][j] < 0 or dNBRSWIR[i][j] < 0.1:
                 dNBR[i][j] = 0
             else:
                 continue;
+    '''
 
     return dNBR
 
@@ -138,7 +140,8 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
     med_per = round(100*med_tot/tot,1)
     high_per = round(100*high_tot/tot,1)
     
-
+    write_binary(class_plot,'BARC_sparks.bin')
+    write_hdr('BARC_sparks.hdr', len(class_plot[0]), len(class_plot), 1)
     #plotting
     cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])   #plotting
     plt.figure(figsize=(15,15))
