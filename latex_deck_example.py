@@ -73,12 +73,11 @@ latex_end = r'''
 # Make the presentation
 
 with open('presentation.tex', 'w') as file:
-    file.write((latex_preamble +
-               generate_slide_frames('Slide Set 1', slide_set1, comments_set1) +
-               generate_slide_frames('Slide Set 2', slide_set2, comments_set2) + 
-               generate_slide_frames('Slide Set 3', slide_set3, comments_set3) + 
-               latex_end).replace('_','\_')) 
+    file.write((generate_slide_frames('Slide Set 1', slide_set1, comments_set1) +
+                generate_slide_frames('Slide Set 2', slide_set2, comments_set2) + 
+                generate_slide_frames('Slide Set 3', slide_set3, comments_set3)
+                ).replace('_','\_')) 
     
-os.system('pdflatex presentation.tex; rm *.log *.nav *.aux *.snm *.vrb; open presentation.pdf')
+#os.system('pdflatex presentation.tex; rm *.log *.nav *.aux *.snm *.vrb; open presentation.pdf')
 
 

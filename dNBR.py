@@ -127,6 +127,8 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
             elif 110 <= scaled_dNBR[i][j] < 187:
                 class_plot[i][j] = 2
                 med_tot += 1
+            elif np.isnan(scaled_dNBR[i][j]):
+                class_plot[i][j] = float('nan')
             else:
                 class_plot[i][j] = 3
                 high_tot += 1
@@ -157,7 +159,7 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
 
     return class_plot
 
-'''
+
 files = os.listdir('/Volumes/Lexar/L2_T10VEL/bins')
 file_list = []
 for n in range(len(files)):
@@ -174,4 +176,3 @@ for file in sorted_file_names[2:]:
     dnbr = dNBR(f'/Volumes/Lexar/L2_T10VEL/bins/{start_file}',f'/Volumes/Lexar/L2_T10VEL/bins/{file}')
     end_date = file.split('_')[2].split('T')[0]
     class_plot(dnbr,start_date,f'{end_date}_L2')
-'''
