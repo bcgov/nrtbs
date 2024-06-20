@@ -138,13 +138,14 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
     med_per = round(100*med_tot/tot,1)
     high_per = round(100*high_tot/tot,1)
     
-    write_binary(class_plot,'BARC_sparks.bin')
-    write_hdr('BARC_sparks.hdr', len(class_plot[0]), len(class_plot), 1)
+    #write_binary(class_plot,'BARC_sparks.bin')
+    #write_hdr('BARC_sparks.hdr', len(class_plot[0]), len(class_plot), 1)
     #plotting
+    end_date_good = end_date.split('_')[0]
     cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])   #plotting
     plt.figure(figsize=(15,15))
     plt.imshow(class_plot,vmin=0,vmax=3,cmap=cmap)
-    plt.title(f'BARC 256 burn severity, start date:{start_date}, end date:{end_date}')
+    plt.title(f'BARC 256 burn severity, start date:{start_date}, end date:{end_date_good}')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Unburned {un_per}%',color='green')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Low {low_per}%' ,color='yellow')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Medium {med_per}%',color='orange')
@@ -155,3 +156,22 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
     plt.savefig(f'{end_date}_BARC_classification.png')
 
     return class_plot
+
+'''
+files = os.listdir('/Volumes/Lexar/L2_T10VEL/bins')
+file_list = []
+for n in range(len(files)):
+    if files[n].split('.')[-1] == 'bin':
+        file_list.append(files[n])
+    else:
+        continue;
+
+sorted_file_names = sorted(file_list, key=extract_date)
+
+start_file = sorted_file_names[1]
+start_date = start_file.split('_')[2].split('T')[0]
+for file in sorted_file_names[2:]:
+    dnbr = dNBR(f'/Volumes/Lexar/L2_T10VEL/bins/{start_file}',f'/Volumes/Lexar/L2_T10VEL/bins/{file}')
+    end_date = file.split('_')[2].split('T')[0]
+    class_plot(dnbr,start_date,f'{end_date}_L2')
+'''
