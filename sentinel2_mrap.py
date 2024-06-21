@@ -78,6 +78,7 @@ def run_mrap(gid):  # run MRAP on one tile
         print("check sorting order")
         for line in lines:
             print("mrap " + line)
+        os.system('rm' + "L2_" +  gid + os.path.sep + line)
 
 
 if __name__ == "__main__":

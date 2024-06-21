@@ -2,36 +2,37 @@
 import os
 from misc import extract_date
 
-def generate_slide_frames(title, filenames, comments):
+def generate_slide_frames(title, filenames1, filenames2):
     # Initialize an empty string to accumulate LaTeX code
     latex_content = ''
 
     # Generate LaTeX code for each filename in the list
-    for i, filename in enumerate(filenames):
-        if os.path.exists(filename):
-            slide_number = os.path.splitext(os.path.basename(filename))[0]
-            slide_comment = comments[i] if i < len(comments) else ''
-            latex_content += rf'''
-    \begin{{frame}}[fragile]{{{title} - Slide {slide_number}}}
-        \frametitle{{{title} - Slide {slide_number}}}
+    for filename in filenames1:
+        date = filename.split('/')[-1].split('_')[0]
+        for file in filenames2:
+            if file.split('/')[-1].split('_')[0] == date:
+                slide_number = os.path.splitext(os.path.basename(filename))[0]
+                latex_content += rf'''
+    \begin{{frame}}[fragile]{{{title} - Date {date}}}
+        \frametitle{{{title} - Date {date}}}
         \begin{{columns}}
-            \begin{{column}}{{0.6\textwidth}}
-                \includegraphics[width=\textwidth]{{{filename}}}
+            \begin{{column}}{{0.5\textwidth}}
+                \centering
+                \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{file}}}
             \end{{column}}
-            \begin{{column}}{{0.4\textwidth}}
-                \raggedleft
-                \small
-                {slide_comment}
+            \begin{{column}}{{0.5\textwidth}}
+                \centering
+                \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{filename}}}
             \end{{column}}
         \end{{columns}}
     \end{{frame}}
-'''
+    '''
 
     return latex_content
 
 # Example usage:
 # List of filenames and comments for each slide set
-dir_list = ['/Users/sterlingvondehn/Documents/nrtbs/BARC_timeserise_fort_nelson_composite','/Users/sterlingvondehn/Documents/nrtbs/L2_fort_nelson','/Users/sterlingvondehn/Documents/nrtbs/BARC_timeserise_fort_nelson_L2']
+dir_list = ['/Users/sterlingvondehn/Documents/nrtbs/BARC_timeserise_fort_nelson_composite','/Users/sterlingvondehn/Documents/nrtbs/MRAP_images','/Users/sterlingvondehn/Documents/nrtbs/BARC_timeserise_fort_nelson_L2','/Users/sterlingvondehn/Documents/nrtbs/L2_images','/Users/sterlingvondehn/Documents/nrtbs/clipped_BARC', '/Users/sterlingvondehn/Documents/nrtbs/non_clipped_BARC']
 slide_list = [[] for i in range(len(dir_list))]
 
 for i in range(len(dir_list)):
@@ -50,20 +51,30 @@ for i in range(len(dir_list)):
 slide_set1 = slide_list[0]
 slide_set2 = slide_list[1]
 slide_set3 = slide_list[2]
-print(slide_set1)
-
-comments_set1 = ['' for slide in slide_set1]
-comments_set2 = ['' for slide in slide_set2]
-comments_set3 = ['' for slide in slide_set3]
-
-
+slide_set4 = slide_list[3]
+slide_set5 = slide_list[4]
+slide_set6 = slide_list[5]
 # LaTeX preamble and end code
 latex_preamble = r'''
 \documentclass{beamer}
 \usepackage{graphicx}
 \usepackage{array}
+\title{BARC}
+\author{Sterling von Dehn and Ash Richardson}
+\institute{B.C. Wildfire Service}
+\date{\today}
+
 \begin{document}
-\setbeamerfont{frametitle}{size=\small}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Table of Contents}
+	\tableofcontents % Automatically generates the table of contents
+\end{frame}
 '''
 
 latex_end = r'''
@@ -73,11 +84,12 @@ latex_end = r'''
 # Make the presentation
 
 with open('presentation.tex', 'w') as file:
-    file.write((generate_slide_frames('Slide Set 1', slide_set1, comments_set1) +
-                generate_slide_frames('Slide Set 2', slide_set2, comments_set2) + 
-                generate_slide_frames('Slide Set 3', slide_set3, comments_set3)
+    file.write((latex_preamble + '\section{Notebook}' +
+                generate_slide_frames('BARC classes using Sashas notebook', slide_set5, slide_set6 ) + '\section{L2 Data}' +
+                generate_slide_frames('BARC and SWIR time series using L2', slide_set3, slide_set4 ) + '\section{MRAP Data}' +
+                generate_slide_frames('BARC and SWIR time series using MRAP', slide_set1, slide_set2) + latex_end
                 ).replace('_','\_')) 
     
-#os.system('pdflatex presentation.tex; rm *.log *.nav *.aux *.snm *.vrb; open presentation.pdf')
+os.system('pdflatex presentation.tex; rm *.log *.nav *.aux *.snm *.vrb; open presentation.pdf')
 
 

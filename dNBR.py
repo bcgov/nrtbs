@@ -84,7 +84,7 @@ def dNBR(start_frame, end_frame):
     Takes the start and end binary files and returns the dNRB.
     >>> dNBR('S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin', 'S2A_MSIL1C_20210907T190911_N0301_R056_T10UFB_20210902T225534.bin')
     '''
-    predata = NBR(start_frame)
+    predata = start_frame
     postdata = NBR(end_frame)
     preNBR = predata[4]
     postNBR = postdata[4]
@@ -160,7 +160,7 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given'):
     return class_plot
 
 
-files = os.listdir('/Volumes/Lexar/L2_T10VEL/bins')
+files = os.listdir('/Volumes/Lexar/L2_T10VEL/mrap')
 file_list = []
 for n in range(len(files)):
     if files[n].split('.')[-1] == 'bin':
@@ -170,9 +170,10 @@ for n in range(len(files)):
 
 sorted_file_names = sorted(file_list, key=extract_date)
 
-start_file = sorted_file_names[1]
+start_file = sorted_file_names[0]
 start_date = start_file.split('_')[2].split('T')[0]
+start_frame = NBR(f'/Volumes/Lexar/L2_T10VEL/bins/S2B_MSIL2A_20240420T192909_N0510_R142_T10VEL_20240420T220839.bin')
 for file in sorted_file_names[2:]:
-    dnbr = dNBR(f'/Volumes/Lexar/L2_T10VEL/bins/{start_file}',f'/Volumes/Lexar/L2_T10VEL/bins/{file}')
+    dnbr = dNBR(start_frame, f'/Volumes/Lexar/L2_T10VEL/mrap/{file}')
     end_date = file.split('_')[2].split('T')[0]
-    class_plot(dnbr,start_date,f'{end_date}_L2')
+    class_plot(dnbr,start_date,f'{end_date}_MRAP')
