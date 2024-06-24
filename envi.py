@@ -48,11 +48,10 @@ def envi_header_band_names(args):
 def envi_update_band_names(args):
     # print("envi_update_band_names", [args])
     # transfer band names from one file to  another. Useful if you run a program that throws band name info away!
-    from misc import args, sep, exists, pd, get_band_names_line_idx
-
+    from misc import sep, exists, pd, get_band_names_line_idx
     if len(args) < 3:
         err('envi_update_band_names.py [.hdr file with band names to use] ' +
-            '[.hdr file with band names to overwrite]')
+            '[.hdr file with band names to overwrite] X')
 
     if not exists(args[1]) or not exists(args[2]):
         err('please check input files:\n\t' + args[1] + '\n\t' + args[2])

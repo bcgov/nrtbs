@@ -27,7 +27,7 @@ def scale(X):
     
     return X
 
-def plot(file_dir):
+def plot(file_dir,title='No title given'):
     '''
     Takes a directory containing bin files and plots an image using the B12, B11, and B09 bands. Also plots the NBR of each frame as well as the dNBR of each frame except the first (first frame would have dNBR=0). Function places each files into three directories: 'images', 'NBR', and 'dNBR'.
     >>> plot('raster_data')
@@ -40,8 +40,10 @@ def plot(file_dir):
             file_list.append(files[n])
         else:
             continue;
-        
-    sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
+    
+
+    sorted_file_names = sorted(file_list, key=extract_date) #sorting
+   
 
     for n in range(len(sorted_file_names)):
         vals = read_binary(f'{file_dir}/{sorted_file_names[n]}') #reading each file
@@ -61,20 +63,21 @@ def plot(file_dir):
             band1 = scale(B12) #scaling bands for plotting
             band2 = scale(B11)
             band3 = scale(B09)
-            date  = sorted_file_names[n].split('_')[2].split('T')[0]
+            date  = extract_date(sorted_file_names[n])
             image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
             
             plt.figure(figsize=(15,15)) #setting figure parameters
             imratio = height/width
             plt.imshow(image) #Plotting the image
-            plt.title(f'Sparks Lake fire on {date}, bands: r=B12, g=B11, b=B09')
+            plt.title(f'{title} on {date}, bands: r=B12, g=B11, b=B09')
+            plt.xlabel(sorted_file_names[n])
             if not os.path.exists('images'):
                 os.mkdir('images')
             plt.tight_layout()
-            plt.savefig(f'images/{date}_{sorted_file_names[n]}.png')
+            plt.savefig(f'images/{date}_image.png')
             plt.clf()
             print('Could not plot NBR/dNBR, not enough bands')
-            
+               
         else:
             NBR = np.zeros((height,width))    
             B12 = np.zeros((height,width))
@@ -91,21 +94,24 @@ def plot(file_dir):
             band1 = scale(B12) #scaling bands for plotting
             band2 = scale(B11)
             band3 = scale(B09)
-            date  = sorted_file_names[n].split('_')[2].split('T')[0]
+            date  = extract_date(sorted_file_names[n])
+            print(date)
             image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
         
             plt.figure(figsize=(15,15)) #setting figure parameters
             imratio = height/width
             plt.imshow(image) #Plotting the image
-            plt.title(f'Sparks Lake fire on {date}, bands: r=B12, g=B11, b=B09')
+            plt.title(f'{title} on {date}, bands: r=B12, g=B11, b=B09')
+            plt.xlabel(sorted_file_names[n])
             if not os.path.exists('images'):
                 os.mkdir('images')
             plt.tight_layout()
-            plt.savefig(f'images/{date}_{sorted_file_names[n]}.png')
+            plt.savefig(f'images/{date}_image.png')
             plt.clf()
-        
+            
+            '''
             plt.imshow(NBR, cmap='Greys') #Plotting the NBR
-            plt.title(f'NBR of Sparks Lake fire on {date}')
+            plt.title(f'NBR of {title} on {date}')
             plt.colorbar(fraction=0.04525*imratio)     
             if not os.path.exists('NBR'):
                 os.mkdir('NBR')
@@ -119,10 +125,11 @@ def plot(file_dir):
             else:
                 dNBR = start_NBR - NBR        
                 plt.imshow(dNBR, cmap='Greys')
-                plt.title(f'dNBR of Sparks Lake fire on {date}')
+                plt.title(f'dNBR of {title} on {date}')
                 plt.colorbar(fraction=0.04525*imratio)     
                 if not os.path.exists('dNBR'):
                     os.mkdir('dNBR')
                 plt.tight_layout()
                 plt.savefig(f'dNBR/{date}_{sorted_file_names[n]}.png') 
                 plt.clf()
+            '''

@@ -4,13 +4,14 @@ This script takes sentinel-2 .zip files as input.
 
 .bin files are produced "as usual", with the exception that NAN is included for "undesirable" data areas, according to the Sentinel-2 (level-2) class map. 
 '''
-from misc import err, args, exist, run, parfor
+from misc import err, args, exist, run, parfor, get_pd
 from envi import envi_header_cleanup
 import multiprocessing as mp
 from osgeo import gdal
 import numpy as np
 import sys
 import os
+pd = get_pd()
 
 def extract_cloudfree(file_name):
     w = file_name.split('_')  # split filename on '_'
@@ -174,7 +175,15 @@ def extract_cloudfree(file_name):
     for f in [xml_f, hdr_b]:
         if os.path.exists(f):
             os.remove(f)
-    run('raster_zero_to_nan ' + stack_fn)
+            
+    if not os.path.exists(pd + 'raster_zero_to_nan'):
+        run(f'g++ {pd}raster_zero_to_nan.cpp {pd}misc.cpp -O3 -o {pd}raster_zero_to_nan')
+        run(f'chmod 777 {pd}raster_zero_to_nan')
+    try:
+        run(f'{pd}raster_zero_to_nan ' + stack_fn)
+    except:
+        print('run raster zero to nan failed')
+
 
 
 if __name__ == "__main__":
