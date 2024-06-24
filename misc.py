@@ -455,5 +455,12 @@ def shapefile_to_EPSG(src_f, dst_f, dst_EPSG=3347): # or 3005 bc albers
 
 def extract_date(file_name):
     # Assuming the date format is YYYY-MM-DD in the file names
-    date  = file_name.split('_')[2].split('T')[0]
-    return datetime.datetime.strptime(date, "%Y%m%d")
+    try:
+        date  = file_name.split('_')[2].split('T')[0]
+        date_tot = datetime.datetime.strptime(date, "%Y%m%d")
+    except:
+        date = file_name.split('_')[0]
+        date_tot = datetime.datetime.strptime(date, "%Y%m%d")
+
+    date_only = date_tot.date()
+    return date_only

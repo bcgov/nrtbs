@@ -32,7 +32,7 @@ def generate_slide_frames(title, filenames1, filenames2):
 
 # Example usage:
 # List of filenames and comments for each slide set
-dir_list = ['~/Documents/nrtbs/BARC_timeserise_fort_nelson_composite','~/Documents/nrtbs/MRAP_images','~/Documents/nrtbs/BARC_timeserise_fort_nelson_L2','~/Documents/nrtbs/L2_images','~/Documents/nrtbs/clipped_BARC', '~/Documents/nrtbs/non_clipped_BARC']
+dir_list = ['BARC_timeseries_fort_nelson_cut_composite','MRAP_cut_images','BARC_timeseries_fort_nelson_L2','L2_images','clipped_BARC', 'non_clipped_BARC']
 slide_list = [[] for i in range(len(dir_list))]
 
 for i in range(len(dir_list)):
@@ -84,12 +84,16 @@ latex_end = r'''
 # Make the presentation
 
 with open('presentation.tex', 'w') as file:
-    file.write((latex_preamble + '\section{Notebook}' +
-                generate_slide_frames('BARC classes using Sashas notebook', slide_set5, slide_set6 ) + '\section{L2 Data}' +
-                generate_slide_frames('BARC and SWIR time series using L2', slide_set3, slide_set4 ) + '\section{MRAP Data}' +
-                generate_slide_frames('BARC and SWIR time series using MRAP', slide_set1, slide_set2) + latex_end
-                ).replace('_','\_')) 
+    file.write((latex_preamble + r'''\section{Notebook}''' +
+                generate_slide_frames('BARC classes using Sashas notebook', slide_set5, slide_set6 ) + r'''\section{Comparison}''' +
+                generate_slide_frames('Comparison of notebook and script',['non_clipped_BARC/20210907_non_clipped_sparks_lake_BARC.png','non_clipped_BARC/20240619_non_clipped_fort_nelson_BARC.png'],['20210907__BARC_classification.png','20240619_MRAP_BARC_classification.png']) + 
+                r'''\section{MRAP Data}''' +
+                generate_slide_frames('BARC and SWIR time series using MRAP', slide_set1, slide_set2 ) + r'''\section{L2 Data}''' +
+                generate_slide_frames('BARC and SWIR time series using L2', slide_set3, slide_set4 )
+                + latex_end
+                ).replace('_','\\_')) 
     
 os.system('pdflatex presentation.tex; rm *.log *.nav *.aux *.snm *.vrb; open presentation.pdf')
 
 
+#generate_slide_frames('Comparision of notebook vs script', ['20210907__BARC_classification.png'], ['non_clipped_BARC/20210907_non_clipped_sparks_lake_BARC.png'] ) 

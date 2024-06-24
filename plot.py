@@ -40,8 +40,10 @@ def plot(file_dir,title='No title given'):
             file_list.append(files[n])
         else:
             continue;
-        
-    sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
+    
+
+    sorted_file_names = sorted(file_list, key=extract_date) #sorting
+   
 
     for n in range(len(sorted_file_names)):
         vals = read_binary(f'{file_dir}/{sorted_file_names[n]}') #reading each file
@@ -61,7 +63,7 @@ def plot(file_dir,title='No title given'):
             band1 = scale(B12) #scaling bands for plotting
             band2 = scale(B11)
             band3 = scale(B09)
-            date  = sorted_file_names[n].split('_')[2].split('T')[0]
+            date  = extract_date(sorted_file_names[n])
             image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
             
             plt.figure(figsize=(15,15)) #setting figure parameters
@@ -92,7 +94,8 @@ def plot(file_dir,title='No title given'):
             band1 = scale(B12) #scaling bands for plotting
             band2 = scale(B11)
             band3 = scale(B09)
-            date  = sorted_file_names[n].split('_')[2].split('T')[0]
+            date  = extract_date(sorted_file_names[n])
+            print(date)
             image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
         
             plt.figure(figsize=(15,15)) #setting figure parameters
