@@ -32,7 +32,7 @@ def generate_slide_frames(title, filenames1, filenames2):
 
 # Example usage:
 # List of filenames and comments for each slide set
-dir_list = ['/Users/sterlingvondehn/Documents/nrtbs/BARC_timeserise_fort_nelson_composite','/Users/sterlingvondehn/Documents/nrtbs/MRAP_images','/Users/sterlingvondehn/Documents/nrtbs/BARC_timeserise_fort_nelson_L2','/Users/sterlingvondehn/Documents/nrtbs/L2_images','/Users/sterlingvondehn/Documents/nrtbs/clipped_BARC', '/Users/sterlingvondehn/Documents/nrtbs/non_clipped_BARC']
+dir_list = ['~/Documents/nrtbs/BARC_timeserise_fort_nelson_composite','~/Documents/nrtbs/MRAP_images','~/Documents/nrtbs/BARC_timeserise_fort_nelson_L2','~/Documents/nrtbs/L2_images','~/Documents/nrtbs/clipped_BARC', '~/Documents/nrtbs/non_clipped_BARC']
 slide_list = [[] for i in range(len(dir_list))]
 
 for i in range(len(dir_list)):

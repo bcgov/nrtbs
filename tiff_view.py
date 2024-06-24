@@ -7,7 +7,7 @@ import numpy as np
 from numpy.ma import masked_where
 
 # Path to your .tif file
-tif_path = '/Users/sterlingvondehn/Downloads/G90267 2/barc/BARC_G90267_20240420_20240619_S2.tif'
+tif_path = '~/Downloads/G90267 2/barc/BARC_G90267_20240420_20240619_S2.tif'
 title = 'non_clipped_fort_nelson_BARC'
 start_date = 20240420
 end_date = 20240619
