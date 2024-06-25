@@ -69,7 +69,7 @@ def NBR(file_name):
             B09_unscal[i][j] = data[width*height*2 + width*i+j]
             B08_unscal[i][j] = data[width*height*3 + width*i+j]
             
-    if date >= datetime.datetime.strptime('20220125',"%Y%m%d").date(): # applying scaling factor to dates past 2022-01-25
+    if int(date) >= 20220125:   # applying scaling factor to dates past 2022-01-25
         B12 = (B12_unscal-1000)/10000
         B11 = (B11_unscal-1000)/10000
         B09 = (B09_unscal-1000)/10000
@@ -193,7 +193,7 @@ def time_series(directory,given_date,format=''):
     sorted_file_names = sorted(file_list, key=extract_date)
     
     for i in range(len(sorted_file_names)):
-        if extract_date(sorted_file_names[i]) == datetime.datetime.strptime(str(given_date), "%Y%m%d").date():
+        if extract_date(sorted_file_names[i]) == str(given_date):
             index = i
             break;
         else:
