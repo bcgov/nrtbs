@@ -90,7 +90,7 @@ with open('presentation.tex', 'w') as file:
     file.write((latex_preamble + r'''\section{Notebook}''' +
                 generate_slide_frames('BARC classes/ Google Earth Engine/ Full scene + clipped', slide_set5, slide_set6 ) + r'''\section{Comparisons}''' +
                 generate_slide_frames('Local implementation + Google Earth Engine',slide_set6,slide_set8) + r'''\section{Noise reduction}''' + 
-                generate_slide_frames('BARC + noise reduction',slide_set7,slide_set8) +
+                generate_slide_frames('Local implementation + noise reduction',slide_set7,slide_set8) +
                 r'''\section{MRAP Data}''' +
                 generate_slide_frames('SWIR + BARC/ time series/ MRAP', slide_set1, slide_set2 ) + r'''\section{L2 Data}''' +
                 generate_slide_frames('SWIR + BARC/ time series/ L2', slide_set3, slide_set4 )
@@ -99,5 +99,3 @@ with open('presentation.tex', 'w') as file:
     
 os.system('pdflatex presentation.tex; rm *.log *.nav *.aux *.snm *.vrb; open presentation.pdf')
 
-
-#generate_slide_frames('Comparision of notebook vs script', ['20210907__BARC_classification.png'], ['non_clipped_BARC/20210907_non_clipped_sparks_lake_BARC.png'] ) 
