@@ -69,16 +69,16 @@ def NBR(file_name):
             B09_unscal[i][j] = data[width*height*2 + width*i+j]
             B08_unscal[i][j] = data[width*height*3 + width*i+j]
             
-    if date >= datetime.datetime.strptime('20220125',"%Y%m%d").date(): # applying scaling factor to dates past 2022-01-25
-        B12 = (B12_unscal-1000)/10000
-        B11 = (B11_unscal-1000)/10000
-        B09 = (B09_unscal-1000)/10000
-        B08 = (B08_unscal-1000)/10000
+    if int(date) >= 20220125:  # applying scaling factor to dates past 2022-01-25
+        B12 = (B12_unscal-1000)
+        B11 = (B11_unscal-1000)
+        B09 = (B09_unscal-1000)
+        B08 = (B08_unscal-1000)
     else:
-        B12 = (B12_unscal)/10000
-        B11 = (B11_unscal)/10000
-        B09 = (B09_unscal)/10000
-        B08 = (B08_unscal)/10000
+        B12 = (B12_unscal)
+        B11 = (B11_unscal)
+        B09 = (B09_unscal)
+        B08 = (B08_unscal)
     
     NBR = (B08-B12)/(B08+B12)
     nbrswir = (B11-B12-0.02)/(B11+B12+0.1)
@@ -113,14 +113,12 @@ def dNBR(start_frame, end_frame):
     dNBRSWIR = preswir - postswir # calculating dNBRSWIR
     
     #removing water and some noise
-    '''
     for i in range(len(dNBR)):
         for j in range(len(dNBR[0])):
-            if predata[0][i][j] <= 100 or rdnbr[i][j] < 0 or dNBRSWIR[i][j] < 0.1:
+            if predata[0][i][j] <= 100 or dNBRSWIR[i][j] < 0.1:
                 dNBR[i][j] = 0
             else:
                 continue;
-    '''
 
     return dNBR
 
@@ -193,7 +191,7 @@ def time_series(directory,given_date,format=''):
     sorted_file_names = sorted(file_list, key=extract_date)
     
     for i in range(len(sorted_file_names)):
-        if extract_date(sorted_file_names[i]) == datetime.datetime.strptime(str(given_date), "%Y%m%d").date():
+        if extract_date(sorted_file_names[i]) == str(given_date):
             index = i
             break;
         else:
