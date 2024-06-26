@@ -25,8 +25,19 @@ NRT burned severity
 ## To consider later
 * As a future refinement, may likely need to run Sen2cor processor [here](https://step.esa.int/main/snap-supported-plugins/sen2cor/sen2cor-v2-11/) as a pre-processing step to exclude detected areas. Info available [here](https://sentiwiki.copernicus.eu/web/s2-processing#S2Processing-L2AAlgorithmsS2-Processing-L2A-Algorithmstrue) on S2 processing algorithms resulting in the available cloud mask accompanying Level-2 data (running sen2cor on Level-1 data results in Level-2 data) 
 * It may eventually be necessary to improve cloud vs. smoke vs. fire classification to refine our results.
-## Application-izing
-When we have arrived at an acceptable method that we determine is operationally relevant for anticipating burned-severity (while the fire is still burning) we need to collect the steps into an "application" that can be re-run (for re-use, including validation over larger areas) 
+## steps for Application-izing for fire and burned-severity mapping
+1. User provides fire number
+2. Pull current bc gov fire perimeter and point (shapefiles) 
+3. Extract the perimeter and/or point for that shapefile (default to perimeter, if available) 
+4. Calculate an AOI around the perimeter/point (e.g. take a "bounding box" around the perimeter/ point and "make it bigger") 
+5. Intersect the new AOI with the sentinel-2 tile grid. i.e., data/Sentinel_BC_Tiles.tar.gz to determine the relevant tile-ID to download (e.g. T10UFB would be included for a fire near kamloops) 
+6. Download (default to 6 weeks for fire mapping application) of data up to present day, over all the selected tile-ID using sync_daterange_gid_zip.py. Can delete zip files at this point to save space. For burn-severity mapping, might need much more to get a pre-image). In the fire-mapping case, if there are present imagery available that are actually cloud-free, can skip compositing / multi-date stuff and just pull the present imagery
+7. Extract cloud-free swir/nir data for all downloaded frames, using sentinel2_extract_cloudfree_swir_nir.py
+8. run sentinel2_mrap.py to produce a series of composites for each tile-ID  
+9. run sentinel2_mrap_merge.py. Note: may need to modify to only spit out a result for the last possible step (most recent data) only, otherwise will run out of space.  However, might need results at intermediary days if the results are funky . Also might need all steps for burned-severity case.
+10. Clip merged composite(s) to AOI 
+11. Run your stuff to produce a BARC map  (pre/post dates). Fire mapping case: could just default to BARC mapping (if the data are not too heavy) but collapse the result down to a single class. If there are data issues, could apply "red wins" rule to (R,G,B) = (B12, B11, B9) data (present imagery or composite) 
+12. Fully application-ised version might default to using BARC mapping to generate a fire map (binary classification). However provided some alternate steps/ work-arounds forcases where the data volume gets impractical. 
 
 # Background / references
 * https://burnseverity.cr.usgs.gov/ravg/background-products-applications
