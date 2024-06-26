@@ -8,9 +8,9 @@ def generate_slide_frames(title, filenames1, filenames2):
 
     # Generate LaTeX code for each filename in the list
     for filename in filenames1:
-        date = extract_date(filename.split('/')[-1])
+        date = filename.split('/')[-1].split('_')[0]
         for file in filenames2:
-            if extract_date(file.split('/')[-1]) == date:
+            if file.split('/')[-1].split('_')[0]== date:
                 slide_number = os.path.splitext(os.path.basename(filename))[0]
                 latex_content += rf'''
     \begin{{frame}}[fragile]{{{title}}}
@@ -33,7 +33,7 @@ def generate_slide_frames(title, filenames1, filenames2):
 
 # Example usage:
 # List of filenames and comments for each slide set
-dir_list = ['BARC_timeseries_fort_nelson_cut_composite','MRAP_images','BARC_timeseries_fort_nelson_L2','L2_images','clipped_BARC', 'non_clipped_BARC']
+dir_list = ['BARC_timeseries_fort_nelson_cut_composite','MRAP_images','BARC_timeseries_fort_nelson_L2','L2_images','clipped_BARC', 'non_clipped_BARC', 'noise_reduced', 'non_noise_reduced']
 slide_list = [[] for i in range(len(dir_list))]
 
 for i in range(len(dir_list)):
@@ -55,6 +55,8 @@ slide_set3 = slide_list[2]
 slide_set4 = slide_list[3]
 slide_set5 = slide_list[4]
 slide_set6 = slide_list[5]
+slide_set7 = slide_list[6]
+slide_set8 = slide_list[7]
 # LaTeX preamble and end code
 latex_preamble = r'''
 \documentclass{beamer}
@@ -87,7 +89,8 @@ latex_end = r'''
 with open('presentation.tex', 'w') as file:
     file.write((latex_preamble + r'''\section{Notebook}''' +
                 generate_slide_frames('BARC classes/ Google Earth Engine/ Full scene + clipped', slide_set5, slide_set6 ) + r'''\section{Comparisons}''' +
-                generate_slide_frames('Local implementation + Google Earth Engine',['non_clipped_BARC/2021-09-07_non_clipped_sparks_lake_BARC.png','non_clipped_BARC/2024-06-19_non_clipped_fort_nelson_BARC.png'],['2021-09-07__BARC_classification.png','2024-06-19_MRAP_BARC_classification.png']) + 
+                generate_slide_frames('Local implementation + Google Earth Engine',slide_set6,slide_set8) + r'''\section{Noise reduction}''' + 
+                generate_slide_frames('BARC + noise reduction',slide_set7,slide_set8) +
                 r'''\section{MRAP Data}''' +
                 generate_slide_frames('SWIR + BARC/ time series/ MRAP', slide_set1, slide_set2 ) + r'''\section{L2 Data}''' +
                 generate_slide_frames('SWIR + BARC/ time series/ L2', slide_set3, slide_set4 )
