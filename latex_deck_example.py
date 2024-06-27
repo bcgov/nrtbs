@@ -81,6 +81,12 @@ latex_preamble = r'''
 	\frametitle{Table of Contents}
 	\tableofcontents % Automatically generates the table of contents
 \end{frame}
+
+\begin{frame}
+    \frametitle{Based on Sasha Nasonova's implementation of BARC}
+    \framesubtitle{\url{https://github.com/SashaNasonova/burnSeverity}}
+    \includegraphics[width=\textwidth]{BARC.png}
+\end{frame}
 '''
 
 latex_end = r'''
