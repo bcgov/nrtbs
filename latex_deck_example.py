@@ -15,20 +15,20 @@ def generate_slide_frames(title, filenames1, filenames2, comments=''):
                 comment_str = comments.replace("#","\\#")
                 x = rf'\framesubtitle{{\url{{{comment_str}}}}}' if comments != '' else ''
                 latex_content += rf'''
-    \begin{{frame}}[fragile]{{{title}}}
-        \frametitle{{{title}}}
-        \begin{{columns}}
-            \begin{{column}}{{0.5\textwidth}}
-                \centering
-                \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{file}}}
-            \end{{column}}
-            \begin{{column}}{{0.5\textwidth}}
-                \centering
-                \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{filename}}}
-            \end{{column}}
-        \end{{columns}}
-        {x}
-    \end{{frame}}
+\begin{{frame}}[fragile]{{{title}}}
+    \frametitle{{{title}}}
+    \begin{{columns}}
+        \begin{{column}}{{0.5\textwidth}}
+            \centering
+            \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{file}}}
+        \end{{column}}
+        \begin{{column}}{{0.5\textwidth}}
+            \centering
+            \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{filename}}}
+        \end{{column}}
+    \end{{columns}}
+    {x}
+\end{{frame}}
     '''
 
     return latex_content
@@ -61,7 +61,7 @@ slide_set7 = slide_list[6]
 slide_set8 = slide_list[7]
 # LaTeX preamble and end code
 latex_preamble = r'''
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{array}
