@@ -1,6 +1,6 @@
 import os
 import sys
-from misc import err
+from misc import err, read_hdr, band_names
 
 def envi_header_band_names(args): 
     #print("envi_header_band_names", args)
@@ -356,3 +356,22 @@ def envi_header_cat(args):
         print("+w", args[3])
         f.write('\n'.join(lines2).encode())
         f.close()
+
+def envi_header_copy_bandnames(args):
+    # need to run this first to make sure the band name fields are where we expect!
+    envi_header_cleanup([None, args[1]])
+    envi_header_cleanup([None, args[2]])
+
+
+    samples, lines, bands = read_hdr(args[2])
+    b_n = band_names(args[1]) #  = [x.strip() for x in os.popen("envi_header_band_names.py " + args[1]).readlines()][1:]
+
+
+    print("b_n", b_n)
+    envi_header_modify(['envi_header_modify.py',
+                        args[2],
+                        str(lines),
+                        str(samples),
+                        str(bands)] + ['"' + b.replace(' ', '\\ ') + '"' for b in b_n]) # and_names])
+
+    # err('envi_header_modify.py [.hdr file to modify] [nrow] [ncol] [nband] [band 1 name]... [band n name]')

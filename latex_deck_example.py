@@ -2,7 +2,7 @@
 import os
 from misc import extract_date
 
-def generate_slide_frames(title, filenames1, filenames2):
+def generate_slide_frames(title, filenames1, filenames2, comments=''):
     # Initialize an empty string to accumulate LaTeX code
     latex_content = ''
 
@@ -12,21 +12,23 @@ def generate_slide_frames(title, filenames1, filenames2):
         for file in filenames2:
             if file.split('/')[-1].split('_')[0]== date:
                 slide_number = os.path.splitext(os.path.basename(filename))[0]
+                comment_str = comments.replace("#","\\#")
+                x = rf'\framesubtitle{{\url{{{comment_str}}}}}' if comments != '' else ''
                 latex_content += rf'''
-    \begin{{frame}}[fragile]{{{title}}}
-        \frametitle{{{title}}}
-        \framesubtitle{{End date: {date}}}
-        \begin{{columns}}
-            \begin{{column}}{{0.5\textwidth}}
-                \centering
-                \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{file}}}
-            \end{{column}}
-            \begin{{column}}{{0.5\textwidth}}
-                \centering
-                \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{filename}}}
-            \end{{column}}
-        \end{{columns}}
-    \end{{frame}}
+\begin{{frame}}[fragile]{{{title}}}
+    \frametitle{{{title}}}
+    \begin{{columns}}
+        \begin{{column}}{{0.5\textwidth}}
+            \centering
+            \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{file}}}
+        \end{{column}}
+        \begin{{column}}{{0.5\textwidth}}
+            \centering
+            \includegraphics[width=1.1\linewidth,height=1.3\textheight,keepaspectratio]{{{filename}}}
+        \end{{column}}
+    \end{{columns}}
+    {x}
+\end{{frame}}
     '''
 
     return latex_content
@@ -59,7 +61,8 @@ slide_set7 = slide_list[6]
 slide_set8 = slide_list[7]
 # LaTeX preamble and end code
 latex_preamble = r'''
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
+\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{array}
 \title{BARC}
@@ -78,6 +81,12 @@ latex_preamble = r'''
 	\frametitle{Table of Contents}
 	\tableofcontents % Automatically generates the table of contents
 \end{frame}
+
+\begin{frame}
+    \frametitle{Based on Sasha Nasonova's implementation of BARC}
+    \framesubtitle{\url{https://github.com/SashaNasonova/burnSeverity}}
+    \includegraphics[width=\textwidth]{BARC.png}
+\end{frame}
 '''
 
 latex_end = r'''
@@ -90,7 +99,7 @@ with open('presentation.tex', 'w') as file:
     file.write((latex_preamble + r'''\section{Notebook}''' +
                 generate_slide_frames('BARC classes/ Google Earth Engine/ Full scene + clipped', slide_set5, slide_set6 ) + r'''\section{Comparisons}''' +
                 generate_slide_frames('Local implementation + Google Earth Engine',slide_set6,slide_set8) + r'''\section{Noise reduction}''' + 
-                generate_slide_frames('Local implementation + noise reduction',slide_set7,slide_set8) +
+                generate_slide_frames('Local implementation + noise reduction',slide_set7,slide_set8,'https://github.com/SterlingvonDehn/nrtbs/blob/9f11f558c7910a31977faae5bdcd278d85b8f25c/dNBR.py#L115') +
                 r'''\section{MRAP Data}''' +
                 generate_slide_frames('SWIR + BARC/ time series/ MRAP', slide_set1, slide_set2 ) + r'''\section{L2 Data}''' +
                 generate_slide_frames('SWIR + BARC/ time series/ L2', slide_set3, slide_set4 )
