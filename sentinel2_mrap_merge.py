@@ -4,6 +4,7 @@
 2) create a new mosaic for every date there's new data
 '''
 from misc import sep, args, exists, run, err, parfor, hdr_fn 
+from envi import envi_update_band_names, envi_header_cleanup
 import multiprocessing as mp
 import os
 
@@ -53,10 +54,16 @@ def merge(to_merge, date, out_fn): # files to be merged, output file name
                       '-dstnodata nan',
                       str(date) + '_merge.vrt',
                       out_fn]))
+        
+    envi_header_cleanup(['',hdr_fn(out_fn)])
+    envi_update_band_names(['', 
+                            hdr_fn(to_merge[-1]),
+                            hdr_fn(out_fn)])
 
+'''
     run('fh ' + hdr_fn(out_fn))
     run('envi_header_copy_bandnames.py ' + hdr_fn(to_merge[-1]) + ' ' + hdr_fn(out_fn))
-
+'''
 
 dirs = [x.strip() for x in os.popen('ls -1d L2_*').readlines()]
 gids = [d.split('_')[-1] for d in dirs]

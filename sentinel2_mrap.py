@@ -42,22 +42,19 @@ def extract(file_name):
 
     # write output file
     out_file_name, driver = file_name + '_MRAP.bin', gdal.GetDriverByName('ENVI')
-    if not os.path.exists(out_file_name):
-        print(out_file_name, my_xsize, my_ysize, nbands, gdal.GDT_Float32)
-        stack_ds = driver.Create(out_file_name, my_xsize, my_ysize, nbands, gdal.GDT_Float32)
-        stack_ds.SetProjection(my_proj)
-        stack_ds.SetGeoTransform(my_geo)
+    print(out_file_name, my_xsize, my_ysize, nbands, gdal.GDT_Float32)
+    stack_ds = driver.Create(out_file_name, my_xsize, my_ysize, nbands, gdal.GDT_Float32)
+    stack_ds.SetProjection(my_proj)
+    stack_ds.SetGeoTransform(my_geo)
 
-        for i in range(1, nbands + 1):
-            stack_ds.GetRasterBand(i).WriteArray(my_bands[i])
-        stack_ds = None
+    for i in range(1, nbands + 1):
+        stack_ds.GetRasterBand(i).WriteArray(my_bands[i])
+    stack_ds = None
 
-        run('fh ' + out_file_name)  # fix envi header, then reproduce the band names
-        envi_update_band_names(['envi_update_band_names.py', 
-                                hdr_fn(file_name),
-                                hdr_fn(out_file_name)])
-    else:
-        print(out_file_name, 'exists [SKIP WRITE]')
+    envi_header_cleanup(['',out_file_name])
+    envi_update_band_names(['', 
+                            hdr_fn(file_name),
+                            hdr_fn(out_file_name)])
 
 def run_mrap(gid):  # run MRAP on one tile
     if True:
@@ -76,9 +73,12 @@ def run_mrap(gid):  # run MRAP on one tile
             gid = line.split("_")[5]
             extract("L2_" +  gid + os.path.sep + line)
 
+
         print("check sorting order")
         for line in lines:
             print("mrap " + line)
+            
+        
 
 
 if __name__ == "__main__":
