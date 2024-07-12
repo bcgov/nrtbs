@@ -1,7 +1,10 @@
-'''20220814 subset image with GDAL, cleanup ENVI header
 '''
-from misc import run, err, exist, args
-from envi import envi_header_cleanup, envi_header_copy_bandnames
+20240712 subset image with GDAL, cleanup ENVI header
+Called on a file or file directory.
+will trim all files in directory
+'''
+from misc import run, err, args
+from envi import envi_header_copy_bandnames
 import os
 
 def cut(fn, A, B, C, D):
@@ -9,7 +12,7 @@ def cut(fn, A, B, C, D):
     out_fn = f'{fn.strip(".bin")}_cut.bin'
     out_fn_hdr = f'{fn.strip(".bin")}_cut.hdr'
 
-    run(f'gdal_translate -of ENVI -ot Float32 -srcwin { (" ".join([A, B, C, D]))} {fn} {out_fn}')  # output file
+    run(f'gdal_translate -of ENVI -ot Float32 -srcwin { (" ".join([A, B, C, D]))} {fn} {out_fn}')  # cuting file
 
     envi_header_copy_bandnames(['',fn[:-4] + '.hdr', out_fn_hdr])
     

@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
-from dNBR import NBR
 from  misc import read_binary
 
 def data(start_file,end_file):
@@ -21,7 +20,6 @@ def data(start_file,end_file):
     USE_NTH = 10
     label = []
     colors = []
-    #data1 = np.zeros((width*height, 4))
     for pixle in range(width*height):
         if pixle % USE_NTH == 0: #only selecting every NTH point
             prebands = []
@@ -45,7 +43,7 @@ def data(start_file,end_file):
                 label.append('high')
                 colors.append('red')
         else:
-            continue;
+            continue
     return [np.array(data),label,colors]
 
 def create_tsne_embedding(data, n_components=2):
@@ -89,12 +87,9 @@ data = data('L2/small/S2B_MSIL2A_20210626T185919_N0300_R013_T10UFB_20210626T2110
 data_4d = data[0]
 label = data[1]
 colors = data[2]
-#print(data.shape)
 
 tsne_2d = create_tsne_embedding(data_4d)
 
-# Optionally, create some labels for the data points
-#labels = np.random.choice(['Class 1', 'Class 2', 'Class 3'], size=100)
-
 # Plot the t-SNE embedding
 plot_tsne_embedding(tsne_2d,label,colors)
+

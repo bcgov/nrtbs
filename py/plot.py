@@ -1,9 +1,9 @@
-from misc import exist, read_hdr, read_float, hdr_fn, read_binary, extract_date
+from misc import read_binary, extract_date
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 import os
-import datetime
+
 
 def scale(X):
     # default: scale a band to [0, 1]  and then clip
@@ -39,7 +39,7 @@ def plot(file_dir,title='No title given'):
         if files[n].split('.')[-1] == 'bin':
             file_list.append(files[n])
         else:
-            continue;
+            continue
     
 
     sorted_file_names = sorted(file_list, key=extract_date) #sorting
@@ -67,7 +67,6 @@ def plot(file_dir,title='No title given'):
             image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
             
             plt.figure(figsize=(15,15)) #setting figure parameters
-            imratio = height/width
             plt.imshow(image) #Plotting the image
             plt.title(f'{title} on {date}, bands: r=B12, g=B11, b=B09')
             plt.xlabel(sorted_file_names[n])
@@ -109,7 +108,7 @@ def plot(file_dir,title='No title given'):
             plt.savefig(f'images/{date}_image.png')
             plt.clf()
             
-            '''
+            
             plt.imshow(NBR, cmap='Greys') #Plotting the NBR
             plt.title(f'NBR of {title} on {date}')
             plt.colorbar(fraction=0.04525*imratio)     
@@ -132,4 +131,27 @@ def plot(file_dir,title='No title given'):
                 plt.tight_layout()
                 plt.savefig(f'dNBR/{date}_{sorted_file_names[n]}.png') 
                 plt.clf()
-            '''
+            
+            
+def plot_image(file):
+    '''
+    calculates the plottable data for the sortwave infared of the given file
+    '''
+    vals = read_binary(file) #reading each file
+    data = vals[3]
+    width = vals[0]
+    height = vals[1]
+    bands = vals[2]
+    B12 = np.zeros((height,width))
+    B11 = np.zeros((height,width))
+    B09 = np.zeros((height,width))
+    for i in range(height):
+        for j in range(width):
+            B12[i][j] = data[width*height*0 + width*i+j] #updating band data for each of the 4 bands
+            B11[i][j] = data[width*height*1 + width*i+j]
+            B09[i][j] = data[width*height*2 + width*i+j]
+    band1 = scale(B12) #scaling bands for plotting
+    band2 = scale(B11)
+    band3 = scale(B09)
+    image = np.stack([band1,band2,band3], axis=2)
+    return image

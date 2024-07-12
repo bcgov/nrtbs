@@ -1,15 +1,12 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import numpy as np
 from plot import plot_image
 
 def plot_image_with_rectangle(file):
     """
     Plots an image and allows the user to draw a rectangle on the image.
     Displays the rectangle's position and dimensions.
-    
-    Parameters:
-    - image: A 2D or 3D NumPy array representing the image to display.
+    Takes a bin file name
     """
 
     # Create a figure and axis for the plot
@@ -17,7 +14,7 @@ def plot_image_with_rectangle(file):
 
     # Display the image
     image = plot_image(file)
-    ax.imshow(image)
+    ax.imshow(image) # plot initial image
 
     # Initialize variables to store the rectangle's position
     rect = None
