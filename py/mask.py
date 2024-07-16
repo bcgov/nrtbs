@@ -1,7 +1,6 @@
-from misc import exist, read_hdr, read_float, hdr_fn, read_binary, extract_date
+from misc import read_binary, extract_date
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 import os
 from dNBR import dNBR, NBR
 from operator import add, sub
@@ -13,8 +12,6 @@ def burnmask(start_file,end_file,threshold):
     >>>burnmask('raster_data/small/S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin', 'raster_data/small/S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin')
     '''
     vals = read_binary(start_file)
-    width = vals[0]
-    height = vals[1]
     dnbr = dNBR(start_file,end_file)
     mask = dnbr >= threshold
 
@@ -39,7 +36,7 @@ def param_plots(file_dir,threshold):
         if files[n].split('.')[-1] == 'bin':
             file_list.append(files[n])
         else:
-            continue;
+            continue
         
     sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
 
@@ -98,7 +95,7 @@ def burn_unburn(file_dir):
         if files[n].split('.')[-1] == 'bin':
             file_list.append(files[n])
         else:
-            continue;
+            continue
         
     sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
     
@@ -127,12 +124,3 @@ def burn_unburn(file_dir):
         plt.imshow(burned,cmap='grey') 
         plt.savefig(f'{date}.png')
         
-#and dnbr[i][j] > 0.1 
-# if (nbrs[frame][i][j] - nbrs[frame-2][i][j]) < -0.35 and -500 < (b11s[frame][i][j] - b11s[frame-1][i][j]) < 500 and b12s[frame][i][j] > 100 and (b8s[frame][i][j] - b8s[frame-1][i][j]) < 0:
-
-'''
-nbrav = (nbrs[frame][i][j:j+5].sum() + nbrs[frame][i+1][j:j+5].sum() + nbrs[frame][i+2][j:j+5].sum() + nbrs[frame][i+3][j:j+5].sum() + nbrs[frame][i+4][j:j+5].sum() + nbrs[frame][i+5][j:j+5].sum())/25
-                
-                nbrav2 = (nbrs[frame-1][i][j:j+5].sum() + nbrs[frame-1][i+1][j:j+5].sum() + nbrs[frame-1][i+2][j:j+5].sum() + nbrs[frame-1][i+3][j:j+5].sum() + nbrs[frame-1][i+4][j:j+5].sum() + nbrs[frame-1][i+5][j:j+5].sum())/25
-                if (nbrav - nbrav2) < -0.3:
-'''

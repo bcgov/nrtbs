@@ -8,6 +8,7 @@ import math
 from misc import extract_date
 import os
 
+# plot parameters
 fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6)) = plt.subplots(3, 2, figsize=(15,8))
 clicks = []
 plot_colors = ['b','r','y','k','c','m']
@@ -28,7 +29,7 @@ def interactive_time_serise(file_dir_list,plot_type:str('image or nbr'), width):
             if files[n].split('.')[-1] == 'bin':
                 file_list.append(files[n])
             else:
-                continue;
+                continue
         sorted_file_names = sorted(file_list, key=extract_date) #sorting files by date
         file_arr.append(sorted_file_names)
 

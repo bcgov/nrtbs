@@ -11,17 +11,19 @@ def Download_URLs_from_tileID_and_date_range(tile_id, start_date, end_date):
     x = open('index.csv:PRODUCT_ID.txt', 'r').read().split('\n')
     y = open('index.csv:BASE_URL.txt', 'r').read().split('\n')
     z = open('index.csv:CLOUD_COVER', 'r').read().split('\n')
-    #x = [x[i].strip() for i in range(len(x))]
+    # searching for valid frames
     matches = []
     for i in range(len(x)-1):
         date = x[i+1].split('_')[2].split('T')[0]
         if date == 'PRD':
-            continue;
-        if x[i+1].split('_')[5] == tile_id and start_date < int(date) < end_date and float(z[i+1]) <= 10:
+            continue
+        if x[i+1].split('_')[5] == tile_id and start_date <= int(date) <= end_date and float(z[i+1]) <= 10:
             print(z[i+1])
             matches += [i+1]
     if len(matches) == 0:
         print('No suitible frames in date range')
+        
+    #extracting data for valid mathces
     for i in matches:
         ID.append(x[i])
         URL.append(y[i])

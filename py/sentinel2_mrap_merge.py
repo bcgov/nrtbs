@@ -4,12 +4,14 @@
 2) create a new mosaic for every date there's new data
 '''
 from misc import sep, args, exists, run, err, parfor, hdr_fn 
+from envi import envi_update_band_names, envi_header_cleanup
 import multiprocessing as mp
 import os
 
 EPSG = 3005 if len(args) < 2 else 3347  # BC Albers / Canada LCC
 
 merge_dates = None
+
 if exists('.mrap_merge_dates'):
     merge_dates = [x.strip() for x in open('.mrap_merge_dates').readlines()]
 
@@ -31,6 +33,7 @@ def resample(fn):
     else:
         return ['', ofn]
 
+
 def merge(to_merge, date, out_fn): # files to be merged, output file name
     if not exists(str(date) + '_merge.vrt'):
         run(' '.join(['gdalbuildvrt',
@@ -38,10 +41,10 @@ def merge(to_merge, date, out_fn): # files to be merged, output file name
                       '-vrtnodata nan',
                       '-resolution highest',
                       '-overwrite',
-                      str(date) + '_merge.vrt',
+                      'merge/' +  str(date) + '_merge.vrt',
                       ' '.join(to_merge)]))
 
-    if not exists(out_fn):
+    if not exists(f'merge/{out_fn}'):
         run(' '.join(['gdalwarp',
                       '-wo NUM_THREADS=16',
                       '-multi',
@@ -51,12 +54,18 @@ def merge(to_merge, date, out_fn): # files to be merged, output file name
                       '-ot Float32',
                       '-srcnodata nan',
                       '-dstnodata nan',
-                      str(date) + '_merge.vrt',
-                      out_fn]))
+                      'merge/' + str(date) + '_merge.vrt',
+                      f'merge/{out_fn}']))
+        
+    envi_header_cleanup(['',hdr_fn(f'merge/{out_fn}')])
+    envi_update_band_names(['', 
+                            hdr_fn(to_merge[-1]),
+                            hdr_fn(f'merge/{out_fn}')])
 
+'''
     run('fh ' + hdr_fn(out_fn))
     run('envi_header_copy_bandnames.py ' + hdr_fn(to_merge[-1]) + ' ' + hdr_fn(out_fn))
-
+'''
 
 dirs = [x.strip() for x in os.popen('ls -1d L2_*').readlines()]
 gids = [d.split('_')[-1] for d in dirs]

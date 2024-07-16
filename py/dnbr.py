@@ -1,9 +1,8 @@
-from misc import err, exist, read_hdr, read_float, hdr_fn, read_binary, extract_date, write_binary, write_hdr
+from misc import err, read_binary, extract_date
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import os
-import datetime
 
 def nbr_full(file_name):
     """
@@ -16,7 +15,8 @@ def nbr_full(file_name):
     band_names = ['B1','B2','B3','B4','B5','B6','B7','B8A','B08','B09','B11','B12']
     for b in band_names:
         exec(f"{b} = np.zeros(({height}, {width}))", globals())
-        
+    
+    # extracts band values into 2D arrays
     for i in range(height):
         for j in range(width):
             B12[i][j] = data[width*height*11 + width*i+j]
@@ -36,18 +36,11 @@ def nbr_full(file_name):
     NDVI = (B08 - B4)/(B08 + B4)#calculating NDVI
     
     nbrswir = (B11-B12-0.02)/(B11+B12+0.1)
-    date  = file_name.split('_')[2].split('T')[0]
-    '''
-    plt.figure(figsize=(15,15))
-    plt.imshow(NDVI, cmap='Greys')
-    plt.title(f'NBR of Sparks Lake fire on {date}')
-    plt.tight_layout()
-    plt.colorbar()
-    '''
+
     return [B1,B2,B3,B4,B5,B6,B7,B8A,B08,B09,B11,B12,NBR,NDVI,nbrswir, height,width]
             
 
-def NBR(file_name):
+def NBR(file_name, harmonized=True):
     '''
     Takes binary file and returns the band values as well as the NBR.
     >>> NBR('S2A_MSIL1C_20210902T190911_N0301_R056_T10UFB_20210902T225534.bin')
@@ -57,11 +50,9 @@ def NBR(file_name):
     width = vals[0]
     height = vals[1]
     band_names = ['B08_unscal','B09_unscal','B11_unscal','B12_unscal']
-    file = file_name.split('/')[-1]
-    date = extract_date(file)
     for b in band_names:
         exec(f"{b} = np.zeros(({height}, {width}))", globals())
-        
+    
     for i in range(height):
         for j in range(width):
             B12_unscal[i][j] = data[width*height*0 + width*i+j]
@@ -69,7 +60,7 @@ def NBR(file_name):
             B09_unscal[i][j] = data[width*height*2 + width*i+j]
             B08_unscal[i][j] = data[width*height*3 + width*i+j]
             
-    if int(date) >= 20220125:  # applying scaling factor to dates past 2022-01-25
+    if harmonized:  # applying scaling factor to harmonized data
         B12 = (B12_unscal-1000)
         B11 = (B11_unscal-1000)
         B09 = (B09_unscal-1000)
@@ -82,14 +73,7 @@ def NBR(file_name):
     
     NBR = (B08-B12)/(B08+B12)
     nbrswir = (B11-B12-0.02)/(B11+B12+0.1)
-    
-    '''
-    plt.figure(figsize=(15,15))
-    plt.imshow(NDVI, cmap='Greys')
-    plt.title(f'NBR of Sparks Lake fire on {date}')
-    plt.tight_layout()
-    plt.colorbar()
-    '''
+
     return [B12,B11,B09,B08,NBR,height,width,nbrswir]
             
             
@@ -109,7 +93,6 @@ def dNBR(start_frame, end_frame):
     preswir = predata[7]
     postswir = postdata[7]
     dNBR = preNBR - postNBR #calculating dNBR
-    rdnbr = dNBR/(np.sqrt(abs(preNBR))) #calculating RdNBR
     dNBRSWIR = preswir - postswir # calculating dNBRSWIR
     
     #removing water and some noise
@@ -118,7 +101,7 @@ def dNBR(start_frame, end_frame):
             if predata[0][i][j] <= 100 or dNBRSWIR[i][j] < 0.1:
                 dNBR[i][j] = 0
             else:
-                continue;
+                continue
 
     return dNBR
 
@@ -157,10 +140,8 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not gi
     med_per = round(100*med_tot/tot,1)
     high_per = round(100*high_tot/tot,1)
     
-    #write_binary(class_plot,'BARC_sparks.bin')
-    #write_hdr('BARC_sparks.hdr', len(class_plot[0]), len(class_plot), 1)
     #plotting
-    cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])   #plotting
+    cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])
     plt.figure(figsize=(15,15))
     plt.imshow(class_plot,vmin=0,vmax=3,cmap=cmap)
     plt.title(f'BARC 256 burn severity, start date:{start_date}, end date:{end_date}')
@@ -169,7 +150,6 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not gi
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Medium {med_per}%',color='orange')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'High {high_per}%',color='red')
     plt.legend(fontsize="20")
-    #plt.show()
     plt.tight_layout()
     plt.savefig(f'{title}_BARC_classification.png')
 
@@ -186,17 +166,17 @@ def time_series(directory,given_date,format=''):
         if files[n].split('.')[-1] == 'bin':
             file_list.append(files[n])
         else:
-            continue;
+            continue
 
     sorted_file_names = sorted(file_list, key=extract_date)
     
     for i in range(len(sorted_file_names)):
         if extract_date(sorted_file_names[i]) == str(given_date):
             index = i
-            break;
+            break
         else:
             index = None
-            continue;
+            continue
     if index == None:
         err('Invalid start date')
     start_file = sorted_file_names[index]

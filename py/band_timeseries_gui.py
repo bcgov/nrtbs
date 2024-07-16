@@ -7,21 +7,6 @@ import numpy as np
 import math
 from misc import extract_date
 import os
-filenames = ['S2B_MSIL1C_20210626T185919_N0300_R013_T10UFB_20210626T211041.bin',
-             'S2B_MSIL1C_20210629T190919_N0300_R056_T10UFB_20210629T212050.bin',
-             'S2A_MSIL1C_20210701T185921_N0301_R013_T10UFB_20210701T223921.bin',
-             'S2B_MSIL1C_20210709T190919_N0301_R056_T10UFB_20210709T224644.bin',
-             'S2A_MSIL1C_20210714T190921_N0301_R056_T10UFB_20210714T225634.bin',
-             'S2B_MSIL1C_20210719T190919_N0301_R056_T10UFB_20210719T212141.bin',
-             'S2A_MSIL1C_20210724T190921_N0301_R056_T10UFB_20210724T230122.bin',
-             'S2B_MSIL1C_20210726T185919_N0301_R013_T10UFB_20210726T211239.bin',
-             'S2B_MSIL1C_20210729T190919_N0301_R056_T10UFB_20210729T212314.bin',
-             'S2A_MSIL1C_20210803T190921_N0301_R056_T10UFB_20210803T224926.bin',
-             'S2B_MSIL1C_20210805T185919_N0301_R013_T10UFB_20210805T211134.bin',
-             'S2A_MSIL1C_20210813T190921_N0301_R056_T10UFB_20210813T224901.bin',
-             'S2A_MSIL1C_20210902T190911_N0301_R056_T10UFB_20210902T225534.bin',
-             'S2B_MSIL1C_20210907T190929_N0301_R056_T10UFB_20210907T224046.bin']
-
 
 fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6)) = plt.subplots(3, 2, figsize=(15,8))
 clicks = []
@@ -29,6 +14,7 @@ plot_colors = ['b','r','y','k','c','m']
 
 def interactive_time_serise(file_dir,plot_type:str('image or nbr'), width):
     '''
+    takes a directory with bin files, an image type, and a square width and creates an interactive plot which allows the user to see band values inside a square as a time series
     '''
     #extracting bin files
     files = os.listdir(file_dir)
@@ -46,7 +32,7 @@ def interactive_time_serise(file_dir,plot_type:str('image or nbr'), width):
     
     global square_width
     square_width = width
-    
+    #selecting image type
     if plot_type == 'image':
         data = NBR(f'{file_dir}/{sorted_file_names[-1]}')
         image = np.stack([scale(data[0]),scale(data[1]),scale(data[2])], axis=2)
@@ -103,12 +89,6 @@ def param_plots(clicks, width):
 
     plt.tight_layout()
     plt.show()
-'''
-def gui(file,file_type):
-    data = NBR(file)
-    if file_type == 'B12':
-    ax1.imshow(nbr[4], cmap='grey')
-'''
 
 def on_click(event):
     print(f"Clicked at: {event.xdata}, {event.ydata}")
@@ -145,5 +125,3 @@ def scale(X):
         X = (X-mymin) / (mymax - mymin)  # perform the linear transformation
     
     return X
-
-

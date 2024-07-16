@@ -7,20 +7,21 @@ import struct
 import datetime
 import numpy as np
 import os.path as path
-import osgeo
 
-try:
-    from osgeo import gdal
-except:
-    print("Error: please install python/gdal:")
-    print("To install GDAL python interface:")
-    print("    python3 -m pip install GDAL")
-    print("Mac:")
-    print("    sudo port install gdal")
-    print("Linux:")
-    print("    sudo apt install libgdal-dev gdal-bin")
-    sys.exit(1)
+def use_gdal():
+    import osgeo
 
+    try:
+        from osgeo import gdal
+    except:
+        print("Error: please install python/gdal:")
+        print("To install GDAL python interface:")
+        print("    python3 -m pip install GDAL")
+        print("Mac:")
+        print("    sudo port install gdal")
+        print("Linux:")
+        print("    sudo apt install libgdal-dev gdal-bin")
+        sys.exit(1)
 
 import multiprocessing as mp
 
@@ -391,9 +392,13 @@ def utc_to_pst(YYYY, MM, DD, hh, mm, ss, single_string=True):
 def write_band_gtiff(output_data,  # 2d numpy array
                      ref_dataset, # gdal dataset to copy map info from
                      output_fn,  # output filename to write
-                     gdal_datatype=gdal.GDT_Float32):  # output datatype
+                     gdal_datatype=None): # gdal.GDT_Float32):  # output datatype
+    use_gdal()
+    if gdal_datatype == None:
+        gdal_datatype = gdal.GDT_Float32
+
     print('+w', output_fn)
-    from osgeo import gdal
+    # from osgeo import gdal
     driver = gdal.GetDriverByName("GTiff")
     rows, cols = output_data.shape  # assumed one-band
     outd = driver.Create(output_fn, cols, rows, 1, gdal_datatype)

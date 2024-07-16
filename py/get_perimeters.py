@@ -5,6 +5,9 @@ import zipfile
 import ssl
 import certifi
 
+'''
+Downloads the current fire perimeters as a zip file
+'''
 # Create a timestamp for the backup filename
 t = datetime.datetime.now().strftime("%Y%m%d%H%M")
 
