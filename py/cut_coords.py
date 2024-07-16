@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from plot import plot_image
+# from misc import args
+import sys
+args = sys.argv
 
 def plot_image_with_rectangle(file):
     """
@@ -14,8 +17,8 @@ def plot_image_with_rectangle(file):
 
     # Display the image
     image = plot_image(file)
+    print(image)
     ax.imshow(image) # plot initial image
-
     # Initialize variables to store the rectangle's position
     rect = None
     start_x = start_y = 0
@@ -67,4 +70,8 @@ def plot_image_with_rectangle(file):
     fig.canvas.mpl_connect('button_release_event', on_mouse_release)
 
     # Show the plot
+    print('Show')
     plt.show()
+
+# if __name__ == "__main__":
+#     plot_image_with_rectangle(args[1])

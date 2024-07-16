@@ -147,9 +147,18 @@ def plot_image(file):
     B09 = np.zeros((height,width))
     for i in range(height):
         for j in range(width):
-            B12[i][j] = data[width*height*0 + width*i+j] #updating band data for each of the 4 bands
-            B11[i][j] = data[width*height*1 + width*i+j]
-            B09[i][j] = data[width*height*2 + width*i+j]
+            if np.isnan(data[width*height*0 + width*i+j]):
+                B12[i][j] = 0
+            else:
+                B12[i][j] = data[width*height*1 + width*i+j] #updating band data for each of the 4 bands
+            if np.isnan(data[width*height*0 + width*i+j]):
+                B11[i][j] = 0
+            else:
+                B11[i][j] = data[width*height*1 + width*i+j]
+            if np.isnan(data[width*height*2 + width*i+j]):
+                B12[i][j] = 0
+            else:
+                B09[i][j] = data[width*height*2 + width*i+j]
     band1 = scale(B12) #scaling bands for plotting
     band2 = scale(B11)
     band3 = scale(B09)
