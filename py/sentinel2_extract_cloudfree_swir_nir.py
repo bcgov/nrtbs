@@ -174,13 +174,12 @@ def extract_cloudfree(file_name):
     hdr_b = hdr_f + '.bak'
     for f in [xml_f, hdr_b]:
         if os.path.exists(f):
-            os.remove(f)
-            
-    if not os.path.exists(pd + 'raster_zero_to_nan'):
-        run(f'g++ {pd}raster_zero_to_nan.cpp {pd}misc.cpp -O3 -o {pd}raster_zero_to_nan')
-        run(f'chmod 777 {pd}raster_zero_to_nan')
+            os.remove(f)    
+    if not os.path.exists('/' + pd.strip('/py') + '/cpp' + 'raster_zero_to_nan'):
+        run(f'g++ /{pd.strip("/py")}/cpp/raster_zero_to_nan.cpp /{pd.strip("/py")}/cpp/misc.cpp -O3 -o /{pd.strip("/py")}/cpp/raster_zero_to_nan')
+        run(f'chmod 777 /{pd.strip("/py")}/cpp/raster_zero_to_nan')
     try:
-        run(f'{pd}raster_zero_to_nan ' + stack_fn)
+        run(f'/{pd.strip("/py")}/cpp/raster_zero_to_nan ' + stack_fn)
     except:
         print('run raster zero to nan failed')
 

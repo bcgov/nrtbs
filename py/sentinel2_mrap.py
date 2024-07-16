@@ -13,6 +13,7 @@ import numpy as np
 import copy
 import sys
 import os
+import shutil
 
 my_bands, my_proj, my_geo, my_xsize, my_ysize, nbands, file_name  = {}, None, None, None, None, None, None
 
@@ -51,10 +52,21 @@ def extract(file_name):
         stack_ds.GetRasterBand(i).WriteArray(my_bands[i])
     stack_ds = None
 
-    envi_header_cleanup(['',out_file_name])
-    envi_update_band_names(['', 
-                            hdr_fn(file_name),
-                            hdr_fn(out_file_name)])
+    hdr_file = f'{file_name[:-4]}.hdr'
+    out_hdr_name = f'{out_file_name[:-4]}.hdr'
+
+    
+    # Create the full path for the new file
+
+    # Copy the file
+    shutil.copy2(hdr_file, out_hdr_name)
+
+    # print(f'File name: {file_name}!!!!!!!!!!!!!!')
+    # print(f'Out file: {out_file_name}!!!!!!!!!!!!!!!!!')
+    # #envi_header_cleanup(['',out_file_name])
+    # envi_update_band_names(['', 
+    #                         hdr_fn(file_name),
+    #                         hdr_fn(out_file_name)])
 
 def run_mrap(gid):  # run MRAP on one tile
     if True:
