@@ -12,7 +12,7 @@ EPSG = 3005 if len(args) < 2 else 3347  # BC Albers / Canada LCC
 
 merge_dates = None
 
-if not exists('merge'):  # create output folder if necessary
+if not exists('merge'):
     os.mkdir('merge')
 
 if exists('.mrap_merge_dates'):
