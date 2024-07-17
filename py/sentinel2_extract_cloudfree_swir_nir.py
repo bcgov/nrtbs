@@ -1,8 +1,7 @@
 '''20230605 modified from sentinel2_extract_swir.py
-
-This script takes sentinel-2 .zip files as input.
-
-.bin files are produced "as usual", with the exception that NAN is included for "undesirable" data areas, according to the Sentinel-2 (level-2) class map. 
+This script takes sentinel-2 .zip files as input. ENVI-format  .bin files are produced "as usual", 
+with the exception that NAN is included for "undesirable" data areas,
+according to "undesirable" data areas we select from the Sentinel-2 (level-2) class map. 
 '''
 from misc import err, args, exist, run, parfor, get_pd
 from envi import envi_header_cleanup
@@ -14,7 +13,7 @@ import os
 pd = get_pd()
 
 def extract_cloudfree(file_name):
-    w = file_name.split('_')  # split filename on '_'
+    w = file_name.split(os.path.sep)[-1].split('_')  # split filename on '_'
     ds = w[2].split('T')[0]  # date string
     stack_fn = '.'.join(file_name.split('.')[:-1]) + '_cloudfree.bin' # output stack filename
 
@@ -181,12 +180,10 @@ def extract_cloudfree(file_name):
     try:
         run(f'/{pd.strip("/py")}/cpp/raster_zero_to_nan ' + stack_fn)
     except:
-        print('run raster zero to nan failed')
+        err('run raster zero to nan failed')
 
 
-
-if __name__ == "__main__":
-    
+if __name__ == "__main__":   
     file_name = None
     if len(args) == 2:
         file_name = args[1]
@@ -210,7 +207,6 @@ if __name__ == "__main__":
         for f in files:
             print(f)
         parfor(extract_cloudfree, files, int(mp.cpu_count())) 
-
 
 '''
 Table 3: SCL bit values
