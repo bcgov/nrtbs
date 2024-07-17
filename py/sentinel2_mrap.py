@@ -15,10 +15,10 @@ import sys
 import os
 import shutil
 
-my_bands, my_proj, my_geo, my_xsize, my_ysize, nbands, file_name  = {}, None, None, None, None, None, None
+my_bands_gid, my_proj_gid, my_geo_gid, my_xsize_gid, my_ysize_gid, nbands_gid = {}, {}, {}, {}, {}, {} 
 
-def extract(file_name):
-    global my_proj, my_geo, my_bands, my_xsize, my_ysize, nbands
+def extract(file_name, gid):
+    global my_bands_gid, my_proj_gid, my_geo_gid, my_xsize_gid, my_ysize_gid, nbands_gid
     print("+r", file_name)
     d = gdal.Open(file_name)  # open the file brought in for this update step
     
@@ -26,39 +26,49 @@ def extract(file_name):
         band = d.GetRasterBand(i)
         new_data = band.ReadAsArray().astype(np.float32)
         
-        if i not in my_bands:  #initialize the band / first time
-            my_bands[i] = new_data # new data for this band becomes the band
+        if gid not in my_bands_gid:
+            my_bands_gid[gid] = {}
+            my_proj_gid[gid] = None
+            my_geo_gid[gid] = None
+            my_xsize_gid[gid] = None
+            my_ysize_gid[gid] = None
+
+        if i not in my_bands_gid[gid]:  #initialize the band / first time
+            my_bands_gid[gid][i] = new_data # new data for this band becomes the band
         else:
-            nans, update = np.isnan(new_data), copy.deepcopy(my_bands[i])  # forgot copy before?
+            nans, update = np.isnan(new_data), copy.deepcopy(my_bands_gid[gid][i])  # forgot copy before?
             update[~nans] = new_data[~nans]
-            my_bands[i] = update
+            my_bands_gid[gid][i] = update
             # my_bands[i][~nans] = new_data[~nans]
 
-    my_proj = d.GetProjection() if my_proj == None else my_proj
-    my_geo = d.GetGeoTransform() if my_geo is None else my_geo
-    if my_xsize is None:
-        my_xsize, my_ysize, nbands = d.RasterXSize, d.RasterYSize, d.RasterCount 
+    my_proj_gid[gid] = d.GetProjection() if my_proj_gid[gid] == None else my_proj_gid[gid]
+    my_geo_gid[gid] = d.GetGeoTransform() if my_geo_gid[gid] is None else my_geo_gid[gid]
+    if my_xsize_gid[gid] is None:
+        my_xsize_gid[gid], my_ysize_gid[gid], nbands_gid[gid] = d.RasterXSize, d.RasterYSize, d.RasterCount 
 
     d = None  # close input file brought in for this update step
 
     # write output file
     out_file_name, driver = file_name + '_MRAP.bin', gdal.GetDriverByName('ENVI')
-    print(out_file_name, my_xsize, my_ysize, nbands, gdal.GDT_Float32)
-    stack_ds = driver.Create(out_file_name, my_xsize, my_ysize, nbands, gdal.GDT_Float32)
-    stack_ds.SetProjection(my_proj)
-    stack_ds.SetGeoTransform(my_geo)
+    print(out_file_name, my_xsize_gid[gid], my_ysize_gid[gid], nbands_gid[gid], gdal.GDT_Float32)
 
-    for i in range(1, nbands + 1):
-        stack_ds.GetRasterBand(i).WriteArray(my_bands[i])
+    stack_ds = driver.Create(out_file_name,
+                             my_xsize_gid[gid],
+                             my_ysize_gid[gid],
+                             nbands_gid[gid],
+                             gdal.GDT_Float32)
+    
+    stack_ds.SetProjection(my_proj_gid[gid])
+    stack_ds.SetGeoTransform(my_geo_gid[gid])
+
+    for i in range(1, nbands_gid[gid] + 1):
+        stack_ds.GetRasterBand(i).WriteArray(my_bands_gid[gid][i])
     stack_ds = None
 
     hdr_file = f'{file_name[:-4]}.hdr'
     out_hdr_name = f'{out_file_name[:-4]}.hdr'
-
     
-    # Create the full path for the new file
-
-    # Copy the file
+    # Copy the file..anything lost by doing this?
     shutil.copy2(hdr_file, out_hdr_name)
 
     # print(f'File name: {file_name}!!!!!!!!!!!!!!')
@@ -70,7 +80,7 @@ def extract(file_name):
 
 def run_mrap(gid):  # run MRAP on one tile
     if True:
-        # look for all the dates in this tile's folder and sort them in aquisition time
+        # look for all the dates in this tile's folder and sort on aquisition time
         
         def get_filename_lines(search_cmd):
             lines = [x.strip() for x in os.popen(search_cmd).readlines()]
@@ -83,14 +93,11 @@ def run_mrap(gid):  # run MRAP on one tile
 
         for line in lines:
             gid = line.split("_")[5]
-            extract("L2_" +  gid + os.path.sep + line)
-
+            extract("L2_" +  gid + os.path.sep + line, gid)
 
         print("check sorting order")
         for line in lines:
             print("mrap " + line)
-            
-        
 
 
 if __name__ == "__main__":
@@ -108,8 +115,12 @@ if __name__ == "__main__":
             # should run on this frame here. 
             # but check for cloud-free data first
         # err("python3 sentinel2_mrap.py [sentinel-2 gid] # [optional: yyyymmdd 'maxdate' parameter] ")
-        def f(fn):
-            run_mrap(fn)
+        
+        # run mrap on one tile
+        def f(gid):
+            run_mrap(gid)
+
+        # run mrap in parallel (by tile)
         parfor(f, gids, int(mp.cpu_count()))
     else:
         run_mrap(args[1])  # single tile mode: no mosaicing

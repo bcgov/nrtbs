@@ -1,7 +1,8 @@
 '''20230605 modified from sentinel2_extract_swir.py
-This script takes sentinel-2 .zip files as input. ENVI-format  .bin files are produced "as usual", 
-with the exception that NAN is included for "undesirable" data areas,
-according to "undesirable" data areas we select from the Sentinel-2 (level-2) class map. 
+
+This script takes sentinel-2 .zip files as input.
+
+.bin files are produced "as usual", with the exception that NAN is included for "undesirable" data areas, according to the Sentinel-2 (level-2) class map. 
 '''
 from misc import err, args, exist, run, parfor, get_pd
 from envi import envi_header_cleanup
@@ -11,6 +12,7 @@ import numpy as np
 import sys
 import os
 pd = get_pd()
+sep = os.path.sep
 
 def extract_cloudfree(file_name):
     w = file_name.split(os.path.sep)[-1].split('_')  # split filename on '_'
@@ -173,17 +175,17 @@ def extract_cloudfree(file_name):
     hdr_b = hdr_f + '.bak'
     for f in [xml_f, hdr_b]:
         if os.path.exists(f):
-            os.remove(f)    
-    if not os.path.exists('/' + pd.strip('/py') + '/cpp' + 'raster_zero_to_nan'):
-        run(f'g++ /{pd.strip("/py")}/cpp/raster_zero_to_nan.cpp /{pd.strip("/py")}/cpp/misc.cpp -O3 -o /{pd.strip("/py")}/cpp/raster_zero_to_nan')
-        run(f'chmod 777 /{pd.strip("/py")}/cpp/raster_zero_to_nan')
-    try:
-        run(f'/{pd.strip("/py")}/cpp/raster_zero_to_nan ' + stack_fn)
-    except:
-        err('run raster zero to nan failed')
+            os.remove(f)
+    exe_file = sep.join(pd.rstrip(os.path.sep).split(sep)[:-1] + ['cpp']) + sep + 'raster_zero_to_nan'  
+
+    if not exist(exe_file):
+        run(f'g++ /{pd.strip("/py")}/cpp/raster_zero_to_nan.cpp /{pd.strip("/py")}/cpp/misc.cpp -O3 -o {exe_file}')
+        run(f'chmod 777 {exe_file}') # /{pd.strip("/py")}/cpp/raster_zero_to_nan')
+    run(f'{exe_file} {stack_fn}')
 
 
-if __name__ == "__main__":   
+if __name__ == "__main__":
+    
     file_name = None
     if len(args) == 2:
         file_name = args[1]
@@ -207,6 +209,7 @@ if __name__ == "__main__":
         for f in files:
             print(f)
         parfor(extract_cloudfree, files, int(mp.cpu_count())) 
+
 
 '''
 Table 3: SCL bit values
