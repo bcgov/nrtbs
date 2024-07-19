@@ -2,18 +2,27 @@ import numpy as np
 
 from misc import run, args
 from check_tile_id import check_tile_id
+from cut_coords import plot_image_with_rectangle
 import os
 
 def get_composit_image(fire_num, start_date, end_date):
-    tiles = check_tile_id(fire_num)
+    '''
+    Takes a fire number as well as a tile ID and downloads an MRAP timesires composit
+    '''
+    tiles = check_tile_id(fire_num) #checking tiles
     tile_str = ''
     for tile in tiles:
         tile_str += f' {tile}'
-    sync_string = f'python3.12 ~/Documents/nrtbs/py/sync_daterange_gid_zip.py {start_date} {end_date}' + tile_str
-    run(sync_string)
-    run('python3.12 ~/Documents/nrtbs/py/sentinel2_extract_cloudfree_swir_nir.py')
-    run('python3.12 ~/Documents/nrtbs/py/sentinel2_mrap.py')
-    run(f'python3.12 ~/Documents/nrtbs/py/sentinel2_mrap_merge.py {fire_num}')
+    sync_string = f'python3 sync_daterange_gid_zip.py {start_date} {end_date}' + tile_str
+    run(sync_string) #running download script
+    run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
+    run('python3 sentinel2_mrap.py') #running MRAP script
+    if len(tiles) > 1:
+        run(f'python3 sentinel2_mrap_merge.py {fire_num}') #running merge script if necesary 
+    files = [x.strip() for x in os.popen(f'ls -1 {fire_num}/*.bin').readlines()]
+    files.sort()
+    cut_data = plot_image_with_rectangle(files[-1])
+    run(f'python3 cut.py {fire_num} {cut_data[0]} {cut_data[1]} {cut_data[2]} {cut_data[3]}')
     
     
 if __name__ == "__main__":
