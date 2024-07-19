@@ -12,8 +12,8 @@ EPSG = 3005 if len(args) < 2 else 3347  # BC Albers / Canada LCC
 
 merge_dates = None
 
-if not exists('merge'):
-    os.mkdir('merge')
+if not exists(args[1]):
+    os.mkdir(args[1])
 
 if exists('.mrap_merge_dates'):
     merge_dates = [x.strip() for x in open('.mrap_merge_dates').readlines()]
@@ -44,10 +44,10 @@ def merge(to_merge, date, out_fn): # files to be merged, output file name
                       '-vrtnodata nan',
                       '-resolution highest',
                       '-overwrite',
-                      'merge/' +  str(date) + '_merge.vrt',
+                      f'{args[1]}/' +  str(date) + '_merge.vrt',
                       ' '.join(to_merge)]))
 
-    if not exists(f'merge/{out_fn}'):
+    if not exists(f'{args[1]}/{out_fn}'):
         run(' '.join(['gdalwarp',
                       '-wo NUM_THREADS=16',
                       '-multi',
@@ -57,13 +57,13 @@ def merge(to_merge, date, out_fn): # files to be merged, output file name
                       '-ot Float32',
                       '-srcnodata nan',
                       '-dstnodata nan',
-                      'merge/' + str(date) + '_merge.vrt',
-                      f'merge/{out_fn}']))
+                      f'{args[1]}/' + str(date) + '_merge.vrt',
+                      f'{args[1]}/{out_fn}']))
         
-    envi_header_cleanup(['',hdr_fn(f'merge/{out_fn}')])
+    envi_header_cleanup(['',hdr_fn(f'{args[1]}/{out_fn}')])
     envi_update_band_names(['', 
                             hdr_fn(to_merge[-1]),
-                            hdr_fn(f'merge/{out_fn}')])
+                            hdr_fn(f'{args[1]}/{out_fn}')])
 
 '''
     run('fh ' + hdr_fn(out_fn))

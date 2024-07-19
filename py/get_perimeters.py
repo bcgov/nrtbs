@@ -12,7 +12,7 @@ Downloads the current fire perimeters as a zip file
 t = datetime.datetime.now().strftime("%Y%m%d%H%M")
 
 # Define the filename and download path
-fn = 'prot_current_fire_polys.zip'
+fn = 'shape_files/prot_current_fire_polys.zip'
 dl_path = 'https://pub.data.gov.bc.ca/datasets/cdfc2d7b-c046-4bf0-90ac-4897232619e1/' + fn
 
 # Create an SSL context using certifi

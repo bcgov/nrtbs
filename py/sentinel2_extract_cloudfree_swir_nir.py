@@ -207,7 +207,7 @@ if __name__ == "__main__":
             files += [x.strip() for x in os.popen("ls -1d " + d + os.path.sep + "S2*MSIL2A*.SAFE").readlines()]
 
         for f in files:
-            print(f)
+            print(f'File_1{f}')
         parfor(extract_cloudfree, files, int(mp.cpu_count())) 
 
 
