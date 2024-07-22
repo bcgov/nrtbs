@@ -8,7 +8,7 @@ from envi import envi_update_band_names, envi_header_cleanup
 import multiprocessing as mp
 import os
 
-EPSG = 3005 if len(args) < 2 else 3347  # BC Albers / Canada LCC
+EPSG = 3005 #if len(args) < 2 else 3347  # BC Albers / Canada LCC
 
 merge_dates = None
 
