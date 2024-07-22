@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import geopandas as gpd
 import numpy as np
-from misc import run
+from misc import run, args
 
 fire_perims_path = '../shape_files/prot_current_fire_polys.shp'
 tile_path = '../shape_files/Sentinel_BC_Tiles.shp'
@@ -41,4 +41,5 @@ def check_tile_id(fire_num):
     fire_num_perim.plot(ax=ax,edgecolor = 'black',color='red')
     ax.set_title(f'{fire_num} in Sentinel2 tiles', fontsize=14)
     ax.legend(fontsize=14)
+    plt.show()
     return tile_names

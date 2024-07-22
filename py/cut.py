@@ -8,9 +8,15 @@ from envi import envi_header_copy_bandnames
 import os
 
 def cut(fn, A, B, C, D):
+    if len(fn.split('/')[0]) == 6:
+        fire_num = fn.split('/')[0]
+    else:
+        fire_num =='fire'
 
-    out_fn = f'{fn.strip(".bin")}_cut.bin'
-    out_fn_hdr = f'{fn.strip(".bin")}_cut.hdr'
+    if not os.path.exists(f'{fire_num}_cut'):
+        os.mkdir(f'{fire_num}_cut')
+    out_fn = f'{fire_num}_cut/{fn.split("/")[1].strip(".bin")}_cut.bin'
+    out_fn_hdr = f'{fire_num}_cut/{fn.split("/")[1].strip(".bin")}_cut.hdr'
 
     run(f'gdal_translate -of ENVI -ot Float32 -srcwin { (" ".join([A, B, C, D]))} {fn} {out_fn}')  # cuting file
 
@@ -22,7 +28,6 @@ if len(args) < 6:
     
 A, B, C, D = args[2: 6]
 fn = args[1]
-
 if __name__ == "__main__":
     
     files = []

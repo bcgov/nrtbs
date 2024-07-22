@@ -4,6 +4,7 @@ import shutil
 import zipfile
 import ssl
 import certifi
+import sys
 
 '''
 Downloads the current fire perimeters as a zip file

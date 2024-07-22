@@ -208,7 +208,7 @@ if __name__ == "__main__":
 
         for f in files:
             print(f'File_1{f}')
-        parfor(extract_cloudfree, files, int(mp.cpu_count())) 
+        parfor(extract_cloudfree, files, 2) 
 
 
 '''
