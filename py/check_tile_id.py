@@ -1,25 +1,16 @@
 import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
 import geopandas as gpd
-from shapely.geometry import Point, shape
 import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-from zipfile import ZipFile
-from bs4 import BeautifulSoup
-import math 
-from osgeo import ogr
-import os
-import numpy as np
+from misc import run, args
 
-
-fire_perims_path = '~/Documents/nrtbs/shape_files/prot_current_fire_polys.shp'
-tile_path = '~/Documents/nrtbs/shape_files/Sentinel_BC_Tiles.shp'
+fire_perims_path = '../shape_files/prot_current_fire_polys.shp'
+tile_path = '../shape_files/Sentinel_BC_Tiles.shp'
 def check_tile_id(fire_num):
     '''
     Checks which tiles a fire numbers perimeter is in, for downloading
     '''
+    run('python3 get_perimeters.py')
+    fire_perims_path = '../shape_files/prot_current_fire_polys.shp'
     #reading files 
     fire_perims = gpd.read_file(fire_perims_path)
     fire_perims = fire_perims.to_crs(epsg=4326)
@@ -50,4 +41,5 @@ def check_tile_id(fire_num):
     fire_num_perim.plot(ax=ax,edgecolor = 'black',color='red')
     ax.set_title(f'{fire_num} in Sentinel2 tiles', fontsize=14)
     ax.legend(fontsize=14)
+    plt.show()
     return tile_names

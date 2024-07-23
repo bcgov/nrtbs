@@ -4,6 +4,7 @@ import shutil
 import zipfile
 import ssl
 import certifi
+import sys
 
 '''
 Downloads the current fire perimeters as a zip file
@@ -23,10 +24,10 @@ with urllib.request.urlopen(dl_path, context=context) as response, open(fn, 'wb'
     shutil.copyfileobj(response, out_file)
 
 # Create a backup of the downloaded file with a timestamp
-shutil.copyfile(fn, 'prot_current_fire_polys_' + t + '.zip')
+shutil.copyfile(fn, '../shape_files/prot_current_fire_polys' + '.zip')
 
 # Extract the contents of the zip file
-with zipfile.ZipFile(fn, 'r') as zip_ref:
-    zip_ref.extractall()
+with zipfile.ZipFile('../shape_files/prot_current_fire_polys' + '.zip', 'r') as zip_ref:
+    zip_ref.extractall('../shape_files')
 
 print("Download and extraction complete.")

@@ -1,24 +1,28 @@
+import matplotlib
+matplotlib.use('TkAgg')  # Use an interactive backend like TkAgg or Qt5Agg
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from plot import plot_image
-# from misc import args
+from plot import plot_image  # Assuming plot_image function is defined elsewhere
 import sys
-args = sys.argv
+
+# Global variable to hold rectangle dimensions
+rectangle_dimensions = None
 
 def plot_image_with_rectangle(file):
     """
     Plots an image and allows the user to draw a rectangle on the image.
-    Displays the rectangle's position and dimensions.
-    Takes a bin file name
+    Stores the rectangle's dimensions in a global variable when the plot is closed.
     """
+
+    global rectangle_dimensions  # Access the global variable
 
     # Create a figure and axis for the plot
     fig, ax = plt.subplots()
 
     # Display the image
     image = plot_image(file)
-    print(image)
-    ax.imshow(image) # plot initial image
+    ax.imshow(image)  # Plot initial image
+
     # Initialize variables to store the rectangle's position
     rect = None
     start_x = start_y = 0
@@ -61,8 +65,12 @@ def plot_image_with_rectangle(file):
         height = end_y - start_y
         print(f"Rectangle drawn from ({start_x:.2f}, {start_y:.2f}) to ({end_x:.2f}, {end_y:.2f})")
         print(f"Width: {width:.2f}, Height: {height:.2f}")
+
+        # Store dimensions in global variable
+        global rectangle_dimensions
+        rectangle_dimensions = (start_x, start_y, width, height)
+
         is_drawing = False
-        return [start_x, start_y, end_x, end_y]
 
     # Connect the event handlers
     fig.canvas.mpl_connect('button_press_event', on_mouse_press)
@@ -70,8 +78,9 @@ def plot_image_with_rectangle(file):
     fig.canvas.mpl_connect('button_release_event', on_mouse_release)
 
     # Show the plot
-    print('Show')
     plt.show()
+    return rectangle_dimensions
 
+# print(args[1])
 # if __name__ == "__main__":
 #     plot_image_with_rectangle(args[1])
