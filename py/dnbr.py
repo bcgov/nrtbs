@@ -1,3 +1,9 @@
+'''
+calculates burn severity using the dNBR of a frame. First two functions are used to extract data from a bin file and return it. dNBR calculates the dNBR of the provided frames and removes water and reduces noise.
+Class_plot plots the burn severity of the given dNBR using BARC thresholds.
+time_series plots the time series of BARC plots for the provided file directory and start frame date
+'''
+
 from misc import err, read_binary, extract_date
 import numpy as np
 import matplotlib.pyplot as plt
@@ -156,10 +162,11 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not gi
     return class_plot
 
 
-def time_series(directory,given_date,format=''):
+def time_series(directory,start_date,format=''):
     '''
     Takes a Directory and plots a time serise of BARC plots with the provided start date 
     '''
+    #sorting files
     files = os.listdir(directory)
     file_list = []
     for n in range(len(files)):
@@ -170,8 +177,9 @@ def time_series(directory,given_date,format=''):
 
     sorted_file_names = sorted(file_list, key=extract_date)
     
+    #finding start date index
     for i in range(len(sorted_file_names)):
-        if extract_date(sorted_file_names[i]) == str(given_date):
+        if extract_date(sorted_file_names[i]) == str(start_date):
             index = i
             break
         else:
@@ -179,9 +187,10 @@ def time_series(directory,given_date,format=''):
             continue
     if index == None:
         err('Invalid start date')
+    #calculating start frame nbr
     start_file = sorted_file_names[index]
-    start_date = extract_date(start_file)
     start_frame = NBR(f'{directory}/{start_file}')
+    #making BARC plots
     for file in sorted_file_names[index +1:]:
         dnbr = dNBR(start_frame, f'{directory}/{file}')
         end_date = extract_date(file)

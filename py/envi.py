@@ -1,3 +1,7 @@
+'''
+sevral functions which are usfull for manipulating envi header files
+'''
+
 import os
 import sys
 from misc import err, read_hdr, band_names

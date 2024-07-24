@@ -1,3 +1,7 @@
+'''
+A GUI which allows you to visualize the band values inside a square as a time series
+>>> interactive_time_series('bin_fil_dir, 'image', 10)
+'''
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from dNBR import NBR
@@ -91,6 +95,9 @@ def param_plots(clicks, width):
     plt.show()
 
 def on_click(event):
+    '''
+    interactive function
+    '''
     print(f"Clicked at: {event.xdata}, {event.ydata}")
     if event.inaxes is not None and len(clicks) < 6:  # Check if the click is inside the plot area
         # Store the click coordinates
@@ -105,6 +112,9 @@ def on_click(event):
         param_plots(clicks,square_width)
         
 def scale(X):
+    '''
+    Used to scale the image if necesary
+    '''
     # default: scale a band to [0, 1]  and then clip
     mymin = np.nanmin(X) # np.nanmin(X))
     mymax = np.nanmax(X) # np.nanmax(X))

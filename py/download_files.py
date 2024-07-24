@@ -1,8 +1,12 @@
+'''
+takes a string tile ID eg. 'T10UFB', and a string date range of integer form yyyymmdd and downloads and extracts the SWIR NIR bands of the avaialbe sentinel 2 data. Only takes frames with cloud cover less then 10 %
+>>> download_urls_from_tileid('T10UFB', 20240701, 20240730)
+'''
 import os
 from sentinel2_extract_swir_nir import extract
 
 
-def Download_URLs_from_tileID_and_date_range(tile_id, start_date, end_date):
+def download_urls_from_tileid(tile_id, start_date, end_date):
     '''
     takes a string tile ID eg. 'T10UFB', and a string date range of integer form yyyymmdd
     '''

@@ -1,22 +1,24 @@
+'''
+donwloads sentinel data, extracts cloudfree swir nir bands, choses most recent avaialbe pixle, and merges frames (if necesary) for the given fire and date range
+$python3 get_composite.py G90267 20240601 20240630
+'''
 import numpy as np
-
 from misc import run, args
 from check_tile_id import check_tile_id
 from cut_coords import plot_image_with_rectangle
 from plot import plot
-from dnbr import time_series
 import os
 
-def get_composit_image(fire_num, start_date, end_date):
+def get_composite_image(fire_num, start_date, end_date):
     '''
-    Takes a fire number as well as a tile ID and downloads an MRAP timesires composit
+    Takes a fire number as well as a tile ID and downloads an MRAP timesires composite
     '''
     tiles = check_tile_id(fire_num) #checking tiles
     tile_str = ''
     for tile in tiles:
         tile_str += f' {tile}'
-    sync_string = f'python3 sync_daterange_gid_zip.py {start_date} {end_date}' + tile_str
-    run(sync_string) #running download script
+    # sync_string = f'python3 sync_daterange_gid_zip.py {start_date} {end_date}' + tile_str
+    # run(sync_string) #running download script
     run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
     run('python3 sentinel2_mrap.py') #running MRAP script
     if len(tiles) > 1:
@@ -29,4 +31,4 @@ def get_composit_image(fire_num, start_date, end_date):
     print('Run dnbr.py time_composit to produce BARC plots')
     
 if __name__ == "__main__":
-    get_composit_image(args[1],args[2],args[3])
+    get_composite_image(args[1],args[2],args[3])

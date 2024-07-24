@@ -1,3 +1,8 @@
+'''
+Interactive GUI which allows you to compare ban values as a time series for multiple data sets. Take a list of directories, each one containing a time series of bin files. When the plot is clicked a box will apear on the plot and the average value for each band in the square is plotted as a time series for each data set.
+>>> interactive_time_serise(['bins1','bins2','bins3'], 'image',10)
+'''
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from dNBR import NBR

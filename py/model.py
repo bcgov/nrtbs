@@ -1,7 +1,10 @@
+'''
+Two differnt modelling functions which function very similarly. Both take a stope index, file directory, and model type. 
+NBRmodel models the NBR of a fire using all the data prior
+dNBRmodel models the dNBR of the fire using all prior data
+'''
 from sklearn.linear_model import LinearRegression 
-
 from sklearn.neighbors import KNeighborsRegressor
-
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
 from dNBR import dNBR, NBR, class_plot
@@ -111,7 +114,7 @@ def NBRmodel(stop_index, file_dir, model_type):
     
 def dNBRmodel(stop_index, file_dir, model_type): 
     '''
-    Using a list of raster files and a model type this function models the NBR of a given fire using linear regression and 4 parameters. The function plots both an error plot of the predicted vs observed final dNBR and the predicted NBR. It also returns the fits score.
+    Using a list of raster files and a model type this function models the dNBR of a given fire using linear regression and 4 parameters. The function plots both an error plot of the predicted vs observed final dNBR and the predicted NBR. It also returns the fits score.
     model types:
     'lin_reg' == linear regression
     'KN_reg' == K Neighbor Regressor

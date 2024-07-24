@@ -1,3 +1,6 @@
+'''
+Several functions which help with creating accurate burn masks for fires suing start and end frames
+'''
 from misc import read_binary, extract_date
 import numpy as np
 import matplotlib.pyplot as plt
