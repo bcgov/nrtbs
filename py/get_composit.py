@@ -17,8 +17,8 @@ def get_composit_image(fire_num, start_date, end_date):
         tile_str += f' {tile}'
     # sync_string = f'python3 sync_daterange_gid_zip.py {start_date} {end_date}' + tile_str
     # run(sync_string) #running download script
-    # run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
-    # run('python3 sentinel2_mrap.py') #running MRAP script
+    run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
+    run('python3 sentinel2_mrap.py') #running MRAP script
     if len(tiles) > 1:
         run(f'python3 sentinel2_mrap_merge.py {fire_num}') #running merge script if necesary 
     files = [x.strip() for x in os.popen(f'ls -1 {fire_num}/*.bin').readlines()] #sorting list of merged images

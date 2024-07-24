@@ -29,7 +29,7 @@ def check_tile_id(fire_num):
             tile_names.append(f'T{name}')
     
     #plotting tiles to check if all are needed
-    fig, ax = plt.subplots(figsize=(15, 15))
+    fig, ax = plt.subplots()
     i = 0
     colors = ['blue', 'green', 'purple', 'orange', 'brown', 'pink', 'gray']
     for idx, section in containing.iterrows():
