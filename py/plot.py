@@ -1,3 +1,6 @@
+'''
+Plots SWIR NIR, NBR, and dNBR of all bin files in the provided directory 
+>>> plot('bins','bin plots')'''
 from misc import read_binary, extract_date
 import numpy as np
 import matplotlib.pyplot as plt

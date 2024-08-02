@@ -1,12 +1,11 @@
+'''
+plots a tiff file
+'''
 import rasterio
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import numpy as np
 from numpy.ma import masked_where
-
-'''
-plots a tiff file
-'''
 
 # Path to your .tif file
 tif_path = '~/Downloads/G90267 2/barc/BARC_G90267_20240420_20240619_S2.tif'

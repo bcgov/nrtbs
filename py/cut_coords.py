@@ -1,3 +1,8 @@
+'''
+An interactive plot which allows you to view a bin file and draw a rectangle around an area of intrest. Once the plot is closed it will return the start x, start y, width, and height of the rectangle
+>>> plot_image_with_rectangle('binfile.bin')
+'''
+
 import matplotlib
 matplotlib.use('TkAgg')  # Use an interactive backend like TkAgg or Qt5Agg
 import matplotlib.pyplot as plt
@@ -29,6 +34,7 @@ def plot_image_with_rectangle(file):
     is_drawing = False
 
     def on_mouse_press(event):
+    
         nonlocal start_x, start_y, is_drawing
         if event.inaxes != ax:
             return
@@ -79,8 +85,4 @@ def plot_image_with_rectangle(file):
 
     # Show the plot
     plt.show()
-    return rectangle_dimensions
-
-# print(args[1])
-# if __name__ == "__main__":
-#     plot_image_with_rectangle(args[1])
+    return rectangle_dimensions #returns dimensions

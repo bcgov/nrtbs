@@ -1,3 +1,7 @@
+'''
+Checks which tiles are required to view a fire using sentinel 2 data. Takes a fire number and returns a list of tiles as well as a plot of the fire perimeter and the tiles it is in.
+>>> check_tile_id('G90267')'''
+
 import matplotlib.pyplot as plt
 import geopandas as gpd
 import numpy as np
@@ -29,7 +33,7 @@ def check_tile_id(fire_num):
             tile_names.append(f'T{name}')
     
     #plotting tiles to check if all are needed
-    fig, ax = plt.subplots(figsize=(15, 15))
+    fig, ax = plt.subplots()
     i = 0
     colors = ['blue', 'green', 'purple', 'orange', 'brown', 'pink', 'gray']
     for idx, section in containing.iterrows():
