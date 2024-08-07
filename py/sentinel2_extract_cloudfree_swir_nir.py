@@ -121,16 +121,18 @@ def extract_cloudfree(file_name):
     1: Saturated or defective
     2: Dark area pixels
     3: Cloud shadows
+    7: Unclassified 
     8: Cloud medium probability
     9: Cloud high probability
     10: Thin cirrus
     We don't want:
     arr2 = arr[np.where((arr >5) & (arr 5) | (arr % 5 == 0))]
     '''
-
+    #(scl_d == 7) |
     # calculate the valid areas:
     scl_d = arrays[cl_i]
     bad_data = np.where((scl_d <= 3) |
+                        (scl_d == 7) |
                         (scl_d == 8) |
                         (scl_d == 9) |
                         (scl_d == 10))
