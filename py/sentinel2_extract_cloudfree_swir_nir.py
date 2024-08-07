@@ -132,7 +132,6 @@ def extract_cloudfree(file_name):
     # calculate the valid areas:
     scl_d = arrays[cl_i]
     bad_data = np.where((scl_d <= 3) |
-                        (scl_d == 7) |
                         (scl_d == 8) |
                         (scl_d == 9) |
                         (scl_d == 10))
