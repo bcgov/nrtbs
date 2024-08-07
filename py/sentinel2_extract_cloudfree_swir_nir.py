@@ -121,7 +121,6 @@ def extract_cloudfree(file_name):
     1: Saturated or defective
     2: Dark area pixels
     3: Cloud shadows
-    7: Unclassified 
     8: Cloud medium probability
     9: Cloud high probability
     10: Thin cirrus
