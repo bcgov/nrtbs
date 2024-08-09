@@ -11,7 +11,7 @@ def cut(fn, A, B, C, D):
     if len(fn.split('/')[0]) == 6:
         fire_num = fn.split('/')[0]
     else:
-        fire_num =='fire'
+        fire_num = 'fire'
 
     if not os.path.exists(f'{fire_num}_cut'):
         os.mkdir(f'{fire_num}_cut')
