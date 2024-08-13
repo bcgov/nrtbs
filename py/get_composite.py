@@ -1,5 +1,5 @@
 '''
-donwloads sentinel data, extracts cloudfree swir nir bands, choses most recent avaialbe pixle, and merges frames (if necesary) for the given fire and date range
+donwloads sentinel data, extracts cloudfree swir nir bands, choses most recent avaialbe pixle, and merges frames (if necesary). Automatic date range is defined if no end date is given. Start download date is always 3 weeks prior to first fire start date
 $python3 get_composite.py G90267 
 $python3 get_composite.py 20240630 G90267 
 $python3 get_composite.py N51117 N51069 N51210 N51103
