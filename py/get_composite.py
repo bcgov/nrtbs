@@ -14,6 +14,7 @@ import os
 import geopandas as gpd
 from datetime import datetime, timedelta
 from dnbr import time_series
+from auto_coords import auto_coords
 
 def get_composite_image(fire_num, end_date=None):
     '''
@@ -73,9 +74,10 @@ def get_composite_image(fire_num, end_date=None):
         run(f'mv {fire_name}/*cloudfree.hdr* {fire_name}/{fire_name}_cloudfree')
     
     #getting list of files for cutting
-    files = [x.strip() for x in os.popen(f'ls -1 {fire_name}/*.bin').readlines()] 
+    files = [x.strip() for x in os.popen(f'ls -1 {fire_name}/*.hdr').readlines()] 
     files.sort()
-    cut_data = plot_image_with_rectangle(files[-1]) #prompt user for cut coords
+    #cut_data = plot_image_with_rectangle(files[-1]) #prompt user for cut coords
+    cut_data = auto_coords(fire_num_perim, files[-1])
     run(f'python3 cut.py {fire_name} {int(cut_data[0])} {int(cut_data[1])} {int(cut_data[2])} {int(cut_data[3])}')
 
     #reading through files to find nearest date to start date

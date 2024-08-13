@@ -51,11 +51,14 @@ def check_tile_id(fire_num):
             if pd.notna(name) and f'T{name}' not in tile_names:  # Check if the name is not NaN
                 tile_names.append(f'T{name}')
 
-                # Plot the tiles
-                for idx, section in containing.iterrows():
-                    tile_id.loc[[idx]].plot(ax=ax, edgecolor='black', color=colors[color_index])
-                    ax.scatter(np.nan, np.nan, color=colors[color_index], marker='s', s=60, label=f'T{section["Name"]}')
-                    color_index = (color_index + 1) % len(colors)  # Cycle through colors
+        # Plot the tiles
+        sections = []
+        for idx, section in containing.iterrows():
+            if section["Name"] not in sections:
+                tile_id.loc[[idx]].plot(ax=ax, edgecolor='black', color=colors[color_index])
+                ax.scatter(np.nan, np.nan, color=colors[color_index], marker='s', s=60, label=f'T{section["Name"]}')
+                color_index = (color_index + 1) % len(colors)  # Cycle through colors
+                sections.append(section["Name"])
                 
     # Plot the fire perimeter
     fire_num_perim.plot(ax=ax, edgecolor='black', color='red')
