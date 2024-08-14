@@ -9,9 +9,6 @@ import sys
 '''
 Downloads the current fire perimeters as a zip file
 '''
-# Create a timestamp for the backup filename
-t = datetime.datetime.now().strftime("%Y%m%d%H%M")
-
 # Define the filename and download path
 fn = 'prot_current_fire_polys.zip'
 dl_path = 'https://pub.data.gov.bc.ca/datasets/cdfc2d7b-c046-4bf0-90ac-4897232619e1/' + fn
@@ -29,5 +26,23 @@ shutil.copyfile(fn, '../shape_files/prot_current_fire_polys' + '.zip')
 # Extract the contents of the zip file
 with zipfile.ZipFile('../shape_files/prot_current_fire_polys' + '.zip', 'r') as zip_ref:
     zip_ref.extractall('../shape_files')
+
+fn_2 = 'prot_current_fire_points.zip'
+dl_path2 = 'https://pub.data.gov.bc.ca/datasets/2790e3f7-6395-4230-8545-04efb5a18800/' + fn_2
+
+# Create an SSL context using certifi
+context = ssl.create_default_context(cafile=certifi.where())
+
+with urllib.request.urlopen(dl_path2, context=context) as response, open(fn_2, 'wb') as out_file:
+    shutil.copyfileobj(response, out_file)
+
+shutil.copyfile(fn_2, '../shape_files/prot_current_fire_points' + '.zip')
+
+with zipfile.ZipFile('../shape_files/prot_current_fire_points' + '.zip', 'r') as zip_ref:
+    zip_ref.extractall('../shape_files')
+
+with urllib.request.urlopen(dl_path2, context=context) as response, open(fn_2, 'wb') as out_file:
+    shutil.copyfileobj(response, out_file)
+
 
 print("Download and extraction complete.")

@@ -111,7 +111,7 @@ def dNBR(start_frame, end_frame):
 
     return dNBR
 
-def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not given'): 
+def class_plot(dNBR, start_date, end_date, title='Not given'): 
     '''
     Plots the BARC 256 burn severity of the provided dNBR and saves it as a png
     '''
@@ -146,6 +146,8 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not gi
     med_per = round(100*med_tot/tot,1)
     high_per = round(100*high_tot/tot,1)
     
+    if not os.path.exists(title):
+        os.mkdir(title)
     #plotting
     cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])
     plt.figure(figsize=(15,15))
@@ -157,12 +159,12 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not gi
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'High {high_per}%',color='red')
     plt.legend(fontsize="20")
     plt.tight_layout()
-    plt.savefig(f'{title}_BARC_classification.png')
+    plt.savefig(f'{title}/{end_date}_BARC_classification.png')
 
     return class_plot
 
 
-def time_series(directory,start_date,format=''):
+def time_series(directory,start_date,title='BARC'):
     '''
     Takes a Directory and plots a time serise of BARC plots with the provided start date 
     '''
@@ -194,4 +196,4 @@ def time_series(directory,start_date,format=''):
     for file in sorted_file_names[index +1:]:
         dnbr = dNBR(start_frame, f'{directory}/{file}')
         end_date = extract_date(file)
-        class_plot(dnbr,start_date,end_date,f'{end_date}_{format}')    
+        class_plot(dnbr,start_date,end_date,title)    

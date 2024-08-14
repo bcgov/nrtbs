@@ -127,7 +127,7 @@ def extract_cloudfree(file_name):
     We don't want:
     arr2 = arr[np.where((arr >5) & (arr 5) | (arr % 5 == 0))]
     '''
-
+    #(scl_d == 7) |
     # calculate the valid areas:
     scl_d = arrays[cl_i]
     bad_data = np.where((scl_d <= 3) |

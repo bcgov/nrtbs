@@ -73,10 +73,10 @@ def plot(file_dir,title='No title given'):
             plt.imshow(image) #Plotting the image
             plt.title(f'{title} on {date}, bands: r=B12, g=B11, b=B09')
             plt.xlabel(sorted_file_names[n])
-            if not os.path.exists('images'):
-                os.mkdir('images')
+            if not os.path.exists(f'{title}_images'):
+                os.mkdir(f'{title}_images')
             plt.tight_layout()
-            plt.savefig(f'images/{date}_image.png')
+            plt.savefig(f'{title}_images/{date}_image.png')
             plt.clf()
             print('Could not plot NBR/dNBR, not enough bands')
                
@@ -105,20 +105,20 @@ def plot(file_dir,title='No title given'):
             plt.imshow(image) #Plotting the image
             plt.title(f'{title} on {date}, bands: r=B12, g=B11, b=B09')
             plt.xlabel(sorted_file_names[n])
-            if not os.path.exists('images'):
-                os.mkdir('images')
+            if not os.path.exists(f'{title}_images'):
+                os.mkdir(f'{title}_images')
             plt.tight_layout()
-            plt.savefig(f'images/{date}_image.png')
+            plt.savefig(f'{title}_images/{date}_image.png')
             plt.clf()
             
             
             plt.imshow(NBR, cmap='Greys') #Plotting the NBR
             plt.title(f'NBR of {title} on {date}')
             plt.colorbar(fraction=0.04525*imratio)     
-            if not os.path.exists('NBR'):
-                os.mkdir('NBR')
+            if not os.path.exists(f'{title}_NBR'):
+                os.mkdir(f'{title}_NBR')
             plt.tight_layout()
-            plt.savefig(f'NBR/{date}_{sorted_file_names[n]}.png')
+            plt.savefig(f'{title}_NBR/{date}_{sorted_file_names[n]}.png')
             plt.clf()
         
             #Plotting the dNBR for all frames but the first
@@ -129,10 +129,10 @@ def plot(file_dir,title='No title given'):
                 plt.imshow(dNBR, cmap='Greys')
                 plt.title(f'dNBR of {title} on {date}')
                 plt.colorbar(fraction=0.04525*imratio)     
-                if not os.path.exists('dNBR'):
-                    os.mkdir('dNBR')
+                if not os.path.exists(f'{title}_dNBR'):
+                    os.mkdir(f'{title}_dNBR')
                 plt.tight_layout()
-                plt.savefig(f'dNBR/{date}_{sorted_file_names[n]}.png') 
+                plt.savefig(f'{title}_dNBR/{date}_{sorted_file_names[n]}.png') 
                 plt.clf()
             
             
