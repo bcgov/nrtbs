@@ -21,14 +21,10 @@ def get_composite_image(fire_num, end_date=None):
     Takes a fire number as well as a tile ID and downloads an MRAP timesires composite
     '''
     #changing single fire numbers to list and naming multi fire scene
-    if type(fire_num) == list:
+    if len(fire_num) > 1:
         fire_name = f'{fire_num[0]}_complex'
-        fire_nums = fire_num
     else:
-        print(fire_num)
-        fire_name = fire_num
-        fire_nums = [fire_num]
-    
+        fire_name = fire_num[0]
     #taking end date as today none defined
     if end_date == None:
         end_date = datetime.today().date()
@@ -40,11 +36,11 @@ def get_composite_image(fire_num, end_date=None):
         str_end_date = end_date
     
     #getting the ignition date for fires and taking the smallest
-    fire_perims_path = '../shape_files/prot_current_fire_points.shp'
-    fire_perims = gpd.read_file(fire_perims_path)
-    fire_perims = fire_perims.to_crs(epsg=4326)
-    fire_num_perim = fire_perims[fire_perims['FIRE_NUM'].isin(fire_nums)]
-    ignt_dates = [datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S').date() for date in  fire_num_perim.IGNITN_DT]
+    fire_points_path = '../shape_files/prot_current_fire_points.shp'
+    fire_points = gpd.read_file(fire_points_path)
+    fire_points = fire_points.to_crs(epsg=4326)
+    fire_num_point = fire_points[fire_points['FIRE_NUM'].isin(fire_num)]
+    ignt_dates = [datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S').date() for date in  fire_num_point.IGNITN_DT]
     fire_start_date = min(ignt_dates)
     start_date = fire_start_date - timedelta(weeks=3)
 
@@ -59,25 +55,25 @@ def get_composite_image(fire_num, end_date=None):
     for tile in tiles:
         tile_str += f' {tile}'
     
-    sync_string = f'python3 sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str #defining sync string
-    run(sync_string) #running download script
-    run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
-    run('python3 sentinel2_mrap.py') #running MRAP script
-    if len(tiles) > 1:
-        run(f'python3 sentinel2_mrap_merge.py {fire_name}') #running merge script if necesary 
+    # sync_string = f'python3 sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str #defining sync string
+    # run(sync_string) #running download script
+    # run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
+    # run('python3 sentinel2_mrap.py') #running MRAP script
+    # if len(tiles) > 1:
+    #     run(f'python3 sentinel2_mrap_merge.py {fire_name}') #running merge script if necesary 
 
-    #renaming directory and moving non MRAP frames
-    else:
-        os.rename(f'L2_{tiles[0]}', fire_name)
-        os.mkdir(f'{fire_name}/{fire_name}_cloudfree')
-        run(f'mv {fire_name}/*cloudfree.bin {fire_name}/{fire_name}_cloudfree')
-        run(f'mv {fire_name}/*cloudfree.hdr* {fire_name}/{fire_name}_cloudfree')
+    # #renaming directory and moving non MRAP frames
+    # else:
+    #     os.rename(f'L2_{tiles[0]}', fire_name)
+    #     os.mkdir(f'{fire_name}/{fire_name}_cloudfree')
+    #     run(f'mv {fire_name}/*cloudfree.bin {fire_name}/{fire_name}_cloudfree')
+    #     run(f'mv {fire_name}/*cloudfree.hdr* {fire_name}/{fire_name}_cloudfree')
     
     #getting list of files for cutting
-    files = [x.strip() for x in os.popen(f'ls -1 {fire_name}/*.hdr').readlines()] 
+    files = [x.strip() for x in os.popen(f'ls -1 {fire_name}/*.bin').readlines()] 
     files.sort()
     #cut_data = plot_image_with_rectangle(files[-1]) #prompt user for cut coords
-    cut_data = auto_coords(fire_num_perim, files[-1])
+    cut_data = auto_coords(fire_num, files[-1])
     run(f'python3 cut.py {fire_name} {int(cut_data[0])} {int(cut_data[1])} {int(cut_data[2])} {int(cut_data[3])}')
 
     #reading through files to find nearest date to start date
