@@ -71,8 +71,13 @@ def merge(to_merge, date, out_fn): # files to be merged, output file name
 '''
 if len(args) == 1:
     args[1] = 'merge'
+    dirs = [x.strip() for x in os.popen('ls -1d L2_*').readlines()]
 
-dirs = [x.strip() for x in os.popen('ls -1d L2_*').readlines()]
+else:
+    dirs = []
+    for tile in args[1:]:
+        dirs.append(f'L2_{tile}')
+
 gids = [d.split('_')[-1] for d in dirs]
 print("gids", gids)
 

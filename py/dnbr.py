@@ -102,12 +102,12 @@ def dNBR(start_frame, end_frame):
     dNBRSWIR = preswir - postswir # calculating dNBRSWIR
     
     #removing water and some noise
-    for i in range(len(dNBR)):
-        for j in range(len(dNBR[0])):
-            if predata[0][i][j] <= 100 or dNBRSWIR[i][j] < 0.1:
-                dNBR[i][j] = 0
-            else:
-                continue
+    # for i in range(len(dNBR)):
+    #     for j in range(len(dNBR[0])):
+    #         if predata[0][i][j] <= 100 or dNBRSWIR[i][j] < 0.1:
+    #             dNBR[i][j] = 0
+    #         else:
+    #             continue
 
     return dNBR
 
