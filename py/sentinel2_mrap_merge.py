@@ -75,7 +75,7 @@ if len(args) == 1:
 
 else:
     dirs = []
-    for tile in args[1:]:
+    for tile in args[2:]:
         dirs.append(f'L2_{tile}')
 
 gids = [d.split('_')[-1] for d in dirs]
