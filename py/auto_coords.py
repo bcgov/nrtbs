@@ -216,7 +216,6 @@ def auto_coords(fire_num, file):
 
     # Extract map info from GDAL
     geotransform, projection = extract_map_info_from_gdal(file)
-    print(projection)
     # Define the corners using the geotransform
     ulx = geotransform[0]
     uly = geotransform[3]
@@ -226,14 +225,18 @@ def auto_coords(fire_num, file):
     # Calculate bottom right corner
     samples = geotransform[1]  # Number of columns
     lines = geotransform[5]    # Number of rows
-    brx = ulx - samples * abs(pixel_size_x)
-    bry = uly + lines * abs(pixel_size_y)
+    brx = ulx - samples * pixel_size_x
+    bry = uly + lines * pixel_size_y
     
     # Transform corners to the target projection
     x_top, y_top = transform_coordinates(ulx, uly, projection, target_proj)
+    x_pix, y_pix = transform_coordinates(pixel_size_x, pixel_size_y, projection, target_proj)
     x_bot, y_bot = transform_coordinates(brx, bry, projection, target_proj)
 
-    # Calculate scaling factors
+    # # Calculate scaling factors
+    # print(x_pix,y_pix)
+    # x_bot = x_top + x_pix*samples
+    # y_bot = y_top - y_pix*lines
     x_con = lines / (x_bot - x_top)
     y_con = samples / (y_bot - y_top)
 
@@ -248,4 +251,4 @@ def auto_coords(fire_num, file):
     width = bot_x - top_x
     height = bot_y - top_y
 
-    return [int(top_x - 200), int(top_y - 200), int(width + 400), int(height + 400)]  # Returning cut coordinates with buffer
+    return [int(abs(top_x) - 200), int(abs(top_y) - 200), int(abs(width) + 400), int(abs(height) + 400)]  # Returning cut coordinates with buffer
