@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import os
+from data_to_raster import write_matrix_to_tif
 
 def nbr_full(file_name):
     """
@@ -193,7 +194,34 @@ def time_series(directory,start_date,title='BARC'):
     start_file = sorted_file_names[index]
     start_frame = NBR(f'{directory}/{start_file}')
     #making BARC plots
+    i = 0
     for file in sorted_file_names[index +1:]:
+        i += 1  
         dnbr = dNBR(start_frame, f'{directory}/{file}')
         end_date = extract_date(file)
-        class_plot(dnbr,start_date,end_date,title)    
+        data = class_plot(dnbr,start_date,end_date,title)  
+        if i == len(sorted_file_names[index +1:]):
+            print('Writing data to Tiff')
+            write_matrix_to_tif(data, f'{directory}/{file}', f'{title}/{end_date}_BARC.tif') 
+
+def barc_to_tiff(fire_dir, start_date, end_date):
+    title = f'{fire_dir.strip("_cut")}_barcs'
+    files = os.listdir(fire_dir)
+    file_list = []
+    for n in range(len(files)):
+        if files[n].split('.')[-1] == 'bin':
+            file_list.append((int(extract_date(files[n])), f'{fire_dir}/{files[n]}'))
+        else:
+            continue
+    
+    #sorted_file_names = sorted(file_list, key=extract_date) #sorting
+    
+    for file in file_list:
+        if file[0] == start_date:
+            start_file = file[1]
+        elif file[0] == end_date:
+            end_file = file[1]
+    
+    dnbr = dNBR(start_file, end_file)
+    data = class_plot(dnbr, start_date, end_date, title)
+    write_matrix_to_tif(data, end_file, f'{title}/{end_date}_barc.tif')
