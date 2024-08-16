@@ -58,7 +58,7 @@ def get_composite_image(fire_num, end_date=None):
     
     if tile_str != '':
         sync_string = f'python3 sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str #defining sync string
-        #run(sync_string) #running download script
+        run(sync_string) #running download script
     
     run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
     for tile in tiles:

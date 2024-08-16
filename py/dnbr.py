@@ -126,18 +126,18 @@ def class_plot(dNBR, start_date, end_date, title='Not given'):
     for i in range(len(scaled_dNBR)): #making classifications
         for j in range(len(scaled_dNBR[0])):
             if scaled_dNBR[i][j] < 76:
-                class_plot[i][j] = 0
+                class_plot[i][j] = 1
                 un_tot += 1
             elif 76 <= scaled_dNBR[i][j] < 110:
-                class_plot[i][j] = 1
+                class_plot[i][j] = 2
                 low_tot += 1
             elif 110 <= scaled_dNBR[i][j] < 187:
-                class_plot[i][j] = 2
+                class_plot[i][j] = 3
                 med_tot += 1
             elif np.isnan(scaled_dNBR[i][j]):
                 class_plot[i][j] = float('nan')
             else:
-                class_plot[i][j] = 3
+                class_plot[i][j] = 4
                 high_tot += 1
     
     #calculating percentages           
@@ -152,7 +152,7 @@ def class_plot(dNBR, start_date, end_date, title='Not given'):
     #plotting
     cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])
     plt.figure(figsize=(15,15))
-    plt.imshow(class_plot,vmin=0,vmax=3,cmap=cmap)
+    plt.imshow(class_plot,vmin=1,vmax=4,cmap=cmap)
     plt.title(f'BARC 256 burn severity, start date:{start_date}, end date:{end_date}')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Unburned {un_per}%',color='green')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Low {low_per}%' ,color='yellow')
