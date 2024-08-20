@@ -15,6 +15,7 @@ import geopandas as gpd
 from datetime import datetime, timedelta
 from dnbr import time_series
 from auto_coords import auto_coords
+from barc_comp import trim_tif_to_shapefile
 
 def get_composite_image(fire_num, end_date=None):
     '''
@@ -25,6 +26,7 @@ def get_composite_image(fire_num, end_date=None):
         fire_name = f'{fire_num[0]}_complex'
     else:
         fire_name = fire_num[0]
+    
     #taking end date as today none defined
     if end_date == None:
         end_date = datetime.today().date()
@@ -49,6 +51,8 @@ def get_composite_image(fire_num, end_date=None):
     str_start_date = ''
     for comp in str_start_date_comps:
         str_start_date += comp
+
+    str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
 
     tiles = check_tile_id(fire_num) #checking tiles
     tile_str = ''
@@ -101,7 +105,9 @@ def get_composite_image(fire_num, end_date=None):
 
     extract_data_percent(f'{fire_name}_cut',barc_start) #plotting the data percent vs time for frames
     plot(f'{fire_name}_cut', fire_name) #plotting image, NBR, dNBR time series
-    time_series(f'{fire_name}_cut', int(barc_start), f'{fire_name}_barcs') #plotting BARC time series
+    time_series(f'{fire_name}_cut', int(barc_start), f'{fire_name}') #plotting BARC time series
+    for fire in fire_num:
+        trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif', fire_name, f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
     
 if __name__ == "__main__":
 

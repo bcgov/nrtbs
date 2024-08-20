@@ -202,7 +202,7 @@ def time_series(directory,start_date,title='BARC'):
         data = class_plot(dnbr,start_date,end_date,title)  
         if i == len(sorted_file_names[index +1:]):
             print('Writing data to Tiff')
-            write_matrix_to_tif(data, f'{directory}/{file}', f'{title}/{end_date}_BARC.tif') 
+            write_matrix_to_tif(data, f'{directory}/{file}', f'{title}_barcs/BARC_{title}_{start_date}_{end_date}_BARC.tif') 
 
 def barc_to_tiff(fire_dir, start_date, end_date):
     title = f'{fire_dir.strip("_cut")}_barcs'
