@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import os
+from data_to_raster import write_matrix_to_tif
 
 def nbr_full(file_name):
     """
@@ -102,16 +103,16 @@ def dNBR(start_frame, end_frame):
     dNBRSWIR = preswir - postswir # calculating dNBRSWIR
     
     #removing water and some noise
-    for i in range(len(dNBR)):
-        for j in range(len(dNBR[0])):
-            if predata[0][i][j] <= 100 or dNBRSWIR[i][j] < 0.1:
-                dNBR[i][j] = 0
-            else:
-                continue
+    # for i in range(len(dNBR)):
+    #     for j in range(len(dNBR[0])):
+    #         if predata[0][i][j] <= 100 or dNBRSWIR[i][j] < 0.1:
+    #             dNBR[i][j] = 0
+    #         else:
+    #             continue
 
     return dNBR
 
-def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not given'): 
+def class_plot(dNBR, start_date, end_date, title='Not given'): 
     '''
     Plots the BARC 256 burn severity of the provided dNBR and saves it as a png
     '''
@@ -125,18 +126,18 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not gi
     for i in range(len(scaled_dNBR)): #making classifications
         for j in range(len(scaled_dNBR[0])):
             if scaled_dNBR[i][j] < 76:
-                class_plot[i][j] = 0
+                class_plot[i][j] = 1
                 un_tot += 1
             elif 76 <= scaled_dNBR[i][j] < 110:
-                class_plot[i][j] = 1
+                class_plot[i][j] = 2
                 low_tot += 1
             elif 110 <= scaled_dNBR[i][j] < 187:
-                class_plot[i][j] = 2
+                class_plot[i][j] = 3
                 med_tot += 1
             elif np.isnan(scaled_dNBR[i][j]):
                 class_plot[i][j] = float('nan')
             else:
-                class_plot[i][j] = 3
+                class_plot[i][j] = 4
                 high_tot += 1
     
     #calculating percentages           
@@ -146,10 +147,12 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not gi
     med_per = round(100*med_tot/tot,1)
     high_per = round(100*high_tot/tot,1)
     
+    if not os.path.exists(title):
+        os.mkdir(title)
     #plotting
     cmap = matplotlib.colors.ListedColormap(['green','yellow','orange','red'])
     plt.figure(figsize=(15,15))
-    plt.imshow(class_plot,vmin=0,vmax=3,cmap=cmap)
+    plt.imshow(class_plot,vmin=1,vmax=4,cmap=cmap)
     plt.title(f'BARC 256 burn severity, start date:{start_date}, end date:{end_date}')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Unburned {un_per}%',color='green')
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'Low {low_per}%' ,color='yellow')
@@ -157,12 +160,12 @@ def class_plot(dNBR, start_date='Not given', end_date='Not given', title='Not gi
     plt.scatter(np.nan,np.nan,marker='s',s=100,label=f'High {high_per}%',color='red')
     plt.legend(fontsize="20")
     plt.tight_layout()
-    plt.savefig(f'{title}_BARC_classification.png')
+    plt.savefig(f'{title}/{end_date}_BARC_classification.png')
 
     return class_plot
 
 
-def time_series(directory,start_date,format=''):
+def time_series(directory,start_date,title='BARC'):
     '''
     Takes a Directory and plots a time serise of BARC plots with the provided start date 
     '''
@@ -191,7 +194,34 @@ def time_series(directory,start_date,format=''):
     start_file = sorted_file_names[index]
     start_frame = NBR(f'{directory}/{start_file}')
     #making BARC plots
+    i = 0
     for file in sorted_file_names[index +1:]:
+        i += 1  
         dnbr = dNBR(start_frame, f'{directory}/{file}')
         end_date = extract_date(file)
-        class_plot(dnbr,start_date,end_date,f'{end_date}_{format}')    
+        data = class_plot(dnbr,start_date,end_date,title)  
+        if i == len(sorted_file_names[index +1:]):
+            print('Writing data to Tiff')
+            write_matrix_to_tif(data, f'{directory}/{file}', f'{title}_barcs/BARC_{title}_{start_date}_{end_date}_BARC.tif') 
+
+def barc_to_tiff(fire_dir, start_date, end_date):
+    title = f'{fire_dir.strip("_cut")}_barcs'
+    files = os.listdir(fire_dir)
+    file_list = []
+    for n in range(len(files)):
+        if files[n].split('.')[-1] == 'bin':
+            file_list.append((int(extract_date(files[n])), f'{fire_dir}/{files[n]}'))
+        else:
+            continue
+    
+    #sorted_file_names = sorted(file_list, key=extract_date) #sorting
+    
+    for file in file_list:
+        if file[0] == start_date:
+            start_file = file[1]
+        elif file[0] == end_date:
+            end_file = file[1]
+    
+    dnbr = dNBR(start_file, end_file)
+    data = class_plot(dnbr, start_date, end_date, title)
+    write_matrix_to_tif(data, end_file, f'{title}/{end_date}_barc.tif')

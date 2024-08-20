@@ -6,7 +6,7 @@ NOTE: assumes sentinel2_extract_cloudfree.py has been run.
 20240618 NOTE: need to make this fully incremental. I.e., initialize buffer (per tile) with last avaiable MRAP date'''
 from envi import envi_update_band_names
 from envi import envi_header_cleanup
-from misc import args, run, hdr_fn, err, parfor
+from misc import args, run, hdr_fn, err, parfor, exist
 import multiprocessing as mp
 from osgeo import gdal
 import numpy as np
@@ -18,6 +18,13 @@ import shutil
 my_bands_gid, my_proj_gid, my_geo_gid, my_xsize_gid, my_ysize_gid, nbands_gid = {}, {}, {}, {}, {}, {} 
 
 def extract(file_name, gid):
+    stack_fn = '.'.join(file_name.split('.')[:-1]) + '.bin_MRAP.bin' # output stack filename
+
+    print(stack_fn)
+    if exist(stack_fn):
+        print("Exists:", stack_fn, "skipping..")
+        return
+
     global my_bands_gid, my_proj_gid, my_geo_gid, my_xsize_gid, my_ysize_gid, nbands_gid
     print("+r", file_name)
     d = gdal.Open(file_name)  # open the file brought in for this update step
@@ -123,4 +130,23 @@ if __name__ == "__main__":
         # run mrap in parallel (by tile)
         parfor(f, gids, int(mp.cpu_count()))
     else:
-        run_mrap(args[1])  # single tile mode: no mosaicing
+        gids = []
+        dirs = [x.strip() for x in os.popen(f'ls -1d {args[1]}').readlines()]
+        for d in dirs:
+            print(d)
+            w = d.split('_')
+            if len(w) != 2:
+                err('unexpected folder name')
+
+            gid = w[1]
+            gids += [gid]
+            # should run on this frame here. 
+            # but check for cloud-free data first
+        # err("python3 sentinel2_mrap.py [sentinel-2 gid] # [optional: yyyymmdd 'maxdate' parameter] ")
+        
+        # run mrap on one tile
+        def f(gid):
+            run_mrap(gid)
+
+        # run mrap in parallel (by tile)
+        parfor(f, gids, int(mp.cpu_count()))
