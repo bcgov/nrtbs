@@ -22,7 +22,7 @@ def check_tile_id(fire_num):
     #checking if multiple fire numbers are given
     if type(fire_num) == str:
         fire_num = [fire_num]
-    
+
     #reading files
     fire_perims = gpd.read_file(fire_perims_path)
     fire_perims = fire_perims.to_crs(epsg=4326)
@@ -42,7 +42,6 @@ def check_tile_id(fire_num):
     # Loop over each fire perimeter feature
     for _, fire_geom in fire_num_perim.iterrows():
         fire_geometry = fire_geom.geometry
-        
         # Check which tiles intersect with the current fire perimeter
         containing = tile_id[tile_id.geometry.intersects(fire_geometry)]
         

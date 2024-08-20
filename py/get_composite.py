@@ -15,6 +15,7 @@ import geopandas as gpd
 from datetime import datetime, timedelta
 from dnbr import time_series
 from auto_coords import auto_coords
+from barc_comp import trim_tif_to_shapefile
 
 def get_composite_image(fire_num, end_date=None):
     '''
@@ -25,6 +26,7 @@ def get_composite_image(fire_num, end_date=None):
         fire_name = f'{fire_num[0]}_complex'
     else:
         fire_name = fire_num[0]
+    
     #taking end date as today none defined
     if end_date == None:
         end_date = datetime.today().date()
@@ -50,20 +52,27 @@ def get_composite_image(fire_num, end_date=None):
     for comp in str_start_date_comps:
         str_start_date += comp
 
+    str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
+
     tiles = check_tile_id(fire_num) #checking tiles
     tile_str = ''
     for tile in tiles:
-        tile_str += f' {tile}'
+        if not os.path.exists(f'L2_{tile}/*{str_end_date}*'):
+            tile_str += f' {tile}'
     
-    sync_string = f'python3 sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str #defining sync string
-    # run(sync_string) #running download script
-    # run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
-    # for tile in tiles:
-    #     run(f'python3 sentinel2_mrap.py L2_{tile}') #running MRAP script
-    if len(tiles) > 1:
-        run(f'python3 sentinel2_mrap_merge.py {fire_name}') #running merge script if necesary 
+    if tile_str != '':
+        sync_string = f'python3 sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str #defining sync string
+        run(sync_string) #running download script
+    
+    run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
+    for tile in tiles:
+        run(f'python3 sentinel2_mrap.py L2_{tile}') #running MRAP script
+    
 
-    #renaming directory and moving non MRAP frames
+    if len(tiles) > 1:
+        run(f'python3 sentinel2_mrap_merge.py {fire_name} {tile_str}') #running merge script if necesary 
+
+    #Making fire directory and copying MRAP frames in
     else:
         if not os.path.exists(fire_name):
             os.mkdir(fire_name)
@@ -76,6 +85,9 @@ def get_composite_image(fire_num, end_date=None):
     #cut_data = plot_image_with_rectangle(files[-1]) #prompt user for cut coords
     cut_data = auto_coords(fire_num, files[-1])
     run(f'python3 cut.py {fire_name} {int(cut_data[0])} {int(cut_data[1])} {int(cut_data[2])} {int(cut_data[3])}')
+
+    if len(tiles) == 1:
+        run(f'rm -r {fire_name}')
 
     #reading through files to find nearest date to start date
     files = os.listdir(f'{fire_name}_cut')
@@ -93,7 +105,9 @@ def get_composite_image(fire_num, end_date=None):
 
     extract_data_percent(f'{fire_name}_cut',barc_start) #plotting the data percent vs time for frames
     plot(f'{fire_name}_cut', fire_name) #plotting image, NBR, dNBR time series
-    time_series(f'{fire_name}_cut', int(barc_start), f'{fire_name}_barcs') #plotting BARC time series
+    time_series(f'{fire_name}_cut', int(barc_start), f'{fire_name}') #plotting BARC time series
+    for fire in fire_num:
+        trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif', fire_name, f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
     
 if __name__ == "__main__":
 

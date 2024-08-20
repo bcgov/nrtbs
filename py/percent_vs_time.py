@@ -57,5 +57,5 @@ def extract_data_percent(file_dir, date=None):
     plt.plot(dates, percent_data)
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    #plt.show()
     plt.savefig(f'{file_dir}_percent_data.png')
