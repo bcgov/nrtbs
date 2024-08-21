@@ -1,7 +1,7 @@
 ## Automated compositing
 * Open code repository in terminal
 * Call "$ python3 get_composite FIRE_NUMBER" for single fire or "$ python3 get_composite FIRE_NUMBER1 FIRE_NUMBER2 ..." for a fire complex'
-* Start and end dates will be automatically generated based on fire ignition dates
+* Start and end dates will be automatically generated based on fire ignition dates unless manual end date is given
 * Automatic trimming to fire AOI
 * Results will be output into a FIRE_NUMBER_barcs folder
 # nrtbs
