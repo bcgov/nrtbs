@@ -52,7 +52,7 @@ def get_composite_image(fire_num, end_date=None):
     for comp in str_start_date_comps:
         str_start_date += comp
 
-    str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
+    #str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
 
     tiles = check_tile_id(fire_num) #checking tiles
     tile_str = ''
