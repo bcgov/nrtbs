@@ -1,5 +1,5 @@
 # nrtbs
-Application: "same-day" NRT burned severity (automatic)
+Application: **NRT "same-day" burned severity (automatic)**
 
 * uses MRAP (Most Recent Available Pixel) "cloud-free" image compositing
 * Access to ESA Sentinel-2 data via NRCAN NRT Sentinel products mirror (thanks ESA and NRCAN) 
