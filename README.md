@@ -20,6 +20,7 @@ sudo apt install gdal-bin gdal-dev
 * Also compatible with MacOS (use brew install instead of sudo apt install) 
 
 # Background / references
+* [Sterling's original instructions](doc/TASK.md)
 * https://burnseverity.cr.usgs.gov/ravg/background-products-applications
 * https://towardsdatascience.com/t-sne-clearly-explained-d84c537f53a
 * https://github.com/SashaNasonova/burnSeverity/blob/main/burnsev_gee.py
