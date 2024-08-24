@@ -1,5 +1,8 @@
 # nrtbs
-Application: NRT burned severity (automated) from MRAP "cloud-free" composited image sequence
+Application: NRT burned severity (automated)
+
+* uses MRAP (Most Recent Available Pixel) "cloud-free" composite imagery 
+ 
 ## Running
 * Open code repository in terminal
 * Call "$ python3 get_composite FIRE_NUMBER" for single fire or "$ python3 get_composite FIRE_NUMBER1 FIRE_NUMBER2 ..." for a fire complex'
@@ -13,8 +16,8 @@ In both cases, the following commands are needed before running the application
 ```
 python3 -m pip install numpy matplotlib pandas rasterio geopandas
 sudo apt install gdal-bin gdal-dev
+```
 * Also compatible with MacOS (use brew install instead of sudo apt install) 
-``` 
 ## Data Engineering
 * Have a look at p 1-2 of [CSRS abstracts](https://github.com/bcgov/wps-research/blob/master/doc/2024_csrs/2024_csrs_abstracts.pdf)
 * Review general details of [Sentinel-2 mission](https://sentiwiki.copernicus.eu/web/s2-mission)
