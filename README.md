@@ -1,7 +1,8 @@
 # nrtbs
 Application: NRT burned severity (automated)
 
-* uses MRAP (Most Recent Available Pixel) "cloud-free" composite imagery 
+* uses MRAP (Most Recent Available Pixel) "cloud-free" image compositing
+* Access to ESA Sentinel-2 data via NRCAN NRT Sentinel products mirror (thanks ESA and NRCAN) 
  
 ## Running
 * Open code repository in terminal
