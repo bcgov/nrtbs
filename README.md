@@ -5,6 +5,9 @@ Application: "same-day" NRT burned severity (automatic)
 * Access to ESA Sentinel-2 data via NRCAN NRT Sentinel products mirror (thanks ESA and NRCAN) 
  
 ## Running
+```
+git clone 
+```
 * Open code repository in terminal
 * Call "$ python3 get_composite FIRE_NUMBER" for single fire or "$ python3 get_composite FIRE_NUMBER1 FIRE_NUMBER2 ..." for a fire complex'
 * Start and end dates will be automatically generated based on fire ignition dates unless manual end date is given
