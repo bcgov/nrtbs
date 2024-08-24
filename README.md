@@ -1,4 +1,4 @@
-# nrtbs
+# nrtbs (Near-Real-Time Burned Severity)
 Application: **NRT "same-day" burned severity (automatic)**
 
 * uses MRAP (Most Recent Available Pixel) "cloud-free" image compositing
