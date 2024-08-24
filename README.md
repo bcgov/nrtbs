@@ -4,16 +4,13 @@ Application: **NRT "same-day" burned severity (automatic)**
 * uses MRAP (Most Recent Available Pixel) "cloud-free" image compositing
 * Access to ESA Sentinel-2 data via NRCAN NRT Sentinel products mirror on AWS-S3 (thanks ESA and NRCAN) 
  
-## Running
+## To run
 ```
 git clone git@github.com:bcgov/nrtbs.git
 cd nrtbs
 python3 get_composite [FIRE_NUMBER] 
 ```
 where [FIRE_NUMBER] is a 6-character BC wildfire "fire number" (a letter followed by 5 digits)
-
-* Open code repository in terminal
-* Call "$ python3 get_composite FIRE_NUMBER" for single fire or "$ python3 get_composite FIRE_NUMBER1 FIRE_NUMBER2 ..." for a fire complex'
 * Start and end dates will be automatically generated based on fire ignition dates unless manual end date is given
 * Automatic trimming to fire AOI
 * Results will be output into a FIRE_NUMBER_barcs folder
