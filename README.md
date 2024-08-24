@@ -5,7 +5,8 @@
 * Automatic trimming to fire AOI
 * Results will be output into a FIRE_NUMBER_barcs folder
 ## Dependencies
-```python3 -m pip install numpy matplotlib pandas rasterio geopandas
+```
+python3 -m pip install numpy matplotlib pandas rasterio geopandas
 sudo apt install gdal-bin gdal-dev
 ``` 
 # nrtbs
