@@ -1,9 +1,9 @@
 '''
 donwloads sentinel data, extracts cloudfree swir nir bands, choses most recent avaialbe pixle, and merges frames (if necesary). Automatic date range is defined if no end date is given. Start download date is always 3 weeks prior to first fire start date
-$python3 get_composite.py G90267 
-$python3 get_composite.py 20240630 G90267 
-$python3 get_composite.py N51117 N51069 N51210 N51103
-$python3 get_composite.py 20240810 N51117 N51069 N51210 N51103
+$python3 get_composite.py G90267 #single fire with automatic end date
+$python3 get_composite.py 20240630 G90267 #single fire with manual end date
+$python3 get_composite.py N51117 N51069 N51210 N51103 #fire complex with automatic end date
+$python3 get_composite.py 20240810 N51117 N51069 N51210 N51103 #fire complex with manual end date
 '''
 from percent_vs_time import extract_data_percent
 from misc import run, args, extract_date
@@ -52,7 +52,7 @@ def get_composite_image(fire_num, end_date=None):
     for comp in str_start_date_comps:
         str_start_date += comp
 
-    str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
+    #str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
 
     tiles = check_tile_id(fire_num) #checking tiles
     tile_str = ''
