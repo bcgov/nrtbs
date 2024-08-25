@@ -20,7 +20,7 @@ where [FIRE_NUMBER] is a 6-character BC wildfire "fire number" (a letter followe
 In both cases, the following commands are needed before running the application
 ```
 python3 -m pip install numpy matplotlib pandas rasterio geopandas
-sudo apt install gdal-bin gdal-dev
+sudo apt install gdal-bin libgdal-dev
 ```
 * Also compatible with MacOS (use brew install instead of sudo apt install) 
 
