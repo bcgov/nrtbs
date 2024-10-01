@@ -38,7 +38,7 @@ def get_composite_image(fire_num, end_date=None):
         str_end_date = end_date
     
     #getting the ignition date for fires and taking the smallest
-    fire_points_path = '../shape_files/prot_current_fire_points.shp'
+    fire_points_path = 'prot_current_fire_points.shp'
     fire_points = gpd.read_file(fire_points_path)
     fire_points = fire_points.to_crs(epsg=4326)
     fire_num_point = fire_points[fire_points['FIRE_NUM'].isin(fire_num)]
@@ -61,16 +61,16 @@ def get_composite_image(fire_num, end_date=None):
             tile_str += f' {tile}'
     
     if tile_str != '':
-        sync_string = f'python3 sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str #defining sync string
+        sync_string = f'python3 py/sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str #defining sync string
         run(sync_string) #running download script
     
-    run('python3 sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
+    run('python3 py/sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
     for tile in tiles:
-        run(f'python3 sentinel2_mrap.py L2_{tile}') #running MRAP script
+        run(f'python3 py/sentinel2_mrap.py L2_{tile}') #running MRAP script
     
 
     if len(tiles) > 1:
-        run(f'python3 sentinel2_mrap_merge.py {fire_name} {tile_str}') #running merge script if necesary 
+        run(f'python3 py/sentinel2_mrap_merge.py {fire_name} {tile_str}') #running merge script if necesary 
 
     #Making fire directory and copying MRAP frames in
     else:
@@ -84,7 +84,7 @@ def get_composite_image(fire_num, end_date=None):
     files.sort()
     #cut_data = plot_image_with_rectangle(files[-1]) #prompt user for cut coords
     cut_data = auto_coords(fire_num, files[-1])
-    run(f'python3 cut.py {fire_name} {int(cut_data[0])} {int(cut_data[1])} {int(cut_data[2])} {int(cut_data[3])}')
+    run(f'python3 py/cut.py {fire_name} {int(cut_data[0])} {int(cut_data[1])} {int(cut_data[2])} {int(cut_data[3])}')
 
     if len(tiles) == 1:
         run(f'rm -r {fire_name}')
@@ -110,6 +110,8 @@ def get_composite_image(fire_num, end_date=None):
         trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif', fire_name, f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
     
 if __name__ == "__main__":
+    
+    return_code = os.system('python3 py/get_perimeters.py') # get the latest perimeters
 
     if len(args[1]) == 8: #runs with specified end date if one is provided
         get_composite_image(args[2:], args[1])

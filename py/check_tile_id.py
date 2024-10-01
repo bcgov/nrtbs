@@ -9,16 +9,21 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 from misc import run
+import os
 
 
-tile_path = '../shape_files/Sentinel_BC_Tiles.shp'
+tile_path = 'data/Sentinel_BC_Tiles/Sentinel_BC_Tiles.shp'
+
+if not os.path.exists(tile_path):  # might need to extract
+    return_code = os.system('tar xvf data/Sentinel_BC_Tiles.tar.gz')
+
 def check_tile_id(fire_num):
     '''
     Checks which tiles a fire numbers perimeter is in, for downloading
     Can take a single fire number or a list of fire numbers
     '''
-    run('python3 get_perimeters.py')
-    fire_perims_path = '../shape_files/prot_current_fire_polys.shp'
+    run('python3 py/get_perimeters.py')
+    fire_perims_path = 'prot_current_fire_polys.shp'
     #checking if multiple fire numbers are given
     if type(fire_num) == str:
         fire_num = [fire_num]

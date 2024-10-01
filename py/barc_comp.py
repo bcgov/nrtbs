@@ -71,7 +71,7 @@ def trim_tif_to_shapefile(tif_path, fire_num, output_path):
     cuts a tiff file to a fire perimeter
     '''
     # Load the shapefile
-    shapefile_path = '../shape_files/prot_current_fire_polys.shp'
+    shapefile_path = 'prot_current_fire_polys.shp'
     perims = gpd.read_file(shapefile_path)
     shapes = perims[perims['FIRE_NUM'] == fire_num]
     
