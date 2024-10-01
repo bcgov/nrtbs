@@ -16,8 +16,10 @@ from datetime import datetime, timedelta
 from dnbr import time_series
 from auto_coords import auto_coords
 from barc_comp import trim_tif_to_shapefile
+no_update_listing = False
 
 def get_composite_image(fire_num, end_date=None):
+    global no_update_listing
     '''
     Takes a fire number as well as a tile ID and downloads an MRAP timesires composite
     '''
@@ -61,7 +63,7 @@ def get_composite_image(fire_num, end_date=None):
             tile_str += f' {tile}'
     
     if tile_str != '':
-        sync_string = f'python3 py/sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str #defining sync string
+        sync_string = f'python3 py/sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str + (' --no_update_listing' if no_update_listing else '')  #defining sync string
         run(sync_string) #running download script
     
     run('python3 py/sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
@@ -110,7 +112,9 @@ def get_composite_image(fire_num, end_date=None):
         trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif', fire_name, f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
     
 if __name__ == "__main__":
-    
+    if "--no_update_listing" in args:
+        no_update_listing = True
+
     return_code = os.system('python3 py/get_perimeters.py') # get the latest perimeters
 
     if len(args[1]) == 8: #runs with specified end date if one is provided

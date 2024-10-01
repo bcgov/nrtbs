@@ -177,16 +177,19 @@ def extract_cloudfree(file_name):
     for f in [xml_f, hdr_b]:
         if os.path.exists(f):
             os.remove(f)
+    
     exe_file = sep.join(pd.rstrip(os.path.sep).split(sep)[:-1] + ['cpp']) + sep + 'raster_zero_to_nan'  
-
-    if not exist(exe_file):
-        run(f'g++ /{pd.strip("/py")}/cpp/raster_zero_to_nan.cpp /{pd.strip("/py")}/cpp/misc.cpp -O3 -o {exe_file}')
-        run(f'chmod 777 {exe_file}') # /{pd.strip("/py")}/cpp/raster_zero_to_nan')
     run(f'{exe_file} {stack_fn}')
 
 
 if __name__ == "__main__":
-    
+    # make sure the exe file is built for converting zero-values to NAN
+    exe_file = sep.join(pd.rstrip(os.path.sep).split(sep)[:-1] + ['cpp']) + sep + 'raster_zero_to_nan'
+
+    if not exist(exe_file):
+        run(f'g++ /{pd.strip("/py")}/cpp/raster_zero_to_nan.cpp /{pd.strip("/py")}/cpp/misc.cpp -O3 -o {exe_file}')
+        run(f'chmod 755 {exe_file}') # /{pd.strip("/py")}/cpp/raster_zero_to_nan')
+
     file_name = None
     if len(args) == 2:
         file_name = args[1]

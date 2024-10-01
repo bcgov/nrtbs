@@ -7,6 +7,8 @@ data_type = 'MSIL2A'
 if not use_L2:
     data_type = 'MSIL1C'
 
+no_update_listing = False # flag to skip refreshing listing of aws archive
+
 from misc import args, sep, exists, parfor, run, timestamp, err
 import multiprocessing as mp
 import datetime
@@ -19,6 +21,8 @@ my_path = sep.join(os.path.abspath(__file__).split(sep)[:-1]) + sep
 product_target = os.getcwd() + sep # put ARD products into present folder
 
 def download_by_gids(gids, yyyymmdd, yyyymmdd2):
+    global no_update_listing
+
     if len(yyyymmdd) != 8 or len(yyyymmdd2) != 8:
         err('expected date in format yyyymmdd')
     start_d = datetime.datetime(int(yyyymmdd[0:4]),
@@ -35,21 +39,33 @@ def download_by_gids(gids, yyyymmdd, yyyymmdd2):
         date_range += [str(start_d.year).zfill(4) + str(start_d.month).zfill(2) + str(start_d.day).zfill(2)]
 
     print(date_range)
+    
+    data = None 
 
-    ts = timestamp()
-    cmd = ' '.join(['aws',  # read data from aws
-                    's3api',
-                    'list-objects',
-                    '--no-sign-request',
-                    '--bucket sentinel-products-ca-mirror'])
-    print(cmd)
-    data = os.popen(cmd).read()
-    
-    
-    if not exists(my_path + 'listing'):  # json backup for analysis
-        os.mkdir(my_path + 'listing')
-    df = my_path + 'listing' + sep + ts + '_objects.txt'  # file to write
-    open(df, 'wb').write(data.encode())  # record json to file
+    if no_update_listing:
+        latest = [x.strip() for x in os.popen('ls -r1 py/listing').readlines()]
+        latest.sort()
+        print("latest", latest)
+        latest_path = 'py/listing/' + latest[-1]
+        if len(latest) > 0 and os.path.exists(latest_path):
+            print("+r", latest_path)
+            data = open(latest_path).read() # .decode()
+        else:
+            err('probably need to run without --no_update_listing option first')
+    else:
+        ts = timestamp()
+        cmd = ' '.join(['aws',  # read data from aws
+                        's3api',
+                        'list-objects',
+                        '--no-sign-request',
+                        '--bucket sentinel-products-ca-mirror'])
+        print(cmd)
+        data = os.popen(cmd).read()
+        
+        if not exists(my_path + 'listing'):  # json backup for analysis
+            os.mkdir(my_path + 'listing')
+        df = my_path + 'listing' + sep + ts + '_objects.txt'  # file to write
+        open(df, 'wb').write(data.encode())  # record json to file
 
 
     jobs, d = [], None
@@ -103,6 +119,12 @@ gids = []  # get gids from command line
 if len(args) > 3:
     gids = set(args[3:])
 
+    gids_use = set({})
+    for gid in gids:
+        if gid[0:2] != '--':
+            gids_use.add(gid)
+    gids = gids_use
+
 if len(gids) == 0:  # if no gids provided, default to all gids for BC
     from gid import bc
     gids = bc()
@@ -112,7 +134,9 @@ else:
         gids = None
         print('pulling Canada data..')
 
-
 if __name__ == "__main__":
     yyyymmdd, yyyymmdd2 = args[1], args[2]
+
+    no_update_listing = '--no_update_listing' in args
+
     download_by_gids(gids, yyyymmdd, yyyymmdd2)
