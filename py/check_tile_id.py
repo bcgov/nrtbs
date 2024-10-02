@@ -15,7 +15,7 @@ import os
 tile_path = 'data/Sentinel_BC_Tiles/Sentinel_BC_Tiles.shp'
 
 if not os.path.exists(tile_path):  # might need to extract
-    return_code = os.system('tar xvf data/Sentinel_BC_Tiles.tar.gz')
+    return_code = os.system('cd data; tar xvf Sentinel_BC_Tiles.tar.gz')
 
 def check_tile_id(fire_num):
     '''
