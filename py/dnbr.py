@@ -169,6 +169,9 @@ def time_series(directory,start_date,title='BARC'):
     '''
     Takes a Directory and plots a time serise of BARC plots with the provided start date 
     '''
+    if not os.path.exists(directory):
+        os.mkdir(directory) 
+
     #sorting files
     files = os.listdir(directory)
     file_list = []
