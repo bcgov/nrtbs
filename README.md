@@ -8,12 +8,18 @@ Application: **NRT "same-day" burned severity (automatic)**
 ```
 git clone git@github.com:bcgov/nrtbs.git
 cd nrtbs
-python3 get_composite [FIRE_NUMBER] 
+python3 py/get_composite [FIRE_NUMBER] 
 ```
-where [FIRE_NUMBER] is a 6-character BC wildfire "fire number" (a letter followed by 5 digits)
+where [FIRE_NUMBER] is a 6-character BC wildfire "fire number" (a letter followed by 5 digits), for example:
+```
+python3 py/get_composite.py G90267
+```
+for the 2024 Parker Lake wildfire, affecting Fort Nelson (BC). 
 * Start and end dates will be automatically generated based on fire ignition dates unless manual end date is given
 * Automatic trimming to fire AOI
 * Results will be output into a FIRE_NUMBER_barcs folder
+## Note:
+After 
 ## Dependencies
 * Windows: first [please click here for instructions to install WSL prompt](https://learn.microsoft.com/en-us/windows/wsl/install) no admin privileges required in Windows
 * Ubuntu Linux
