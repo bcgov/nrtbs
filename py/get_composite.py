@@ -17,6 +17,7 @@ from dnbr import time_series
 from auto_coords import auto_coords
 from barc_comp import trim_tif_to_shapefile
 no_update_listing = False
+skip_download = False
 
 def get_composite_image(fire_num, end_date=None):
     global no_update_listing
@@ -62,7 +63,7 @@ def get_composite_image(fire_num, end_date=None):
         if not os.path.exists(f'L2_{tile}/*{str_end_date}*'):
             tile_str += f' {tile}'
     
-    if tile_str != '':
+    if tile_str != '' and not skip_download:
         sync_string = f'python3 py/sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str + (' --no_update_listing' if no_update_listing else '')  #defining sync string
         run(sync_string) #running download script
     
@@ -114,6 +115,9 @@ def get_composite_image(fire_num, end_date=None):
 if __name__ == "__main__":
     if "--no_update_listing" in args:
         no_update_listing = True
+
+    if "--skip_download" in args:
+        skip_download = True
 
     return_code = os.system('python3 py/get_perimeters.py') # get the latest perimeters
 
