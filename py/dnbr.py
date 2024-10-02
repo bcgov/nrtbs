@@ -169,9 +169,6 @@ def time_series(directory,start_date,title='BARC'):
     '''
     Takes a Directory and plots a time serise of BARC plots with the provided start date 
     '''
-    if not os.path.exists(directory):
-        os.mkdir(directory) 
-
     #sorting files
     files = os.listdir(directory)
     file_list = []
@@ -205,6 +202,14 @@ def time_series(directory,start_date,title='BARC'):
         data = class_plot(dnbr,start_date,end_date,title)  
         if i == len(sorted_file_names[index +1:]):
             print('Writing data to Tiff')
+            
+            barc_folder_name = '_'.join(title.split('_')[:-1]) + '_barcs'
+            if not os.path.exists(barc_folder_name):
+                os.mkdir(barc_folder_name)
+
+            if not os.path.exists(title+'_barcs'):
+                os.mkdir(title+'_barcs')
+
             write_matrix_to_tif(data, f'{directory}/{file}', f'{title}_barcs/BARC_{title}_{start_date}_{end_date}_BARC.tif') 
 
 def barc_to_tiff(fire_dir, start_date, end_date):
