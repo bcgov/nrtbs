@@ -161,7 +161,7 @@ def class_plot(dNBR, start_date, end_date, title='Not given'):
     plt.legend(fontsize="20")
     plt.tight_layout()
     plt.savefig(f'{title}/{end_date}_BARC_classification.png')
-
+    plt.close()
     return class_plot
 
 
