@@ -1,5 +1,5 @@
 '''
-donwloads sentinel data, extracts cloudfree swir nir bands, choses most recent avaialbe pixle, and merges frames (if necesary). Automatic date range is defined if no end date is given. Start download date is always 3 weeks prior to first fire start date
+donwloads sentinel data, extracts cloudfree swir nir bands, chooses most recent avaiable pixels, and merges frames (if necessary). Automatic date range is defined if no end date is given. Start download date is always 3 weeks prior to (first) fire start date (in case of complex of fires specified).
 $python3 get_composite.py G90267 #single fire with automatic end date
 $python3 get_composite.py 20240630 G90267 #single fire with manual end date
 $python3 get_composite.py N51117 N51069 N51210 N51103 #fire complex with automatic end date
@@ -18,6 +18,19 @@ from auto_coords import auto_coords
 from barc_comp import trim_tif_to_shapefile
 no_update_listing = False
 skip_download = False
+
+
+def is_valid_date(date_string):
+    ''' Check if string is 8 digits long and consists of digits that can be parsed into a datetime object
+    '''
+    if len(date_string) != 8 or not date_string.isdigit():
+        return False
+    try:   # try to parse string as date in yyyymmdd format
+        datetime.strptime(date_string, '%Y%m%d')
+        return True
+    except Exception as e:
+        return False
+
 
 def get_composite_image(fire_num, end_date=None):
     global no_update_listing
@@ -64,14 +77,15 @@ def get_composite_image(fire_num, end_date=None):
             tile_str += f' {tile}'
     
     if tile_str != '' and not skip_download:
-        sync_string = f'python3 py/sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + tile_str + (' --no_update_listing' if no_update_listing else '')  #defining sync string
+        # defining sync string
+        sync_string = f'python3 py/sync_daterange_gid_zip.py {str_start_date} {str_end_date}' + \
+                        tile_str + (' --no_update_listing' if no_update_listing else '')
         run(sync_string) #running download script
     
     run('python3 py/sentinel2_extract_cloudfree_swir_nir.py') #running cloudfree extraction
     for tile in tiles:
         run(f'python3 py/sentinel2_mrap.py L2_{tile}') #running MRAP script
     
-
     if len(tiles) > 1:
         run(f'python3 py/sentinel2_mrap_merge.py {fire_name} {tile_str}') #running merge script if necesary 
 
@@ -85,6 +99,7 @@ def get_composite_image(fire_num, end_date=None):
     #getting list of files for cutting
     files = [x.strip() for x in os.popen(f'ls -1 {fire_name}/*.bin').readlines()] 
     files.sort()
+
     #cut_data = plot_image_with_rectangle(files[-1]) #prompt user for cut coords
     cut_data = auto_coords(fire_num, files[-1])
     run(f'python3 py/cut.py {fire_name} {int(cut_data[0])} {int(cut_data[1])} {int(cut_data[2])} {int(cut_data[3])}')
@@ -100,19 +115,32 @@ def get_composite_image(fire_num, end_date=None):
             date_list.append(extract_date(files[n]))
         else:
             continue
+
     date_list = sorted(date_list)
     for i in range(len(date_list)):
         if datetime.strptime(date_list[i], '%Y%m%d').date() >= (fire_start_date - timedelta(days=1)):
             barc_start = date_list[i-1]
             break
 
-    extract_data_percent(f'{fire_name}_cut',barc_start) #plotting the data percent vs time for frames
-    plot(f'{fire_name}_cut', fire_name) #plotting image, NBR, dNBR time series
-    time_series(f'{fire_name}_cut', int(barc_start), f'{fire_name}') #plotting BARC time series
-    for fire in fire_num:
-        trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif', fire_name, f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
+    extract_data_percent(f'{fire_name}_cut',
+                         barc_start) #plotting the data percent vs time for frames
+
+    plot(f'{fire_name}_cut',
+         fire_name) #plotting image, NBR, dNBR time series
     
+    time_series(f'{fire_name}_cut',
+                int(barc_start),
+                f'{fire_name}') #plotting BARC time series
+    
+    for fire in fire_num:
+        trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif',
+                              fire_name,
+                              f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
+ 
+   
 if __name__ == "__main__":
+    end_date = args[1] if is_valid_date(args[1]) else None
+
     if "--no_update_listing" in args:
         no_update_listing = True
 
@@ -121,8 +149,9 @@ if __name__ == "__main__":
 
     return_code = os.system('python3 py/get_perimeters.py') # get the latest perimeters
 
-    if len(args[1]) == 8: #runs with specified end date if one is provided
-        get_composite_image(args[2:], args[1])
+    fire_numbers = []
+    for i in args[1:]:
+        if i[0:2] != '--' and not is_valid_date(i):
+            fire_numbers += [i]
     
-    else: #runs with end date set to current date
-        get_composite_image(args[1:])
+    get_composite_image(fire_numbers, end_date)  # this function is in this file
