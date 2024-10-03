@@ -77,9 +77,8 @@ def plot(file_dir,title='No title given'):
                 os.mkdir(f'{title}_images')
             plt.tight_layout()
             plt.savefig(f'{title}_images/{date}_image.png')
-            plt.clf()
+            plt.close() # plt.clf()
             print('Could not plot NBR/dNBR, not enough bands')
-               
         else:
             NBR = np.zeros((height,width))    
             B12 = np.zeros((height,width))
@@ -133,9 +132,9 @@ def plot(file_dir,title='No title given'):
                     os.mkdir(f'{title}_dNBR')
                 plt.tight_layout()
                 plt.savefig(f'{title}_dNBR/{date}_{sorted_file_names[n]}.png') 
-                plt.clf()
-            
-            
+            plt.close()  # plt.clf()
+
+
 def plot_image(file):
     '''
     calculates the plottable data for the sortwave infared of the given file
