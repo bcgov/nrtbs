@@ -145,9 +145,9 @@ def get_composite_image(fire_num, end_date=None):
 
 
 if __name__ == "__main__":
-    end_date = args[1] if is_valid_date(args[1]) else None
+    end_date = args[1] if is_valid_date(args[1]) else None  # date arg possibly at position 1
 
-    no_update_listing, skip_download = "--no_update_listing" in args, "--skip_download" in args
+    no_update_listing, skip_download = "--no_update_listing" in args, "--skip_download" in args  # nonpositional options
     
     return_code = os.system('python3 py/get_perimeters.py')  # refresh perimeters, n.b. should add "past data" option
 
