@@ -151,7 +151,7 @@ if __name__ == "__main__":
     
     return_code = os.system('python3 py/get_perimeters.py')  # refresh perimeters, n.b. should add "past data" option
 
-    fire_numbers = []
+    fire_numbers = []  # other options assumed to be fire ID codes
     for i in args[1:]:
         if (i[0:2] != '--') and (not is_valid_date(i)):
             fire_numbers += [i]
