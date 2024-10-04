@@ -13,6 +13,8 @@ def write_matrix_to_tif(matrix, data_file, output_tif):
     - data_file (str): Path to the data file corresponding to the header file.
     - output_tif (str): Path to the output TIFF file.
     """
+    print('+w', output_tif)
+
     def read_metadata_from_gdal(data_file):
         """
         Extract metadata using GDAL.
@@ -73,4 +75,4 @@ def write_matrix_to_tif(matrix, data_file, output_tif):
     with rasterio.open(output_tif, 'w', **tif_metadata) as dst:
         dst.write(matrix, 1)  # Write the matrix to the first band
 
-    print(f'Data written to Tiff')
+    # print(f'Data written to Tiff')

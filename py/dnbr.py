@@ -112,7 +112,7 @@ def dNBR(start_frame, end_frame):
 
     return dNBR
 
-def class_plot(dNBR, start_date, end_date, title='Not given'): 
+def barc_class_plot(dNBR, start_date, end_date, title='Not given'): 
     '''
     Plots the BARC 256 burn severity of the provided dNBR and saves it as a png
     '''
@@ -162,10 +162,11 @@ def class_plot(dNBR, start_date, end_date, title='Not given'):
     plt.tight_layout()
     plt.savefig(f'{title}/{end_date}_BARC_classification.png')
     plt.close()
+    print('+w', f'{title}/{end_date}_BARC_classification.png')
     return class_plot
 
 
-def time_series(directory,start_date,title='BARC'):
+def barc_time_series(directory,start_date,title='BARC'):
     '''
     Takes a Directory and plots a time serise of BARC plots with the provided start date 
     '''
@@ -190,18 +191,23 @@ def time_series(directory,start_date,title='BARC'):
             continue
     if index == None:
         err('Invalid start date')
+    
     #calculating start frame nbr
     start_file = sorted_file_names[index]
     start_frame = NBR(f'{directory}/{start_file}')
+    
     #making BARC plots
     i = 0
     for file in sorted_file_names[index +1:]:
+        print("time_series,file=",file) 
         i += 1  
         dnbr = dNBR(start_frame, f'{directory}/{file}')
         end_date = extract_date(file)
-        data = class_plot(dnbr,start_date,end_date,title)  
-        if i == len(sorted_file_names[index +1:]):
-            print('Writing data to Tiff')
+
+        data = barc_class_plot(dnbr,start_date,end_date,title)  
+
+        if True: # i == len(sorted_file_names[index +1:]):
+            # print('Writing data to Tiff')
             
             barc_folder_name = '_'.join(title.split('_')[:-1]) + '_barcs'
             if not os.path.exists(barc_folder_name):

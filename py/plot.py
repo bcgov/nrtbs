@@ -32,9 +32,15 @@ def scale(X):
 
 def plot(file_dir,title='No title given'):
     '''
-    Takes a directory containing bin files and plots an image using the B12, B11, and B09 bands. Also plots the NBR of each frame as well as the dNBR of each frame except the first (first frame would have dNBR=0). Function places each files into three directories: 'images', 'NBR', and 'dNBR'.
+    Takes a directory containing bin files and plots an image using the B12, B11, and B09 bands.
+        Also plots the NBR of each frame as well as the dNBR of each frame except the first (first frame would have dNBR=0).
+        Function places each files into three directories: 'images', 'NBR', and 'dNBR'.
     >>> plot('raster_data')
     '''
+    print("plot(", "file_dir=" + str(file_dir), "title=" + str(title), ")")
+    if not os.path.exists(f'{title}_images'):
+        os.mkdir(f'{title}_images')
+
     #extracting bin files
     files = os.listdir(file_dir)
     file_list = []
@@ -44,42 +50,45 @@ def plot(file_dir,title='No title given'):
         else:
             continue
     
-
-    sorted_file_names = sorted(file_list, key=extract_date) #sorting
-   
+    sorted_file_names = sorted(file_list, key=extract_date) #sorting 
 
     for n in range(len(sorted_file_names)):
+        date  = extract_date(sorted_file_names[n])
+        print(date)
+
         vals = read_binary(f'{file_dir}/{sorted_file_names[n]}') #reading each file
         data = vals[3]
         width = vals[0]
         height = vals[1]
         bands = vals[2]
         if bands < 4:
-            B12 = np.zeros((height,width))
-            B11 = np.zeros((height,width))
-            B09 = np.zeros((height,width))
-            for i in range(height):
-                for j in range(width):
-                    B12[i][j] = data[width*height*0 + width*i+j] #updating band data for each of the 4 bands
-                    B11[i][j] = data[width*height*1 + width*i+j]
-                    B09[i][j] = data[width*height*2 + width*i+j]
-            band1 = scale(B12) #scaling bands for plotting
-            band2 = scale(B11)
-            band3 = scale(B09)
-            date  = extract_date(sorted_file_names[n])
-            image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
+            if not os.path.exists(f'{title}_images/{date}_image.png'):
+                B12 = np.zeros((height,width))
+                B11 = np.zeros((height,width))
+                B09 = np.zeros((height,width))
+                for i in range(height):
+                    for j in range(width):
+                        B12[i][j] = data[width*height*0 + width*i+j] #updating band data for each of the 4 bands
+                        B11[i][j] = data[width*height*1 + width*i+j]
+                        B09[i][j] = data[width*height*2 + width*i+j]
+                band1 = scale(B12) #scaling bands for plotting
+                band2 = scale(B11)
+                band3 = scale(B09)
+                image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
             
-            plt.figure(figsize=(15,15)) #setting figure parameters
-            plt.imshow(image) #Plotting the image
-            plt.title(f'{title} on {date}, bands: r=B12, g=B11, b=B09')
-            plt.xlabel(sorted_file_names[n])
-            if not os.path.exists(f'{title}_images'):
-                os.mkdir(f'{title}_images')
-            plt.tight_layout()
-            plt.savefig(f'{title}_images/{date}_image.png')
-            plt.close() # plt.clf()
-            print('Could not plot NBR/dNBR, not enough bands')
+                plt.figure(figsize=(15,15)) #setting figure parameters
+                plt.imshow(image) #Plotting the image
+                plt.title(f'{title} on {date}, bands: r=B12, g=B11, b=B09')
+                plt.xlabel(sorted_file_names[n])
+                plt.tight_layout()
+                plt.savefig(f'{title}_images/{date}_image.png')
+                plt.close() # plt.clf()
+                print('+w', f'{title}_images/{date}_image.png')
+                print('Could not plot NBR/dNBR, not enough bands')
         else:
+            if os.path.exists(f'{title}_images/{date}_image.png') and os.path.exists(f'{title}_NBR/{date}_{sorted_file_names[n]}.png') and os.path.exists(f'{title}_dNBR/{date}_{sorted_file_names[n]}.png'):
+                continue
+
             NBR = np.zeros((height,width))    
             B12 = np.zeros((height,width))
             B11 = np.zeros((height,width))
@@ -95,8 +104,8 @@ def plot(file_dir,title='No title given'):
             band1 = scale(B12) #scaling bands for plotting
             band2 = scale(B11)
             band3 = scale(B09)
-            date  = extract_date(sorted_file_names[n])
-            print(date)
+            #date  = extract_date(sorted_file_names[n])
+            #print(date)
             image = np.stack([band1,band2,band3], axis=2) #creating 3D matrix for RGB plot
         
             plt.figure(figsize=(15,15)) #setting figure parameters
@@ -109,7 +118,7 @@ def plot(file_dir,title='No title given'):
             plt.tight_layout()
             plt.savefig(f'{title}_images/{date}_image.png')
             plt.clf()
-            
+            print('+w', f'{title}_images/{date}_image.png')
             
             plt.imshow(NBR, cmap='Greys') #Plotting the NBR
             plt.title(f'NBR of {title} on {date}')
@@ -119,6 +128,7 @@ def plot(file_dir,title='No title given'):
             plt.tight_layout()
             plt.savefig(f'{title}_NBR/{date}_{sorted_file_names[n]}.png')
             plt.clf()
+            print('+w', f'{title}_NBR/{date}_{sorted_file_names[n]}.png')
         
             #Plotting the dNBR for all frames but the first
             if n == 0:
@@ -132,6 +142,7 @@ def plot(file_dir,title='No title given'):
                     os.mkdir(f'{title}_dNBR')
                 plt.tight_layout()
                 plt.savefig(f'{title}_dNBR/{date}_{sorted_file_names[n]}.png') 
+                print('+w', f'{title}_dNBR/{date}_{sorted_file_names[n]}.png')
             plt.close()  # plt.clf()
 
 

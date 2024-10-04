@@ -7,7 +7,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
-from dNBR import dNBR, NBR, class_plot
+from dNBR import dNBR, NBR, barc_class_plot
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -185,8 +185,8 @@ def dNBRmodel(stop_index, file_dir, model_type):
         j = n % width
         data[i][j] = pred[n]
     err = dnbr - data #error
-    true_barc = class_plot(dnbr) 
-    barc = class_plot(data)
+    true_barc = barc_class_plot(dnbr) 
+    barc = barc_class_plot(data)
     errbarc = true_barc-barc
     
     plt.figure(figsize=(15,15)) #plotting

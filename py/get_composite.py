@@ -13,7 +13,7 @@ from plot import plot
 import os
 import geopandas as gpd
 from datetime import datetime, timedelta
-from dnbr import time_series
+from dnbr import barc_time_series
 from auto_coords import auto_coords
 from barc_comp import trim_tif_to_shapefile
 no_update_listing = False
@@ -116,28 +116,36 @@ def get_composite_image(fire_num, end_date=None):
         else:
             continue
 
+    barc_start = None
     date_list = sorted(date_list)
+    print("date_list", date_list)
     for i in range(len(date_list)):
         if datetime.strptime(date_list[i], '%Y%m%d').date() >= (fire_start_date - timedelta(days=1)):
             barc_start = date_list[i-1]
             break
 
+    print("barc_start", barc_start)
     extract_data_percent(f'{fire_name}_cut',
                          barc_start) #plotting the data percent vs time for frames
 
+    # #plotting image, NBR, dNBR time series
     plot(f'{fire_name}_cut',
-         fire_name) #plotting image, NBR, dNBR time series
+         fire_name)  # places files into three directories: 'images', 'NBR', and 'dNBR'
     
-    time_series(f'{fire_name}_cut',
-                int(barc_start),
-                f'{fire_name}') #plotting BARC time series
+    # plotting BARC time series
+    barc_time_series(f'{fire_name}_cut',
+                     int(barc_start),
+                     f'{fire_name}')
     
     for fire in fire_num:
-        trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif',
-                              fire_name,
-                              f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
+        barc_files = [x.strip() for x in os.popen('ls -1 ' + f'{fire}_barcs/*BARC.tif').readlines()]
+        for b in barc_files:
+            trim_tif_to_shapefile(b, fire_name, '.'.join(b.split('.')[:-1]) + '_clipped.tif')        
+
+        #trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif',
+        #                      fire_name,
+        #                      f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
  
-   
 if __name__ == "__main__":
     end_date = args[1] if is_valid_date(args[1]) else None
 
@@ -151,7 +159,7 @@ if __name__ == "__main__":
 
     fire_numbers = []
     for i in args[1:]:
-        if i[0:2] != '--' and not is_valid_date(i):
+        if (i[0:2] != '--') and (not is_valid_date(i)):
             fire_numbers += [i]
     
     get_composite_image(fire_numbers, end_date)  # this function is in this file

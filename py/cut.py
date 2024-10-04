@@ -12,8 +12,13 @@ def cut(fn, A, B, C, D):
 
     if not os.path.exists(f'{fire_num}_cut'):
         os.mkdir(f'{fire_num}_cut')
+
     out_fn = f'{fire_num}_cut/{fn.split("/")[1].strip(".bin")}_cut.bin'
     out_fn_hdr = f'{fire_num}_cut/{fn.split("/")[1].strip(".bin")}_cut.hdr'
+
+    if os.path.exists(out_fn) and os.path.exists(out_fn_hdr):
+        print("skip cut", fn, A, B, C, D)
+        return
 
     run(f'gdal_translate -of ENVI -ot Float32 -srcwin { (" ".join([A, B, C, D]))} {fn} {out_fn}')  # cuting file
 
