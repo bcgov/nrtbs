@@ -24,7 +24,6 @@ e.g.:
 ```
 python3 py/get_composite.py G90267 --no_update_listing
 ```
-to skip the step of refreshing the list of data currently available on AWS (as this step may take a few minutes).
 ## Dependencies
 * Windows: first [please click here for instructions to install WSL prompt](https://learn.microsoft.com/en-us/windows/wsl/install) no admin privileges required in Windows
 * Ubuntu Linux
