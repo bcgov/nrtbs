@@ -21,7 +21,8 @@ skip_download = False
 
 
 def is_valid_date(date_string):
-    ''' Check if string is 8 digits long and consists of digits that can be parsed into a datetime object
+    '''
+    Check if string is 8 digits long & consists of digits parseable into datetime object
     '''
     if len(date_string) != 8 or not date_string.isdigit():
         return False
@@ -33,7 +34,7 @@ def is_valid_date(date_string):
 
 
 def get_composite_image(fire_num, end_date=None):
-    global no_update_listing
+    global no_update_listing, skip_download
     '''
     Takes a fire number as well as a tile ID and downloads an MRAP timesires composite
     '''
@@ -142,24 +143,17 @@ def get_composite_image(fire_num, end_date=None):
         for b in barc_files:
             trim_tif_to_shapefile(b, fire_name, '.'.join(b.split('.')[:-1]) + '_clipped.tif')        
 
-        #trim_tif_to_shapefile(f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC.tif',
-        #                      fire_name,
-        #                      f'{fire}_barcs/BARC_{fire}_{start_date}_{end_date}_BARC_clipped.tif')
- 
+
 if __name__ == "__main__":
     end_date = args[1] if is_valid_date(args[1]) else None
 
-    if "--no_update_listing" in args:
-        no_update_listing = True
-
-    if "--skip_download" in args:
-        skip_download = True
-
-    return_code = os.system('python3 py/get_perimeters.py') # get the latest perimeters
+    no_update_listing, skip_download = "--no_update_listing" in args, "--skip_download" in args
+    
+    return_code = os.system('python3 py/get_perimeters.py')  # refresh perimeters, n.b. should add "past data" option
 
     fire_numbers = []
     for i in args[1:]:
         if (i[0:2] != '--') and (not is_valid_date(i)):
             fire_numbers += [i]
     
-    get_composite_image(fire_numbers, end_date)  # this function is in this file
+    get_composite_image(fire_numbers, end_date)  # get_composite_image() is in this file!
