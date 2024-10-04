@@ -30,7 +30,7 @@ python3 py/get_composite.py G90267 --no_update_listing
 In both cases, the following commands are needed before running the application
 ```
 python3 -m pip install numpy matplotlib pandas rasterio geopandas
-sudo apt install gdal-bin libgdal-dev
+sudo apt install gdal-bin libgdal-dev python3-gdal
 ```
 * Also compatible with MacOS (use brew install instead of sudo apt install) 
 
