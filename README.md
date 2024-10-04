@@ -34,8 +34,15 @@ sudo apt install gdal-bin libgdal-dev python3-gdal
 ```
 * Also compatible with MacOS (use brew install instead of sudo apt install) 
 
-### Note: need to add GDAL setup info here
-To be completed
+### Test procedure:
+Rolling up the setup and invocation, to get started (assuming you have WSL installed) here is the available test procedure:
+```
+python3 -m pip install numpy matplotlib pandas rasterio geopandas
+sudo apt install gdal-bin libgdal-dev
+git clone git@github.com:bcgov/nrtbs.git
+cd nrtbs
+python3 py/get_composite.py 20240601 G90267
+```
 
 # Background / references
 * [Sterling's original work instructions](doc/TASK.md)
