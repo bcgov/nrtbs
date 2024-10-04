@@ -18,13 +18,13 @@ for the 2024 Parker Lake wildfire, affecting Fort Nelson (BC).
 * Start and end dates will be automatically generated based on fire ignition dates unless manual end date is given
 * Automatic trimming to fire AOI
 * Results will be output into a FIRE_NUMBER_barcs folder
-## Note:
+## Notes:
 Can add flag ```--no_update_listing``` to skip refreshing the index of all available Sentinel-2 data. Also a ```--skip_data_download``` is available for re-running without downloading the initial .zip format data again (e.g. if there are storage limitations, can use this to re-run after deleting all zip files but keeping intermediary products)
 e.g.:
 ```
 python3 py/get_composite.py G90267 --no_update_listing
 ```
-to skip the step of refreshing the list of data currently available on AWS (as this step may take a few minutes)
+to skip the step of refreshing the list of data currently available on AWS (as this step may take a few minutes).
 ## Dependencies
 * Windows: first [please click here for instructions to install WSL prompt](https://learn.microsoft.com/en-us/windows/wsl/install) no admin privileges required in Windows
 * Ubuntu Linux
@@ -34,6 +34,9 @@ python3 -m pip install numpy matplotlib pandas rasterio geopandas
 sudo apt install gdal-bin libgdal-dev
 ```
 * Also compatible with MacOS (use brew install instead of sudo apt install) 
+
+### Note: need to add GDAL setup info here
+To be completed
 
 # Background / references
 * [Sterling's original work instructions](doc/TASK.md)
