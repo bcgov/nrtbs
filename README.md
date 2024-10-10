@@ -15,6 +15,11 @@ where [FIRE_NUMBER] is a 6-character BC wildfire "fire number" (a letter followe
 python3 py/get_composite.py G90267
 ```
 for the 2024 Parker Lake wildfire, affecting Fort Nelson (BC). 
+
+To manually add an end date, prefix the fire number accordingly:
+```
+python3 py/get_composite.py 20240630 G90267
+```
 * Start and end dates will be automatically generated based on fire ignition dates unless manual end date is given
 * Automatic trimming to fire AOI
 * Results will be output into a FIRE_NUMBER_barcs folder
