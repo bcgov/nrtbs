@@ -24,7 +24,7 @@ python3 py/get_composite.py 20240630 G90267
 * Automatic trimming to fire AOI
 * Results will be output into a FIRE_NUMBER_barcs folder
 ## Notes:
-Can add flag ```--no_update_listing``` to skip refreshing the index of all available Sentinel-2 data. Also a ```--skip_data_download``` is available for re-running without downloading the initial .zip format data again (e.g. if there are storage limitations, can use this to re-run after deleting all zip files but keeping intermediary products)
+Can add flag ```--no_update_listing``` to skip refreshing the index of all available Sentinel-2 data. Also a ```--skip_download``` is available for re-running without downloading the initial .zip format data again (e.g. if there are storage limitations, can use this to re-run after deleting all zip files but keeping intermediary products)
 e.g.:
 ```
 python3 py/get_composite.py G90267 --no_update_listing
