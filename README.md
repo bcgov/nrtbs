@@ -51,7 +51,8 @@ python3 py/get_composite.py 20240601 G90267
 
 # Background / references
 * [Sterling's original work instructions](doc/TASK.md)
-* https://burnseverity.cr.usgs.gov/ravg/background-products-applications
-* https://towardsdatascience.com/t-sne-clearly-explained-d84c537f53a
 * https://github.com/SashaNasonova/burnSeverity/blob/main/burnsev_gee.py
 * https://github.com/SashaNasonova/burnSeverity/blob/main/BurnSeverityMapping.ipynb
+* https://burnseverity.cr.usgs.gov/products/baer
+* https://burnseverity.cr.usgs.gov/ravg/background-products-applications
+* https://towardsdatascience.com/t-sne-clearly-explained-d84c537f53a
