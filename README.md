@@ -66,3 +66,4 @@ python3 py/get_composite.py 20240601 G90267
 * https://burnseverity.cr.usgs.gov/products/baer
 * https://burnseverity.cr.usgs.gov/ravg/background-products-applications
 * https://towardsdatascience.com/t-sne-clearly-explained-d84c537f53a
+* [USDA Forest Service: Field Guide for Mapping Post-fire Soil Burn Severity](https://research.fs.usda.gov/treesearch/36236)
