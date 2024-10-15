@@ -5,6 +5,15 @@ Application: **NRT "same-day" burned severity (automatic)**
 * Access to ESA Sentinel-2 data via NRCAN NRT Sentinel products mirror on AWS-S3 (thanks ESA and NRCAN) 
  
 ## To run
+Simple option:
+```
+wget https://github.com/bcgov/nrtbs/archive/refs/heads/master.zip
+unzip master.zip
+cd nrtbs-master
+python3 py/get_composite [FIRE_NUMBER]
+```
+
+Advanced option (if you have github set up already at your terminal):
 ```
 git clone git@github.com:bcgov/nrtbs.git
 cd nrtbs
@@ -34,18 +43,18 @@ python3 py/get_composite.py G90267 --no_update_listing
 * Ubuntu Linux
 In both cases, the following commands are needed before running the application
 ```
-python3 -m pip install numpy matplotlib pandas rasterio geopandas
-sudo apt install gdal-bin libgdal-dev python3-gdal
+sudo apt update && sudo apt upgrade
+sudo apt install gdal-bin libgdal-dev python3-gdal python3-pip python3-tk
+python3 -m pip install numpy matplotlib pandas rasterio geopandas awscli --break-system-packages
 ```
 * Also compatible with MacOS (use brew install instead of sudo apt install) 
 
 ### Test procedure:
-Rolling up the setup and invocation, to get started (assuming you have WSL installed) here is the available test procedure:
+To get started with the application (assuming you have WSL and dependencies installed) the available test procedure:
 ```
-python3 -m pip install numpy matplotlib pandas rasterio geopandas
-sudo apt install gdal-bin libgdal-dev
-git clone git@github.com:bcgov/nrtbs.git
-cd nrtbs
+wget https://github.com/bcgov/nrtbs/archive/refs/heads/master.zip
+unzip master.zip
+cd nrtbs-master
 python3 py/get_composite.py 20240601 G90267
 ```
 
