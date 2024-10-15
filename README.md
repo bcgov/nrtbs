@@ -59,6 +59,7 @@ python3 py/get_composite.py 20240601 G90267
 ```
 
 # Background / references
+* [Sterling von Dehn's work term report (internal, access controlled)](https://bcgov.sharepoint.com/:b:/t/01324/ERKaKW6P0AdPjP5yOgJofXEBFYHDg6iIm-7c1trylGTEuA?e=7iID0Z)
 * [Sterling's original work instructions](doc/TASK.md)
 * https://github.com/SashaNasonova/burnSeverity/blob/main/burnsev_gee.py
 * https://github.com/SashaNasonova/burnSeverity/blob/main/BurnSeverityMapping.ipynb
