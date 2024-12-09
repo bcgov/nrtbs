@@ -49,6 +49,11 @@ python3 -m pip install numpy matplotlib pandas rasterio geopandas awscli --break
 ```
 * Also compatible with MacOS (use brew install instead of sudo apt install) 
 
+Note: may need to fix numpy at version 1.23.0 e.g. with:
+```
+python3 -m pip install numpy==1.23.0
+```
+
 ### Test procedure:
 To get started with the application (assuming you have WSL and dependencies installed) the available test procedure:
 ```
