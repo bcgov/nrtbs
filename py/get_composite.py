@@ -6,7 +6,7 @@ $python3 get_composite.py N51117 N51069 N51210 N51103 #fire complex with automat
 $python3 get_composite.py 20240810 N51117 N51069 N51210 N51103 #fire complex with manual end date
 '''
 from percent_vs_time import extract_data_percent
-from misc import run, args, extract_date
+from misc import run, args, extract_date, exist
 from check_tile_id import check_tile_id
 from cut_coords import plot_image_with_rectangle
 from plot import plot
@@ -16,9 +16,11 @@ from datetime import datetime, timedelta
 from dnbr import barc_time_series
 from auto_coords import auto_coords
 from barc_comp import trim_tif_to_shapefile
+
 no_update_listing = False
 skip_download = False
-
+historical_perimeters = None  # for retroactive / historical analysis mode.. fire perimters stored offline in shapefile`
+historical_points = None
 
 def is_valid_date(date_string):
     '''
@@ -55,7 +57,7 @@ def get_composite_image(fire_num, end_date=None):
         str_end_date = end_date
     
     #getting the ignition date for fires and taking the smallest
-    fire_points_path = 'prot_current_fire_points.shp'
+    fire_points_path = 'prot_current_fire_points.shp' if historical_points is None else historical_points  # add historical data option : ) 
     fire_points = gpd.read_file(fire_points_path)
     fire_points = fire_points.to_crs(epsg=4326)
     fire_num_point = fire_points[fire_points['FIRE_NUM'].isin(fire_num)]
@@ -71,7 +73,7 @@ def get_composite_image(fire_num, end_date=None):
 
     #str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
 
-    tiles = check_tile_id(fire_num) #checking tiles
+    tiles = check_tile_id(fire_num, historical_perimeters) #checking tiles
     tile_str = ''
     for tile in tiles:
         if not os.path.exists(f'L2_{tile}/*{str_end_date}*'):
@@ -102,7 +104,10 @@ def get_composite_image(fire_num, end_date=None):
     files.sort()
 
     #cut_data = plot_image_with_rectangle(files[-1]) #prompt user for cut coords
-    cut_data = auto_coords(fire_num, files[-1])
+    cut_data = auto_coords(fire_num,
+                           files[-1],
+                           historical_perimeters)  # 20241211 add option for historical fires/perimeters
+    
     run(f'python3 py/cut.py {fire_name} {int(cut_data[0])} {int(cut_data[1])} {int(cut_data[2])} {int(cut_data[3])}')
 
     if len(tiles) == 1:
@@ -141,15 +146,34 @@ def get_composite_image(fire_num, end_date=None):
     for fire in fire_num:
         barc_files = [x.strip() for x in os.popen('ls -1 ' + f'{fire}_barcs/*BARC.tif').readlines()]
         for b in barc_files:
-            trim_tif_to_shapefile(b, fire_name, '.'.join(b.split('.')[:-1]) + '_clipped.tif')        
+            # trim tif to shapefile ( recorded fire perimeter ) 
+            trim_tif_to_shapefile(b,
+                                  fire_name,
+                                  '.'.join(b.split('.')[:-1]) + '_clipped.tif',
+                                  historical_perimeters)
 
 
 if __name__ == "__main__":
     end_date = args[1] if is_valid_date(args[1]) else None  # date arg possibly at position 1
 
     no_update_listing, skip_download = "--no_update_listing" in args, "--skip_download" in args  # nonpositional options
-    
-    return_code = os.system('python3 py/get_perimeters.py')  # refresh perimeters, n.b. should add "past data" option
+
+    for i in args[1:]:
+        if i[:2] == '--':
+            w = i.split('=')
+            if w[0] == '--historical_perimeters':
+                print("historical mode")
+                historical_perimeters = w[1]
+                if not exist(historical_perimeters):
+                    err("could not find file: " + str(historical_perimeters))
+
+            if w[0] == '--historical_points':
+                historical_points = w[1]
+                if not exist(historical_points):
+                    err("could not find file: " + str(historical_points))
+
+    if historical_perimeters is None:
+        return_code = os.system('python3 py/get_perimeters.py')  # refresh perimeters, n.b. should add "past data" option
 
     fire_numbers = []  # other options assumed to be fire ID codes
     for i in args[1:]:

@@ -13,7 +13,7 @@ from numpy.ma import masked_where
 import geopandas as gpd
 from misc import run, args
 
-def comp_tiff(fire_num, start_date1, start_date2, start_date3, end_date):
+def comp_tiff(fire_num, start_date1, start_date2, start_date3, end_date, historical_perimeters=None):
     '''
     Compares BARC plots
     '''
@@ -21,7 +21,7 @@ def comp_tiff(fire_num, start_date1, start_date2, start_date3, end_date):
     faib_tiff = f'../data/{fire_num}/barc/BARC_{fire_num}_{start_date1}_{end_date}_S2_clip.tif'
     nrtbs_tiff_pre = f'{fire_num}_barcs/{end_date}_barc.tif'
     #trimming NRTBS tiff
-    trim_tif_to_shapefile(nrtbs_tiff_pre, fire_num, f'{fire_num}_barcs/cut.tif')
+    trim_tif_to_shapefile(nrtbs_tiff_pre, fire_num, f'{fire_num}_barcs/cut.tif', historical_perimeters)
     run(f'python3 raster_project_onto.py {fire_num}_barcs/cut.tif {faib_tiff} {fire_num}_barcs/{fire_num}_projected.tif true')
     nrtbs_tiff = f'{fire_num}_barcs/{fire_num}_projected.tif'
 
@@ -66,12 +66,12 @@ def comp_tiff(fire_num, start_date1, start_date2, start_date3, end_date):
     plt.tight_layout()
     plt.savefig(f'{fire_num}_barcs/{fire_num}_comp.png')
 
-def trim_tif_to_shapefile(tif_path, fire_num, output_path):
+def trim_tif_to_shapefile(tif_path, fire_num, output_path, historical_perimeters=None):
     '''
     cuts a tiff file to a fire perimeter
     '''
     # Load the shapefile
-    shapefile_path = 'prot_current_fire_polys.shp'
+    shapefile_path = 'prot_current_fire_polys.shp' if historical_perimeters is None else historical_perimeters
     perims = gpd.read_file(shapefile_path)
     shapes = perims[perims['FIRE_NUM'] == fire_num]
     

@@ -66,7 +66,7 @@ def gdf_coords(gdf, target_crs):
     minx, miny, maxx, maxy = bounds
     return [maxx, maxy, minx, miny]
 
-def auto_coords(fire_num, file):
+def auto_coords(fire_num, file, historical_perimeters=None):
     """
     Calculates cut coordinates for raster data and fire perimeters, transforming to a specified projection.
 
@@ -80,7 +80,7 @@ def auto_coords(fire_num, file):
     """
     target_proj = 'epsg:3005'
     # Load fire perimeter data
-    fire_perims = gpd.read_file('prot_current_fire_polys.shp')
+    fire_perims = gpd.read_file('prot_current_fire_polys.shp' if historical_perimeters is None else historical_perimeters)
     fire_num_perims = fire_perims[fire_perims['FIRE_NUM'].isin(fire_num)]
 
     # Extract map info from GDAL
