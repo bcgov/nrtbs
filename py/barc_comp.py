@@ -73,7 +73,8 @@ def trim_tif_to_shapefile(tif_path, fire_num, output_path, historical_perimeters
     # Load the shapefile
     shapefile_path = 'prot_current_fire_polys.shp' if historical_perimeters is None else historical_perimeters
     perims = gpd.read_file(shapefile_path)
-    shapes = perims[perims['FIRE_NUM'] == fire_num]
+    fire_number_string = 'FIRE_NUMBE' if 'FIRE_NUMBE' in perims else 'FIRE_NUM'
+    shapes = perims[perims[fire_number_string] == fire_num]
     
     # Ensure the shapefile and TIFF are in the same CRS
     with rasterio.open(tif_path) as src:

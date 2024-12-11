@@ -34,7 +34,8 @@ def check_tile_id(fire_num, historical_perimeters=None):
     #reading files
     fire_perims = gpd.read_file(fire_perims_path)
     fire_perims = fire_perims.to_crs(epsg=4326)
-    fire_num_perim = fire_perims[fire_perims['FIRE_NUM'].isin(fire_num)]
+    fire_number_string = 'FIRE_NUM' if 'FIRE_NUM' in fire_perims else 'FIRE_NUMBE'
+    fire_num_perim = fire_perims[fire_perims[fire_number_string].isin(fire_num)]
     tile_id = gpd.read_file(tile_path)
     tile_id = tile_id.to_crs(epsg=4326)
 

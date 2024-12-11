@@ -81,7 +81,9 @@ def auto_coords(fire_num, file, historical_perimeters=None):
     target_proj = 'epsg:3005'
     # Load fire perimeter data
     fire_perims = gpd.read_file('prot_current_fire_polys.shp' if historical_perimeters is None else historical_perimeters)
-    fire_num_perims = fire_perims[fire_perims['FIRE_NUM'].isin(fire_num)]
+    
+    fire_number_string = 'FIRE_NUMBE' if 'FIRE_NUMBE' in fire_perims else 'FIRE_NUM'
+    fire_num_perims = fire_perims[fire_perims[fire_number_string].isin(fire_num)]
 
     # Extract map info from GDAL
     geotransform, projection = extract_map_info_from_gdal(file)

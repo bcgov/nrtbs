@@ -60,8 +60,20 @@ def get_composite_image(fire_num, end_date=None):
     fire_points_path = 'prot_current_fire_points.shp' if historical_points is None else historical_points  # add historical data option : ) 
     fire_points = gpd.read_file(fire_points_path)
     fire_points = fire_points.to_crs(epsg=4326)
-    fire_num_point = fire_points[fire_points['FIRE_NUM'].isin(fire_num)]
-    ignt_dates = [datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S').date() for date in  fire_num_point.IGNITN_DT]
+
+    fire_number_string = 'FIRE_NUM' if 'FIRE_NUM' in fire_points else 'FIRE_NUMBE'
+    fire_num_point = fire_points[fire_points[fire_number_string].isin(fire_num)]
+    
+
+    ignt_dates = None
+    try:
+        ignt_dates = [datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S').date() for date in  fire_num_point.IGNITN_DT]
+    except:
+        try:
+            ignt_dates = [datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S').date() for date in  fire_num_point.FIRE_DATE]
+        except:
+            err("could not parse fire start date from shapefile")
+
     fire_start_date = min(ignt_dates)
     start_date = fire_start_date - timedelta(weeks=3)
 
