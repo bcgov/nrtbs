@@ -33,11 +33,20 @@ python3 py/get_composite.py 20240630 G90267
 * Automatic trimming to fire AOI
 * Results will be output into a FIRE_NUMBER_barcs folder
 ## Notes:
+### Skipping refreshing Sentinel-2 data index and/or skipping download of Sentinel-2 data
 Can add flag ```--no_update_listing``` to skip refreshing the index of all available Sentinel-2 data. Also a ```--skip_download``` is available for re-running without downloading the initial .zip format data again (e.g. if there are storage limitations, can use this to re-run after deleting all zip files but keeping intermediary products)
 e.g.:
 ```
 python3 py/get_composite.py G90267 --no_update_listing
 ```
+### Historical mode
+For research purposes it's important to be able to generate composite imagery sequences over fires from past years. Therefore we've added an option to provide historical BC Wildfire information.
+
+How to add historical perimeters and study a past fire that's not available in the default (current public) source of fire perimter data (e.g. insert your fire number of interest and path to your shapefile here):
+```
+python3 py/get_composite.py V82991 --historical_perimeters=data/BC_Fire_Perimeters_2023-polygon.shp
+```
+
 ## Dependencies
 * Windows: first [please click here for instructions to install WSL prompt](https://learn.microsoft.com/en-us/windows/wsl/install) no admin privileges required in Windows
 * Ubuntu Linux
