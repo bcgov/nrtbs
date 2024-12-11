@@ -44,7 +44,7 @@ For research purposes it's important to be able to generate composite imagery se
 
 How to add historical perimeters and study a past fire that's not available in the default (current public) source of fire perimter data (e.g. insert your fire number of interest and path to your shapefile here):
 ```
-python3 py/get_composite.py V82991 --historical_perimeters=data/BC_Fire_Perimeters_2023-polygon.shp
+python3 py/get_composite.py V82991 --historical_perimeters=data/BC_Fire_Perimeters_2023-polygon.shp --historical_points=data/BC_Fire_Perimeters_2023-point.shp
 ```
 
 ## Dependencies
