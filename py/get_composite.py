@@ -56,10 +56,6 @@ def get_composite_image(fire_num, end_date=None):
     else:
         str_end_date = end_date
     
-    # historical perimeters may not include end date? NEED TO WORK ON THIS
-    if historical_perimeters:
-        str_end_date = str_end_date[:4] + '1111'
-
     #getting the ignition date for fires and taking the smallest.. for historical case we can revert to polygon file
     fire_points_path = 'prot_current_fire_points.shp' if historical_perimeters is None else historical_perimeters  # add historical data option : ) 
     fire_points = gpd.read_file(fire_points_path)
@@ -88,6 +84,10 @@ def get_composite_image(fire_num, end_date=None):
         str_start_date += comp
 
     #str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
+
+    # historical perimeters may not include end date? NEED TO WORK ON THIS
+    if historical_perimeters:
+        str_end_date = str_start_date[:4] + '1111'
 
     tiles = check_tile_id(fire_num, historical_perimeters) #checking tiles
     tile_str = ''
