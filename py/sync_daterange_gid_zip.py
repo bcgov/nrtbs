@@ -73,7 +73,12 @@ def download_by_gids(gids, yyyymmdd, yyyymmdd2):
     try:
         d = json.loads(data)  # parse json data
     except:
-        err('please confirm aws cli: e.g. sudo apt install awscli')
+        print("Please confirm awscli is installed.")
+        print("Recommended method:")
+        print("\tpython3 -m pip install awscli")
+        print("(note, have had problems with:")
+        print("\tsudo apt install awscl  # this method did not work properly.")
+        err('please confirm aws cli is installed!')
     data = d['Contents']  # extract the data records, one per dataset
     
     cmds = []
