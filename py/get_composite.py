@@ -56,8 +56,8 @@ def get_composite_image(fire_num, end_date=None):
     else:
         str_end_date = end_date
     
-    #getting the ignition date for fires and taking the smallest
-    fire_points_path = 'prot_current_fire_points.shp' if historical_points is None else historical_points  # add historical data option : ) 
+    #getting the ignition date for fires and taking the smallest.. for historical case we can revert to polygon file
+    fire_points_path = 'prot_current_fire_points.shp' if historical_perimeters is None else historical_perimeters  # add historical data option : ) 
     fire_points = gpd.read_file(fire_points_path)
     fire_points = fire_points.to_crs(epsg=4326)
 
@@ -179,11 +179,12 @@ if __name__ == "__main__":
                 if not exist(historical_perimeters):
                     err("could not find file: " + str(historical_perimeters))
 
+            '''            
             if w[0] == '--historical_points':
                 historical_points = w[1]
                 if not exist(historical_points):
                     err("could not find file: " + str(historical_points))
-
+            '''
     if historical_perimeters is None:
         return_code = os.system('python3 py/get_perimeters.py')  # refresh perimeters, n.b. should add "past data" option
 
