@@ -64,7 +64,6 @@ def get_composite_image(fire_num, end_date=None):
     fire_number_string = 'FIRE_NUM' if 'FIRE_NUM' in fire_points else 'FIRE_NUMBE'
     fire_num_point = fire_points[fire_points[fire_number_string].isin(fire_num)]
     
-
     ignt_dates = None
     try:
         ignt_dates = [datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S').date() for date in  fire_num_point.IGNITN_DT]
@@ -84,7 +83,6 @@ def get_composite_image(fire_num, end_date=None):
         str_start_date += comp
 
     #str_start_date = '20230201' # FOR DONNIE COMPLEX REMOVE FOR OTHER USE!!!!!!!!!!!!!!!!!!
-
     # historical perimeters may not include end date? NEED TO WORK ON THIS
     if historical_perimeters:
         str_end_date = str_start_date[:4] + '1111'
