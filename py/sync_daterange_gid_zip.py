@@ -58,6 +58,7 @@ def download_by_gids(gids, yyyymmdd, yyyymmdd2):
                         's3api',
                         'list-objects',
                         '--no-sign-request',
+                        '--no-verify-ssl',
                         '--bucket sentinel-products-ca-mirror'])
         print(cmd)
         data = os.popen(cmd).read()
@@ -99,6 +100,7 @@ def download_by_gids(gids, yyyymmdd, yyyymmdd2):
             cmd = ' '.join(['aws',
                             's3',
                             'cp',
+                            '--no-verify-ssl',
                             '--no-sign-request',
                             's3://sentinel-products-ca-mirror/' + key,
                             f])
