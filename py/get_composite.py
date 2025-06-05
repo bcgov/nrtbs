@@ -4,18 +4,20 @@ $python3 get_composite.py G90267 #single fire with automatic end date
 $python3 get_composite.py 20240630 G90267 #single fire with manual end date
 $python3 get_composite.py N51117 N51069 N51210 N51103 #fire complex with automatic end date
 $python3 get_composite.py 20240810 N51117 N51069 N51210 N51103 #fire complex with manual end date
+
+20250605 should add feature to guess the name of the fire ignition field : ) 
 '''
+from misc import run, args, extract_date, exist, err
 from percent_vs_time import extract_data_percent
-from misc import run, args, extract_date, exist
-from check_tile_id import check_tile_id
 from cut_coords import plot_image_with_rectangle
+from barc_comp import trim_tif_to_shapefile
+from datetime import datetime, timedelta
+from check_tile_id import check_tile_id
+from auto_coords import auto_coords
+from dnbr import barc_time_series
+import geopandas as gpd
 from plot import plot
 import os
-import geopandas as gpd
-from datetime import datetime, timedelta
-from dnbr import barc_time_series
-from auto_coords import auto_coords
-from barc_comp import trim_tif_to_shapefile
 
 no_update_listing = False
 skip_download = False
